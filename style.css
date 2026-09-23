@@ -284,6 +284,42 @@ p {
   transform: translateY(-1px);
 }
 
+.desktop-nav .nav-kofi {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  min-height: 38px;
+  padding: 0 0.8rem;
+  color: var(--accent);
+  background: var(--accent-faint);
+  border: 1px solid rgba(119, 228, 255, 0.24);
+  border-radius: 8px;
+  transition: color 180ms ease, background-color 180ms ease, border-color 180ms ease, transform 180ms ease;
+}
+
+.desktop-nav .nav-kofi:hover {
+  color: #051018;
+  background: var(--accent);
+  border-color: var(--accent);
+  transform: translateY(-1px);
+}
+
+.kofi-icon {
+  width: 1rem;
+  height: 1rem;
+  flex: 0 0 auto;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.6;
+}
+
+.kofi-icon .kofi-heart {
+  fill: currentColor;
+  stroke: none;
+}
+
 .menu-toggle {
   display: none;
   width: 44px;
@@ -2583,6 +2619,13 @@ p {
   }
   .mobile-nav a:last-child { border-bottom: 0; }
   .mobile-nav a span { color: var(--muted); font-family: var(--font-mono); font-size: 0.58rem; }
+  .mobile-nav .mobile-nav-donate { color: var(--accent); }
+  .mobile-nav .mobile-nav-donate-label { display: inline-flex; align-items: center; gap: 0.5rem; color: inherit; font-family: var(--font-sans); font-size: 0.8rem; }
+  .mobile-nav .mobile-nav-donate-label .kofi-icon { width: 1rem; height: 1rem; }
+  .mobile-nav .mobile-nav-donate > span:last-child { color: inherit; font-family: var(--font-mono); font-size: 0.68rem; }
+  .mobile-nav .mobile-nav-donate:hover,
+  .mobile-nav .mobile-nav-donate:hover .mobile-nav-donate-label,
+  .mobile-nav .mobile-nav-donate:hover > span:last-child { color: var(--text); }
   #app { padding-top: 4rem; }
   .hero { grid-template-columns: 1fr; min-height: 0; }
   .hero-stage { min-height: 470px; max-width: 640px; margin: 1rem auto 0; width: 100%; }
