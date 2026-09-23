@@ -15,6 +15,7 @@ const mobileNav = document.querySelector('[data-mobile-nav]');
 const menuToggle = document.querySelector('[data-menu-toggle]');
 const toast = document.querySelector('[data-toast]');
 const lightbox = document.querySelector('[data-lightbox]');
+const SITE_BASE_PATH = getSiteBasePath();
 
 const FILTERS = ['All', ...getProjectCategories()];
 const ICON_PATHS = {
@@ -62,6 +63,50 @@ function initialize() {
   renderRoute(false);
 }
 
+function getSiteBasePath() {
+  if (window.location.protocol === 'file:') return '';
+  const baseElement = document.querySelector('base');
+  const baseHref = baseElement?.getAttribute('href') || '/';
+  try {
+    const pathname = new URL(baseHref, window.location.href).pathname;
+    return pathname === '/' ? '/' : `${pathname.replace(/\/+$/, '')}/`;
+  } catch (error) {
+    return '/';
+  }
+}
+
+function stripSiteBasePath(path) {
+  const normalized = normalizePath(path);
+  if (!SITE_BASE_PATH || SITE_BASE_PATH === '/') return normalized;
+  const baseWithoutSlash = SITE_BASE_PATH.replace(/\/+$/, '');
+  if (normalized === baseWithoutSlash) return '/';
+  if (normalized.startsWith(SITE_BASE_PATH)) return normalizePath(normalized.slice(SITE_BASE_PATH.length));
+  return normalized;
+}
+
+function buildSitePath(pathname, query = '') {
+  const normalized = stripSiteBasePath(pathname);
+  const suffix = normalized === '/' ? '' : normalized.replace(/^\/+/, '');
+  const base = SITE_BASE_PATH || '/';
+  const path = base.endsWith('/') ? `${base}${suffix}` : `${base}/${suffix}`;
+  return `${path || '/'}${query ? `?${query}` : ''}`;
+}
+
+function routeHref(path) {
+  const [pathname, query = ''] = String(path || '/').split('?');
+  if (window.location.protocol === 'file:') return path || '/';
+  return buildSitePath(pathname, query);
+}
+
+function syncRouteLinks() {
+  document.querySelectorAll('[data-route]').forEach((link) => {
+    const href = link.getAttribute('href') || '/';
+    if (/^(?:[a-z][a-z0-9+.-]*:|\/\/|#)/i.test(href)) return;
+    const [pathname, query = ''] = href.split('?');
+    link.setAttribute('href', routeHref(`${pathname || '/'}${query ? `?${query}` : ''}`));
+  });
+}
+
 function getLocation() {
   if (window.location.protocol === 'file:') {
     const search = new URLSearchParams(window.location.search);
@@ -74,26 +119,27 @@ function getLocation() {
   }
 
   return {
-    pathname: normalizePath(window.location.pathname),
+    pathname: stripSiteBasePath(window.location.pathname),
     query: new URLSearchParams(window.location.search)
   };
 }
 
 function normalizePath(path) {
   if (!path || path === '/index.html') return '/';
-  const normalized = path.replace(/\/+/g, '/').replace(/\/+$/, '');
+  const withLeadingSlash = String(path).replace(/^\.\//, '/').replace(/^([^/])/, '/$1');
+  const normalized = withLeadingSlash.replace(/\/{2,}/g, '/').replace(/\/+$/, '');
   return normalized || '/';
 }
 
 function navigate(path) {
   const [pathname, query = ''] = path.split('?');
-  const normalized = normalizePath(pathname);
+  const normalized = stripSiteBasePath(pathname);
 
   if (window.location.protocol === 'file:') {
     const next = `index.html?route=${encodeURIComponent(normalized + (query ? `?${query}` : ''))}`;
     window.history.pushState({}, '', next);
   } else {
-    window.history.pushState({}, '', normalized + (query ? `?${query}` : ''));
+    window.history.pushState({}, '', buildSitePath(normalized, query));
   }
 
   closeMobileNav();
@@ -145,6 +191,7 @@ function renderRoute(shouldScroll) {
   document.title = title;
   updateMeta(title, description);
   updateActiveNavigation(path);
+  syncRouteLinks();
   setupReveal();
   setupImageFrames();
   syncDiscordLinks();
@@ -863,9 +910,8 @@ function findProject(slug) {
 
 function assetUrl(path) {
   if (!path) return '';
-  if (/^(https?:|data:|blob:|\/)/i.test(path)) return path;
-  if (window.location.protocol === 'file:') return new URL(path, window.location.href).href;
-  return `/${path.replace(/^\/+/, '')}`;
+  if (/^(?:[a-z][a-z0-9+.-]*:|\/\/)/i.test(path)) return path;
+  return new URL(path.replace(/^\/+/, ''), document.baseURI).href;
 }
 
 function icon(name) {

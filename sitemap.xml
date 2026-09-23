@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url><loc>/</loc></url>
-  <url><loc>/projects</loc></url>
-  <url><loc>/projects/heavenlobby</loc></url>
-  <url><loc>/projects/yumi</loc></url>
-  <url><loc>/services</loc></url>
-  <url><loc>/about</loc></url>
-  <url><loc>/contact</loc></url>
+  <url><loc>https://smmezp.github.io/portfolio/</loc></url>
+  <url><loc>https://smmezp.github.io/portfolio/projects</loc></url>
+  <url><loc>https://smmezp.github.io/portfolio/projects/heavenlobby</loc></url>
+  <url><loc>https://smmezp.github.io/portfolio/projects/yumi</loc></url>
+  <url><loc>https://smmezp.github.io/portfolio/services</loc></url>
+  <url><loc>https://smmezp.github.io/portfolio/about</loc></url>
+  <url><loc>https://smmezp.github.io/portfolio/contact</loc></url>
 </urlset>
