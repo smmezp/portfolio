@@ -304,22 +304,6 @@ p {
   transform: translateY(-1px);
 }
 
-.kofi-icon {
-  width: 1rem;
-  height: 1rem;
-  flex: 0 0 auto;
-  fill: none;
-  stroke: currentColor;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  stroke-width: 1.6;
-}
-
-.kofi-icon .kofi-heart {
-  fill: currentColor;
-  stroke: none;
-}
-
 .menu-toggle {
   display: none;
   width: 44px;
@@ -2620,8 +2604,7 @@ p {
   .mobile-nav a:last-child { border-bottom: 0; }
   .mobile-nav a span { color: var(--muted); font-family: var(--font-mono); font-size: 0.58rem; }
   .mobile-nav .mobile-nav-donate { color: var(--accent); }
-  .mobile-nav .mobile-nav-donate-label { display: inline-flex; align-items: center; gap: 0.5rem; color: inherit; font-family: var(--font-sans); font-size: 0.8rem; }
-  .mobile-nav .mobile-nav-donate-label .kofi-icon { width: 1rem; height: 1rem; }
+  .mobile-nav .mobile-nav-donate-label { color: inherit; font-family: var(--font-sans); font-size: 0.8rem; }
   .mobile-nav .mobile-nav-donate > span:last-child { color: inherit; font-family: var(--font-mono); font-size: 0.68rem; }
   .mobile-nav .mobile-nav-donate:hover,
   .mobile-nav .mobile-nav-donate:hover .mobile-nav-donate-label,
