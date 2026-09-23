@@ -38,7 +38,7 @@ window.MEDEIROS_PROJECTS = [
       'assets/projects/heavenjoin/video.mp4'
     ],
     links: {
-      download: 'https://ko-fi.com/s/d6ba497b6e'
+      download: 'https://www.spigotmc.org/resources/heavenjoin.138793/'
     },
     github: '',
     discord: 'https://discord.gg/Unbx6TpXwa',
@@ -89,7 +89,7 @@ window.MEDEIROS_PROJECTS = [
     },
     videos: [],
     links: {
-      download: 'https://ko-fi.com/s/d2dfadbcc7' 
+      download: 'https://www.spigotmc.org/resources/heavenclearlag.138846/' 
     },
     github: '',
     discord: 'https://discord.gg/Unbx6TpXwa',
@@ -104,6 +104,106 @@ window.MEDEIROS_PROJECTS = [
       {
         title: 'Technical direction',
         body: 'Discord.js and JavaScript keep the bot flexible for server-specific commands, embeds, categories and operational rules.'
+      }
+    ]
+  },
+  {
+    id: 'heavenchat',
+    name: 'Heaven Chat',
+    slug: 'heavenchat',
+    shortDescription: 'A lightweight and configurable chat system for Minecraft servers.',
+    fullDescription: 'HeavenChat is a highly configurable chat plugin designed to provide flexible communication through local, global, staff, private and custom chat channels while keeping the system lightweight and easy to manage.',
+    category: 'Minecraft Plugins',
+    categoryLabel: 'Minecraft Plugin',
+    status: 'In development',
+    technologies: ['Java', 'Paper', 'Spigot'],
+    features: [
+      'Local and global chat',
+      'Custom chat channels',
+      'Private messaging',
+      'Staff chat',
+      'Chat spy system',
+      'Chat channel focus',
+      'LuckPerms integration',
+      'PlaceholderAPI support',
+      'HEX color support',
+      'Multi-version compatibility'
+    ],
+    images: {
+      hero: 'assets/projects/heavenchat/hero.png',
+      gallery: [
+        'assets/projects/heavenchat/1.png',
+        'assets/projects/heavenchat/2.png',
+        'assets/projects/heavenchat/3.png'
+      ]
+    },
+    videos: [],
+    links: {
+      download: ''
+    },
+    github: '',
+    discord: 'https://discord.gg/Unbx6TpXwa',
+    price: 'Free',
+    featured: true,
+    date: '2026',
+    details: [
+      {
+        title: 'Build focus',
+        body: 'A flexible communication system focused on clean chat channels, configurable formats and an organized player experience.'
+      },
+      {
+        title: 'Technical direction',
+        body: 'Built with Java for the Paper and Spigot ecosystem, with configurable channels, permissions and broad Minecraft version compatibility.'
+      }
+    ]
+  },
+  {
+    id: 'heavenlobby',
+    name: 'Heaven Lobby',
+    slug: 'heavenlobby',
+    shortDescription: 'A configurable lobby and server management experience for Minecraft networks.',
+    fullDescription: 'HeavenLobby is a highly configurable lobby management and server selector plugin designed for Minecraft networks, combining server navigation, customizable menus, player features and network management into a unified experience.',
+    category: 'Minecraft Plugins',
+    categoryLabel: 'Minecraft Plugin',
+    status: 'In development',
+    technologies: ['Java', 'Paper', 'Spigot', 'Velocity'],
+    features: [
+      'Server selector',
+      'Configurable GUI',
+      'Lobby management',
+      'Item customization',
+      'PlaceholderAPI support',
+      'Maintenance system',
+      'Multi-version compatibility',
+      'Configurable menus',
+      'Player features',
+      'Proxy integration'
+    ],
+    images: {
+      hero: 'assets/projects/heavenlobby/hero.png',
+      gallery: [
+        'assets/projects/heavenlobby/1.png',
+        'assets/projects/heavenlobby/2.png',
+        'assets/projects/heavenlobby/3.png'
+      ]
+    },
+    videos: [],
+    links: {
+      download: ''
+    },
+    github: '',
+    discord: 'https://discord.gg/Unbx6TpXwa',
+    price: 'TBA',
+    featured: true,
+    date: '2026',
+    details: [
+      {
+        title: 'Build focus',
+        body: 'A flexible lobby foundation focused on server navigation, configurable menus and a polished player experience across connected networks.'
+      },
+      {
+        title: 'Technical direction',
+        body: 'Built around the Paper, Spigot and Velocity ecosystem to support modern lobby environments, backend servers and proxy-based network setups.'
       }
     ]
   }
