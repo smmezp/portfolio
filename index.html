@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#070b12">
+  <meta name="msapplication-TileColor" content="#070b12">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="description" content="Medeiros is a Minecraft developer building custom plugins, server systems, Discord bots and proxy solutions for international server teams.">
+  <meta name="author" content="Medeiros">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Medeiros — Minecraft Developer">
+  <meta property="og:description" content="Custom Minecraft plugins, server systems and Discord solutions built for your server.">
+  <meta property="og:url" content="/">
+  <meta property="og:image" content="assets/projects/heavenlobby/hero.svg">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Medeiros — Minecraft Developer">
+  <meta name="twitter:description" content="Custom Minecraft plugins, server systems and Discord solutions built for your server.">
+  <script>document.write('<base href="' + (window.location.protocol === 'file:' ? './' : '/') + '">');</script>
+  <link rel="icon" type="image/png" sizes="16x16" href="assets/brand/favicon-16x16.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/brand/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="48x48" href="assets/brand/favicon-48x48.png">
+  <link rel="icon" type="image/x-icon" href="assets/brand/favicon.ico">
+  <link rel="shortcut icon" type="image/png" href="assets/brand/favicon-32x32.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="assets/brand/apple-touch-icon.png">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <script src="data/site.js" defer></script>
+  <script src="data/projects.js" defer></script>
+  <script src="script.js" defer></script>
+</head>
+<body>
+  <div class="site-noise" aria-hidden="true"></div>
+  <div class="site-orb site-orb-one" aria-hidden="true"></div>
+  <div class="site-orb site-orb-two" aria-hidden="true"></div>
+
+  <div class="site-shell">
+    <header class="site-header" data-header>
+      <a class="wordmark" href="/" data-route aria-label="Medeiros home">
+        <img class="brand-logo" src="assets/brand/logo-main.png" alt="" width="48" height="48" decoding="async">
+        <span class="wordmark-text">MEDEIROS</span>
+      </a>
+
+      <nav class="desktop-nav" aria-label="Primary navigation">
+        <a href="/" data-route data-nav-link="home">Home</a>
+        <a href="/projects" data-route data-nav-link="projects">Projects</a>
+        <a href="/services" data-route data-nav-link="services">Services</a>
+        <a href="/about" data-route data-nav-link="about">About</a>
+        <a href="/contact" data-route data-nav-link="contact">Contact</a>
+        <a class="nav-cta" href="https://discord.gg/Unbx6TpXwa" data-discord-link target="_blank" rel="noopener noreferrer">Hire Me <span aria-hidden="true">↗</span></a>
+      </nav>
+
+      <button class="menu-toggle" type="button" data-menu-toggle aria-expanded="false" aria-controls="mobileNav" aria-label="Open navigation menu">
+        <span></span><span></span>
+      </button>
+    </header>
+
+    <nav class="mobile-nav" id="mobileNav" data-mobile-nav aria-label="Mobile navigation">
+      <a href="/" data-route data-nav-link="home">Home <span>01</span></a>
+      <a href="/projects" data-route data-nav-link="projects">Projects <span>02</span></a>
+      <a href="/services" data-route data-nav-link="services">Services <span>03</span></a>
+      <a href="/about" data-route data-nav-link="about">About <span>04</span></a>
+      <a href="/contact" data-route data-nav-link="contact">Contact <span>05</span></a>
+    </nav>
+
+    <main id="app" tabindex="-1"></main>
+
+    <footer class="site-footer">
+      <div class="footer-main">
+        <a class="wordmark footer-wordmark" href="/" data-route aria-label="Medeiros home">
+          <img class="brand-logo" src="assets/brand/logo-main.png" alt="" width="48" height="48" decoding="async">
+          <span class="wordmark-text">MEDEIROS</span>
+        </a>
+        <p>Custom Minecraft development for servers that want to build with intent.</p>
+        <a class="footer-contact" href="https://discord.gg/Unbx6TpXwa" data-discord-link target="_blank" rel="noopener noreferrer">Start a conversation <span aria-hidden="true">↗</span></a>
+      </div>
+      <div class="footer-bottom">
+        <span>© <span data-current-year></span> Medeiros</span>
+        <span class="footer-status"><i></i> Available for selected commissions</span>
+        <span>Built for better server experiences</span>
+      </div>
+    </footer>
+  </div>
+
+  <div class="lightbox" data-lightbox hidden aria-hidden="true">
+    <div class="lightbox-backdrop" data-lightbox-close></div>
+    <div class="lightbox-dialog" role="dialog" aria-modal="true" aria-label="Project image preview">
+      <button class="lightbox-close" type="button" data-lightbox-close aria-label="Close image preview">×</button>
+      <button class="lightbox-arrow lightbox-prev" type="button" data-lightbox-prev aria-label="Previous image">←</button>
+      <figure>
+        <div class="lightbox-image-frame">
+          <img data-lightbox-image src="" alt="">
+          <div class="lightbox-placeholder" data-lightbox-placeholder hidden><strong>Project Preview</strong><span>Images coming soon</span></div>
+        </div>
+        <figcaption data-lightbox-caption></figcaption>
+      </figure>
+      <button class="lightbox-arrow lightbox-next" type="button" data-lightbox-next aria-label="Next image">→</button>
+    </div>
+  </div>
+
+  <div class="toast" data-toast role="status" aria-live="polite"></div>
+</body>
+</html>

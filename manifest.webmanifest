@@ -1,0 +1,24 @@
+{
+  "name": "Medeiros — Minecraft Developer",
+  "short_name": "Medeiros",
+  "description": "Custom Minecraft plugins, server systems and Discord solutions built by Medeiros.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#060a11",
+  "theme_color": "#070b12",
+  "icons": [
+    {
+      "src": "assets/brand/favicon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "assets/brand/favicon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}
