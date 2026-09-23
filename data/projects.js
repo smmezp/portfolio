@@ -88,9 +88,11 @@ window.MEDEIROS_PROJECTS = [
       ]
     },
     videos: [],
-    links: {},
+    links: {
+      download: 'https://ko-fi.com/s/d2dfadbcc7' 
+    },
     github: '',
-    discord: '',
+    discord: 'https://discord.gg/Unbx6TpXwa',
     price: 'Free',
     featured: true,
     date: '2026',
