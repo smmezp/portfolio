@@ -139,7 +139,7 @@ window.MEDEIROS_PROJECTS = [
     },
     videos: [],
     links: {
-      download: ''
+      download: 'https://www.spigotmc.org/resources/heavenchat.139064/'
     },
     github: '',
     discord: 'https://discord.gg/Unbx6TpXwa',
