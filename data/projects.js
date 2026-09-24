@@ -115,7 +115,7 @@ window.MEDEIROS_PROJECTS = [
     fullDescription: 'HeavenChat is a highly configurable chat plugin designed to provide flexible communication through local, global, staff, private and custom chat channels while keeping the system lightweight and easy to manage.',
     category: 'Minecraft Plugins',
     categoryLabel: 'Minecraft Plugin',
-    status: 'In development',
+    status: 'Released',
     technologies: ['Java', 'Paper', 'Spigot'],
     features: [
       'Local and global chat',
