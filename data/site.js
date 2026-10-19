@@ -16,7 +16,7 @@ window.MEDEIROS_SITE = {
       number: '01',
       title: 'Custom Minecraft Plugins',
       shortTitle: 'Custom plugins',
-      description: 'Purpose-built Paper and Spigot plugins shaped around the mechanics, UX and operational needs of your server.',
+      description: 'Paper and Spigot plugins made for your server’s mechanics, with configuration your staff can actually use.',
       icon: 'code'
     },
     {
@@ -24,7 +24,7 @@ window.MEDEIROS_SITE = {
       number: '02',
       title: 'Server Development',
       shortTitle: 'Server systems',
-      description: 'Connected server systems that make progression, moderation, economy and player experiences feel intentional.',
+      description: 'Systems that work together on your server: progression, moderation, economy and the player experience around them.',
       icon: 'layers'
     },
     {
@@ -32,7 +32,7 @@ window.MEDEIROS_SITE = {
       number: '03',
       title: 'Plugin Configuration',
       shortTitle: 'Configuration',
-      description: 'Clean, maintainable configuration for existing plugins, with sensible defaults and a setup your team can own.',
+      description: 'Menus, custom items, enchantments and other setups for the plugins you already use, delivered tested and documented.',
       icon: 'sliders'
     },
     {
@@ -40,7 +40,7 @@ window.MEDEIROS_SITE = {
       number: '04',
       title: 'Discord Bots',
       shortTitle: 'Discord bots',
-      description: 'Discord.js automation, tools and integrations that keep your community and server operations in sync.',
+      description: 'Discord.js bots and integrations that keep your community and your server in sync.',
       icon: 'bot'
     },
     {
@@ -48,7 +48,7 @@ window.MEDEIROS_SITE = {
       number: '05',
       title: 'Proxy Development',
       shortTitle: 'Proxy development',
-      description: 'Velocity proxy systems and integrations for networks that need reliable routing, permissions and control.',
+      description: 'Velocity proxy plugins and integrations for networks that need reliable routing, permissions and control.',
       icon: 'network'
     },
     {
@@ -56,7 +56,7 @@ window.MEDEIROS_SITE = {
       number: '06',
       title: 'Bug Fixing',
       shortTitle: 'Bug fixing',
-      description: 'Focused debugging and fixes for existing Minecraft plugins, integrations and server systems.',
+      description: 'Debugging and fixes for existing plugins, integrations and server systems.',
       icon: 'wrench'
     },
     {
@@ -64,7 +64,7 @@ window.MEDEIROS_SITE = {
       number: '07',
       title: 'Server Setup',
       shortTitle: 'Server setup',
-      description: 'A considered technical foundation for launching or refreshing a server without unnecessary complexity.',
+      description: 'A solid technical base for launching or refreshing a server, without unnecessary complexity.',
       icon: 'terminal'
     },
     {
@@ -72,7 +72,7 @@ window.MEDEIROS_SITE = {
       number: '08',
       title: 'Custom Integrations',
       shortTitle: 'Integrations',
-      description: 'Useful connections between your Minecraft server, proxy, Discord and the tools your team already uses.',
+      description: 'Connections between your Minecraft server, proxy, Discord and the tools your team already uses.',
       icon: 'spark'
     }
   ],
@@ -90,17 +90,17 @@ window.MEDEIROS_SITE = {
     {
       number: '01',
       title: 'Understand the brief',
-      description: 'We align on the player experience, technical constraints and the outcome your server needs.'
+      description: 'We agree on what players should experience and what your server needs from it.'
     },
     {
       number: '02',
-      title: 'Build the right system',
-      description: 'The implementation stays configuration-friendly, readable and focused on the actual use case.'
+      title: 'Build it',
+      description: 'I build it to be configurable and easy to read, focused on your actual use case.'
     },
     {
       number: '03',
-      title: 'Refine and hand over',
-      description: 'We test the important paths, polish the details and leave you with something your team can operate.'
+      title: 'Test and hand over',
+      description: 'We test what matters, fix what comes up, and you get something your team can run.'
     }
   ],
   projectTypes: [
@@ -114,10 +114,10 @@ window.MEDEIROS_SITE = {
     'Other'
   ],
   budgets: [
-    'Under $250',
-    '$250 – $500',
-    '$500 – $1,000',
-    '$1,000+',
+    'Under $50',
+    '$50 – $150',
+    '$150 – $500',
+    '$500+',
     'Not sure yet'
   ]
 };
