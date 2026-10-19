@@ -27,7 +27,7 @@ window.MEDEIROS_PROJECTS = [
       'Multi-version compatibility'
     ],
     images: {
-      hero: 'assets/projects/heavenjoin/hero.png',
+      hero: 'assets/projects/heavenjoin/hero.jpg',
       gallery: [
         'assets/projects/heavenjoin/1.png',
         'assets/projects/heavenjoin/2.png',
@@ -77,10 +77,9 @@ window.MEDEIROS_PROJECTS = [
       'HEX color support',
       'Fully configurable system',
       'Multi-version compatibility'
-
     ],
     images: {
-      hero: 'assets/projects/heavenclearlag/hero.png',
+      hero: 'assets/projects/heavenclearlag/hero.jpg',
       gallery: [
         'assets/projects/heavenclearlag/1.png',
         'assets/projects/heavenclearlag/2.png',
@@ -99,11 +98,11 @@ window.MEDEIROS_PROJECTS = [
     details: [
       {
         title: 'Build focus',
-        body: 'A calm, structured support flow that helps communities route requests, involve staff and keep ticket history useful.'
+        body: 'Keeps servers clean without surprises: players get clear warnings before a cleanup, and staff control what gets removed and how often.'
       },
       {
         title: 'Technical direction',
-        body: 'Discord.js and JavaScript keep the bot flexible for server-specific commands, embeds, categories and operational rules.'
+        body: 'Built with Java for the Paper and Spigot ecosystem, with configurable cleanup categories, timers, messages and broad Minecraft version compatibility.'
       }
     ]
   },
@@ -130,7 +129,7 @@ window.MEDEIROS_PROJECTS = [
       'Multi-version compatibility'
     ],
     images: {
-      hero: 'assets/projects/heavenchat/hero.png',
+      hero: 'assets/projects/heavenchat/hero.jpg',
       gallery: [
         'assets/projects/heavenchat/1.png',
         'assets/projects/heavenchat/2.png',
@@ -180,7 +179,7 @@ window.MEDEIROS_PROJECTS = [
       'Proxy integration'
     ],
     images: {
-      hero: 'assets/projects/heavenlobby/hero.png',
+      hero: 'assets/projects/heavenlobby/hero.jpg',
       gallery: [
         'assets/projects/heavenlobby/1.png',
         'assets/projects/heavenlobby/2.png',
