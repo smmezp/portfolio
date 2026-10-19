@@ -2,8 +2,10 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url><loc>https://smmezp.github.io/portfolio/</loc></url>
   <url><loc>https://smmezp.github.io/portfolio/projects</loc></url>
+  <url><loc>https://smmezp.github.io/portfolio/projects/heavenjoin</loc></url>
+  <url><loc>https://smmezp.github.io/portfolio/projects/heavenclearlag</loc></url>
+  <url><loc>https://smmezp.github.io/portfolio/projects/heavenchat</loc></url>
   <url><loc>https://smmezp.github.io/portfolio/projects/heavenlobby</loc></url>
-  <url><loc>https://smmezp.github.io/portfolio/projects/yumi</loc></url>
   <url><loc>https://smmezp.github.io/portfolio/services</loc></url>
   <url><loc>https://smmezp.github.io/portfolio/about</loc></url>
   <url><loc>https://smmezp.github.io/portfolio/contact</loc></url>

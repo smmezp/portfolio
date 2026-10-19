@@ -289,86 +289,78 @@ function updateActiveNavigation(path) {
 }
 
 function renderHome() {
-  const featured = getFeaturedProjects();
+  const released = PROJECTS.filter((project) => project.status === 'Released');
+  const collage = (released.length ? released : PROJECTS).slice(0, 3);
+  const latest = PROJECTS.slice(0, 4);
   return `
     <div class="view home-view">
       <section class="hero">
         <div class="hero-copy">
-          <p class="hero-kicker"><i></i> Available for selected commissions</p>
-          <h1>Build a server<br>people <span class="hero-accent">remember.</span></h1>
-          <p class="hero-lede">Custom Minecraft plugins, server systems and Discord solutions built for your server — with the detail, clarity and flexibility serious communities need.</p>
+          <p class="status-pill"><i></i> Open for commissions</p>
+          <h1>Minecraft plugins, built to be <span class="mark">configured.</span></h1>
+          <p class="lede">I’m Medeiros. I write Paper and Spigot plugins, Velocity tools and Discord bots for server owners who want something that fits their server instead of a one-size-fits-all pack.</p>
           <div class="button-row">
-            <a class="button button-primary" href="/projects" data-route>View Projects <span aria-hidden="true">↗</span></a>
-            ${renderDiscordLink('Hire Me', 'button button-ghost')}
+            <a class="button button-primary" href="/projects" data-route>See my plugins ${icon('arrow')}</a>
+            ${renderDiscordLink('Hire me', 'button button-ghost')}
           </div>
-          <div class="hero-support">Minecraft developer · plugins · systems · integrations</div>
+          <ul class="hero-facts">
+            <li><strong>${released.length}</strong> plugin${released.length === 1 ? '' : 's'} released on SpigotMC</li>
+            <li><strong>Paper · Spigot · Velocity</strong></li>
+            <li><strong>Multi-version</strong> support</li>
+          </ul>
         </div>
 
-        <div class="hero-stage" aria-label="Medeiros development workspace illustration">
-          <div class="stage-frame">
-            <div class="stage-topbar">
-              <div class="stage-dots"><i></i><i></i><i></i></div>
-              <span class="stage-label">medeiros / build-01</span>
-            </div>
-            <div class="stage-content">
-              <div>
-                <span class="stage-kicker">Minecraft Developer</span>
-                <h2>Systems with a point of view.</h2>
-              </div>
-              <div class="stage-code" aria-label="Example project configuration">
-                <div class="stage-code-line"><b>01</b><span><span class="blue">server</span>.<span class="cyan">connect</span>(<span class="green">"your-world"</span>)</span></div>
-                <div class="stage-code-line"><b>02</b><span><span class="blue">lobby</span>.<span class="cyan">configure</span>(<span class="green">"without-limits"</span>)</span></div>
-                <div class="stage-code-line"><b>03</b><span><span class="blue">player</span>.<span class="cyan">experience</span>(<span class="green">"feels-right"</span>)</span></div>
-              </div>
-              <div class="stage-footer"><span>Java · Paper · Velocity</span><strong>● live</strong></div>
-            </div>
-          </div>
-          <div class="hero-mark"><span>ME</span></div>
+        <div class="hero-collage" aria-label="Released plugins">
+          <span class="pixel-cloud pixel-cloud-a" aria-hidden="true"></span>
+          <span class="pixel-cloud pixel-cloud-b" aria-hidden="true"></span>
+          ${collage.map((project, index) => `
+            <a class="collage-card collage-card-${index + 1}" href="/projects/${escapeHTML(project.slug)}" data-route>
+              <div class="image-frame" data-image-frame>${renderProjectImage(project.images?.hero, `${project.name} preview`, { loading: 'eager' })}</div>
+              <span class="collage-caption">${escapeHTML(project.name)}</span>
+            </a>`).join('')}
         </div>
       </section>
 
-      <div class="signal-strip reveal" aria-label="Development focus">
-        <div class="signal-item"><b>01</b> Plugins</div>
-        <div class="signal-item"><b>02</b> Server systems</div>
-        <div class="signal-item"><b>03</b> Discord bots</div>
-        <div class="signal-item"><b>04</b> Proxy development</div>
-      </div>
-
-      ${renderProjectStats()}
-
-      <section class="section-block intro-grid reveal" id="about-preview">
-        <h2>Technical depth.<br><span class="text-soft">Human clarity.</span></h2>
-        <div class="intro-copy">
-          <p>Medeiros is a developer focused on building custom plugins, server systems and Discord integrations that feel considered from the first interaction to the last configuration file.</p>
-          <p>No unnecessary noise. Just a clear brief, thoughtful implementation and a result your team can actually use.</p>
-          <a class="inline-link" href="/about" data-route>More about the approach <span aria-hidden="true">↗</span></a>
+      <section class="section reveal" id="featured-projects">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">Selected work</p>
+            <h2>Plugins you can use today.</h2>
+          </div>
+          <div class="section-head-side">
+            <p>Released plugins link straight to SpigotMC. Each one has its own page with screenshots and a feature list.</p>
+            <a class="text-link" href="/projects" data-route>All projects ${icon('arrow')}</a>
+          </div>
         </div>
+        <div class="project-grid">${latest.length ? latest.map((project) => renderProjectCard(project)).join('') : renderEmptyProjects()}</div>
       </section>
 
-      <section class="section-block reveal" id="services-preview">
-        <div class="section-header">
-          <div><p class="eyebrow">What I build</p><h2>Development that fits<br>your world.</h2></div>
-          <div><p>From a single plugin to the systems around it, each commission starts with the experience you want players to have.</p><a class="section-link" href="/services" data-route>Explore services <span aria-hidden="true">↗</span></a></div>
+      <section class="section reveal" id="services-preview">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">Services</p>
+            <h2>Work for hire.</h2>
+          </div>
+          <div class="section-head-side">
+            <p>From a small fix to a full plugin. Bring the problem and we’ll work out the rest.</p>
+            <a class="text-link" href="/services" data-route>All services ${icon('arrow')}</a>
+          </div>
         </div>
         <div class="service-grid">${SITE.services.slice(0, 4).map(renderServiceCard).join('')}</div>
       </section>
 
-      <section class="section-block reveal" id="featured-projects">
-        <div class="section-header">
-          <div><p class="eyebrow">Selected work</p><h2>Projects with<br>purpose.</h2></div>
-          <div><p><strong class="project-counter">${formatProjectCount(PROJECTS.length)}</strong> in the catalog. Every card opens a full project page with its own brief, features and gallery.</p><a class="section-link" href="/projects" data-route>View all projects <span aria-hidden="true">↗</span></a></div>
+      <section class="section reveal" id="process">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">How it works</p>
+            <h2>A commission, step by step.</h2>
+          </div>
         </div>
-        <div class="featured-projects-grid">${featured.length ? featured.map((project, index) => renderProjectCard(project, { featured: index === 0 })).join('') : renderEmptyProjects()}</div>
-      </section>
-
-      <section class="section-block tech-section reveal" id="technologies">
-        <div><p class="eyebrow">The toolkit</p><h2>Built on tools that let the idea move fast.</h2></div>
-        <div class="tech-grid">${SITE.technologies.map(renderTechnology).join('')}</div>
-      </section>
-
-      <section class="section-block process-section reveal">
-        <div class="section-header"><div><p class="eyebrow">How it works</p><h2>Good work starts<br>with alignment.</h2></div><p>Simple process, focused communication and no black-box handoff.</p></div>
         <div class="process-grid">${SITE.process.map(renderProcessStep).join('')}</div>
+        <div class="toolbelt">
+          <span class="toolbelt-label">Working with</span>
+          <ul class="chips">${SITE.technologies.map((tech) => `<li class="chip">${escapeHTML(tech.name)}</li>`).join('')}</ul>
+        </div>
       </section>
 
       ${renderCtaPanel()}
@@ -377,19 +369,22 @@ function renderHome() {
 }
 
 function renderProjects() {
+  const showToolbar = PROJECTS.length > 6;
   return `
     <div class="view projects-view">
-      <section class="page-heading reveal">
-        <div class="page-heading-copy"><p class="eyebrow">Project catalog</p><h1>Selected systems,<br><span class="text-soft">fully documented.</span></h1><p>Explore plugins and server work built around a clear player experience and a maintainable technical foundation.</p></div>
-        <div class="page-mark" aria-label="${escapeHTML(formatProjectCount(PROJECTS.length))}">${PROJECTS.length}<br>PROJECTS</div>
+      <section class="page-head reveal">
+        <p class="eyebrow">Projects</p>
+        <h1>Things I’ve built.</h1>
+        <p class="page-lede">Plugins and server tools for Minecraft. Released ones link to SpigotMC, the rest are on the way.</p>
       </section>
-      <section class="reveal" aria-label="Project filters">
+      <section class="reveal" aria-label="Projects">
+        ${showToolbar ? `
         <div class="filter-toolbar">
           <div class="filter-list" role="group" aria-label="Filter projects by category">${FILTERS.map(renderFilterButton).join('')}</div>
           <label class="search-box"><span class="visually-hidden">Search projects</span>${icon('search')}<input type="search" data-project-search value="${escapeHTML(activeSearch)}" placeholder="Search projects" autocomplete="off"></label>
         </div>
-        <div class="project-results-meta" aria-live="polite"><strong data-project-results-count>${escapeHTML(formatProjectCount(getFilteredProjects().length))}</strong><span>shown in the catalog</span></div>
-        <div class="project-index-grid" data-project-grid>${renderFilteredProjectCards()}</div>
+        <p class="results-meta" aria-live="polite"><strong data-project-results-count>${escapeHTML(formatProjectCount(getFilteredProjects().length))}</strong> shown</p>` : ''}
+        <div class="project-grid" data-project-grid>${renderFilteredProjectCards()}</div>
       </section>
       ${renderCtaPanel()}
     </div>
@@ -411,23 +406,7 @@ function getFeaturedProjects() {
 
 function formatProjectCount(count) {
   const total = Number.isFinite(Number(count)) ? Number(count) : 0;
-  return `${total} ${total === 1 ? 'Project' : 'Projects'}`;
-}
-
-function renderProjectStats() {
-  const categoryStats = getProjectCategories().map((category) => `
-    <div class="project-stat project-stat-category" aria-label="${escapeHTML(category)} — ${getProjectCount(category)}">
-      <span>${escapeHTML(category)} <span aria-hidden="true">—</span></span>
-      <strong>${getProjectCount(category)}</strong>
-    </div>
-  `).join('');
-  return `
-    <section class="project-stats reveal" aria-label="Project statistics">
-      <div class="project-stat project-stat-total"><strong>${PROJECTS.length}</strong><span>${PROJECTS.length === 1 ? 'Project' : 'Projects'}</span></div>
-      <div class="project-stat"><strong>${getFeaturedProjects().length}</strong><span>Featured</span></div>
-      ${categoryStats}
-    </section>
-  `;
+  return `${total} ${total === 1 ? 'project' : 'projects'}`;
 }
 
 function renderFilterButton(filter) {
@@ -436,13 +415,12 @@ function renderFilterButton(filter) {
 }
 
 function renderDiscordLink(label, className = 'button button-primary') {
-  return `<a class="${escapeHTML(className)}" href="${escapeHTML(DISCORD_SERVER_URL)}" data-discord-link target="_blank" rel="noopener noreferrer">${escapeHTML(label)} <span aria-hidden="true">↗</span></a>`;
+  return `<a class="${escapeHTML(className)}" href="${escapeHTML(DISCORD_SERVER_URL)}" data-discord-link target="_blank" rel="noopener noreferrer">${escapeHTML(label)} ${icon('external')}</a>`;
 }
 
 function renderFilteredProjectCards() {
   const query = activeSearch.trim().toLowerCase();
   const filtered = getFilteredProjects();
-
   return filtered.length ? filtered.map((project) => renderProjectCard(project)).join('') : renderEmptyProjects(query ? 'No projects match that search.' : 'No projects in this category yet.');
 }
 
@@ -458,8 +436,12 @@ function getFilteredProjects() {
 function renderServices() {
   return `
     <div class="view services-view">
-      <section class="page-heading reveal"><div class="page-heading-copy"><p class="eyebrow">Capabilities</p><h1>Build the part of<br>your server that matters.</h1><p>Bring a mechanic, workflow or technical problem. We can turn it into a focused system that feels native to your server.</p></div><div class="page-mark" aria-label="${SITE.services.length} ways to build">${String(SITE.services.length).padStart(2, '0')}<br>WAYS TO BUILD</div></section>
-      <section class="services-list reveal" aria-label="Services">${SITE.services.map(renderServiceRow).join('')}</section>
+      <section class="page-head reveal">
+        <p class="eyebrow">Services</p>
+        <h1>What I can build for you.</h1>
+        <p class="page-lede">Bring a mechanic, a workflow or a bug. I’ll tell you what it takes and what it costs before we start.</p>
+      </section>
+      <section class="service-list reveal" aria-label="Services">${SITE.services.map(renderServiceRow).join('')}</section>
       ${renderCtaPanel()}
     </div>
   `;
@@ -468,20 +450,28 @@ function renderServices() {
 function renderAbout() {
   return `
     <div class="view about-view">
-      <section class="page-heading reveal"><div class="page-heading-copy"><p class="eyebrow">About Medeiros</p><h1>Development for<br>worlds worth entering.</h1><p>A focused Minecraft developer portfolio for international server owners and teams looking to commission thoughtful technical work.</p></div></section>
+      <section class="page-head reveal">
+        <p class="eyebrow">About</p>
+        <h1>Hi, I’m Medeiros.</h1>
+        <p class="page-lede">I’m a Minecraft developer. I make plugins for Paper and Spigot, tools for Velocity networks and Discord bots that keep a community in sync with its server.</p>
+      </section>
       <section class="about-grid reveal">
-        <div class="about-display"><p class="eyebrow">Medeiros</p><h2>Minecraft<br><span class="text-soft">Developer</span></h2><span class="about-signature">Plugins · systems · integrations</span></div>
         <div class="about-copy">
-          <p>I specialize in Minecraft server development, custom plugins, server systems and Discord integrations.</p>
-          <p>The goal is not to add complexity for its own sake. It is to make the right things possible: clearer player experiences, better operations and systems that remain understandable after handoff.</p>
-          <p>Every project starts from the actual brief. No invented case studies, no inflated claims — just a focused build and a clean path from idea to implementation.</p>
-          <div class="philosophy-list">
-            <div class="philosophy-item"><span>01</span><div><h3>Make the experience legible</h3><p>Players should understand what a system is doing, and server teams should understand how to tune it.</p></div></div>
-            <div class="philosophy-item"><span>02</span><div><h3>Prefer useful flexibility</h3><p>Configuration is valuable when it supports real decisions, not when it hides an unclear design.</p></div></div>
-            <div class="philosophy-item"><span>03</span><div><h3>Leave a better handoff</h3><p>Documentation, structure and clear communication are part of the implementation — not an afterthought.</p></div></div>
+          <p>I release my own plugins on SpigotMC and take commissions from servers that need something specific. Everything I build is meant to be configured by the people who run the server, not just by me.</p>
+          <p>If something I made breaks on your server, I want to hear about it. Fixes and updates are part of the work.</p>
+          <div class="principles">
+            <div class="principle"><h3>Clear for players</h3><p>People should understand what a system is doing the moment they see it.</p></div>
+            <div class="principle"><h3>Flexible for staff</h3><p>Settings are there for real decisions, with sensible defaults so nothing needs tuning on day one.</p></div>
+            <div class="principle"><h3>Easy to hand over</h3><p>Readable config and clear structure, so your team can keep running it without me.</p></div>
           </div>
-          <div class="about-tech"><h3>Working with</h3><div class="tag-list">${SITE.technologies.map((tech) => `<span class="tag">${escapeHTML(tech.name)}</span>`).join('')}</div></div>
         </div>
+        <aside class="about-card">
+          <h3>Working with</h3>
+          <ul class="chips">${SITE.technologies.map((tech) => `<li class="chip">${escapeHTML(tech.name)}</li>`).join('')}</ul>
+          <h3>Find me</h3>
+          <p class="about-handle">Discord: <strong>${escapeHTML(SITE.contact.discord)}</strong></p>
+          ${renderDiscordLink('Open Discord', 'button button-primary button-small')}
+        </aside>
       </section>
       ${renderCtaPanel()}
     </div>
@@ -493,29 +483,34 @@ function renderContact() {
   const budgetOptions = SITE.budgets.map((budget) => `<option value="${escapeHTML(budget)}">${escapeHTML(budget)}</option>`).join('');
   return `
     <div class="view contact-view">
-      <section class="page-heading reveal"><div class="page-heading-copy"><p class="eyebrow">Start a commission</p><h1>Want to work<br><span class="text-soft">together?</span></h1><p>Share the shape of the project, the problem you want to solve and where you want the experience to go. We can take it from there.</p></div><div class="page-mark" aria-hidden="true">LET'S<br>BUILD</div></section>
+      <section class="page-head reveal">
+        <p class="eyebrow">Contact</p>
+        <h1>Want to work together?</h1>
+        <p class="page-lede">Discord is the fastest way to reach me. You can also fill in the brief below and paste it to me there.</p>
+      </section>
       <section class="contact-layout reveal">
         <div class="contact-intro">
-          <p class="eyebrow">Primary contact</p>
-          <h2>Bring the brief.<br>I’ll bring the system.</h2>
-          <p>Discord is the fastest way to start a conversation. The form creates a concise brief you can copy and paste — it does not send anything automatically.</p>
-           <div class="discord-card"><div><span class="discord-label">Discord</span><strong class="discord-handle">${escapeHTML(SITE.contact.discord)}</strong></div><div class="discord-actions"><button class="copy-button" type="button" data-copy-discord>Copy handle</button>${renderDiscordLink('Open Discord', 'button button-ghost button-small')}</div></div>
-          <div class="commission-steps">
-            <div class="commission-step"><span>01</span><div><strong>Send the context</strong><p>What are you building, and what should the player or team be able to do?</p></div></div>
-            <div class="commission-step"><span>02</span><div><strong>Align on scope</strong><p>We turn the idea into a clear technical direction, priorities and next steps.</p></div></div>
-            <div class="commission-step"><span>03</span><div><strong>Build with feedback</strong><p>Progress stays visible, focused and easy to discuss as the system takes shape.</p></div></div>
+          <div class="discord-card">
+            <div><span class="discord-label">Discord</span><strong class="discord-handle">${escapeHTML(SITE.contact.discord)}</strong></div>
+            <div class="discord-actions"><button class="button button-ghost button-small" type="button" data-copy-discord>Copy handle</button>${renderDiscordLink('Open Discord', 'button button-primary button-small')}</div>
           </div>
+          <ol class="steps">
+            <li><strong>Tell me what you need</strong><span>What are you building, and what should players or staff be able to do?</span></li>
+            <li><strong>We agree on scope</strong><span>I reply with a plan, a price and a rough timeline.</span></li>
+            <li><strong>I build, you review</strong><span>You see progress along the way and can ask for changes.</span></li>
+          </ol>
         </div>
-        <div class="commission-form-wrap">
-          <div class="form-header"><div><p class="eyebrow no-dot">Commission brief</p><h2>Tell me about the build.</h2></div><p>Required fields are marked in the form. Nothing is sent from this page.</p></div>
+        <div class="form-card">
+          <h2>Commission brief</h2>
+          <p class="form-hint">Nothing is sent from this page. The brief is copied so you can paste it to me on Discord.</p>
           <form class="commission-form" id="commissionForm">
             <div class="field"><label for="commissionName">Name</label><input id="commissionName" name="name" type="text" placeholder="Your name" autocomplete="name" required></div>
             <div class="field"><label for="commissionDiscord">Discord username</label><input id="commissionDiscord" name="discord" type="text" placeholder="username" autocomplete="off" required></div>
             <div class="field"><label for="commissionEmail">Email</label><input id="commissionEmail" name="email" type="email" placeholder="you@example.com" autocomplete="email" required></div>
             <div class="field"><label for="commissionType">Project type</label><select id="commissionType" name="projectType" required><option value="" disabled selected>Select a project type</option>${projectOptions}</select></div>
             <div class="field"><label for="commissionBudget">Budget</label><select id="commissionBudget" name="budget" required><option value="" disabled selected>Select a range</option>${budgetOptions}</select></div>
-            <div class="field field-wide"><label for="commissionDescription">Project description</label><textarea id="commissionDescription" name="description" placeholder="What are you hoping to build? Include useful context, existing systems and your ideal outcome." required></textarea></div>
-            <div class="form-actions"><p class="form-note">Submitting prepares a shareable brief and copies it to your clipboard when your browser allows it.</p><button class="button button-primary" type="submit">Prepare brief <span aria-hidden="true">↗</span></button></div>
+            <div class="field field-wide"><label for="commissionDescription">What do you need?</label><textarea id="commissionDescription" name="description" placeholder="Describe the idea, the server it’s for and anything it needs to work with." required></textarea></div>
+            <div class="form-actions"><button class="button button-primary" type="submit">Prepare brief ${icon('arrow')}</button></div>
             <p class="form-status" id="commissionStatus" aria-live="polite"></p>
             <pre class="brief-preview" id="briefPreview" hidden></pre>
           </form>
@@ -528,32 +523,40 @@ function renderContact() {
 function renderProjectDetail(project) {
   const gallery = Array.isArray(project.images?.gallery) ? project.images.gallery : [];
   const details = Array.isArray(project.details) ? project.details : [];
+  const others = PROJECTS.filter((item) => item.slug !== project.slug);
   return `
     <div class="view project-detail-view">
-      <section class="project-detail-hero">
+      <section class="detail-hero">
         <div class="detail-copy reveal">
-          <div class="breadcrumbs"><a href="/projects" data-route>Projects</a><span>/</span><span>${escapeHTML(project.name)}</span></div>
-          <div class="detail-labels"><span class="detail-label">${escapeHTML(project.categoryLabel || project.category)}</span><span class="detail-label status">${escapeHTML(project.status)}</span></div>
+          <nav class="breadcrumbs" aria-label="Breadcrumb"><a href="/projects" data-route>Projects</a><span>/</span><span>${escapeHTML(project.name)}</span></nav>
+          <div class="detail-labels"><span class="chip">${escapeHTML(project.categoryLabel || project.category)}</span>${renderStatusBadge(project.status)}</div>
           <h1>${escapeHTML(project.name)}</h1>
           <p class="detail-description">${escapeHTML(project.shortDescription)}</p>
-           <div class="button-row">${renderDiscordLink('Contact Me', 'button button-primary')}${renderProjectLinks(project)}</div>
-           <div class="detail-meta"><div class="detail-meta-item"><span>Project year</span><strong>${escapeHTML(project.date || '—')}</strong></div><div class="detail-meta-item"><span>Engagement</span><strong>${escapeHTML(project.price || 'Scope on request')}</strong></div></div>
-         </div>
-         <div class="detail-visual image-frame reveal" data-image-frame>${renderProjectImage(project.images?.hero, `${project.name} project preview`, { loading: 'eager', fetchPriority: 'high' })}<div class="detail-visual-caption"><span>${escapeHTML(project.categoryLabel || project.category)}</span><span>${escapeHTML(project.status)}</span></div></div>
-      </section>
-
-      <section class="detail-content">
-        <div>
-          <section class="detail-section reveal"><p class="eyebrow">Overview</p><h2>Designed around<br>the actual brief.</h2><p>${escapeHTML(project.fullDescription)}</p></section>
-          <section class="detail-subsection reveal"><p class="eyebrow">What it does</p><h3>Key features</h3><div class="feature-grid">${(project.features || []).map((feature, index) => `<div class="feature-item"><span>${String(index + 1).padStart(2, '0')}</span><strong>${escapeHTML(feature)}</strong></div>`).join('')}</div></section>
-          ${details.length ? `<section class="detail-subsection reveal"><p class="eyebrow">Additional information</p><div class="details-grid">${details.map((detail) => `<article class="details-card"><h3>${escapeHTML(detail.title)}</h3><p>${escapeHTML(detail.body)}</p></article>`).join('')}</div></section>` : ''}
+          <div class="button-row">${renderProjectLinks(project)}</div>
+          <dl class="detail-meta">
+            <div><dt>Year</dt><dd>${escapeHTML(project.date || '—')}</dd></div>
+            <div><dt>Price</dt><dd>${escapeHTML(project.price || 'On request')}</dd></div>
+            <div><dt>Status</dt><dd>${escapeHTML(project.status)}</dd></div>
+          </dl>
         </div>
-        <aside class="detail-sidebar reveal"><div class="snapshot"><span class="snapshot-label">Technologies</span><div class="tag-list">${(project.technologies || []).map((technology) => `<span class="tag">${escapeHTML(technology)}</span>`).join('')}</div></div><div class="snapshot"><span class="snapshot-label">Status</span><strong class="text-soft">${escapeHTML(project.status)}</strong></div><div class="snapshot"><span class="snapshot-label">Need something similar?</span>${renderDiscordLink('Discuss a commission', 'inline-link')}</div></aside>
+        <div class="detail-visual image-frame reveal" data-image-frame>${renderProjectImage(project.images?.hero, `${project.name} project preview`, { loading: 'eager', fetchPriority: 'high' })}</div>
       </section>
 
-       ${gallery.length ? `<section class="gallery-section reveal"><div class="gallery-header"><div><p class="eyebrow">Project gallery</p><h2>Inside the build.</h2></div><p>${String(gallery.length).padStart(2, '0')} views · click to expand</p></div><div class="gallery-grid">${gallery.map((image, index) => `<button class="gallery-item image-frame" type="button" data-image-frame data-lightbox-slug="${escapeHTML(project.slug)}" data-lightbox-index="${index + 1}" aria-label="Open ${escapeHTML(project.name)} gallery image ${index + 1}">${renderProjectImage(image, `${project.name} gallery image ${index + 1}`, { loading: 'lazy' })}<span>0${index + 1} / ${String(gallery.length).padStart(2, '0')}</span></button>`).join('')}</div></section>` : ''}
+      <section class="detail-body">
+        <div class="detail-main">
+          <section class="detail-block reveal"><p class="eyebrow">Overview</p><p class="detail-overview">${escapeHTML(project.fullDescription)}</p></section>
+          <section class="detail-block reveal"><p class="eyebrow">Features</p><ul class="check-list">${(project.features || []).map((feature) => `<li>${escapeHTML(feature)}</li>`).join('')}</ul></section>
+          ${details.length ? `<section class="detail-block reveal"><div class="details-grid">${details.map((detail) => `<article class="details-card"><h3>${escapeHTML(detail.title)}</h3><p>${escapeHTML(detail.body)}</p></article>`).join('')}</div></section>` : ''}
+        </div>
+        <aside class="detail-side reveal">
+          <div class="side-card"><span class="side-label">Built with</span><ul class="chips">${(project.technologies || []).map((technology) => `<li class="chip">${escapeHTML(technology)}</li>`).join('')}</ul></div>
+          <div class="side-card"><span class="side-label">Need something similar?</span><p>I take commissions for custom plugins and configuration.</p>${renderDiscordLink('Talk on Discord', 'button button-primary button-small')}</div>
+        </aside>
+      </section>
+
+      ${gallery.length ? `<section class="detail-section reveal"><div class="section-head"><div><p class="eyebrow">Screenshots</p><h2>In the game.</h2></div><p class="section-head-note">Tap an image to enlarge.</p></div><div class="gallery-grid">${gallery.map((image, index) => `<button class="gallery-item image-frame" type="button" data-image-frame data-lightbox-slug="${escapeHTML(project.slug)}" data-lightbox-index="${index + 1}" aria-label="Open ${escapeHTML(project.name)} screenshot ${index + 1}">${renderProjectImage(image, `${project.name} screenshot ${index + 1}`, { loading: 'lazy' })}</button>`).join('')}</div></section>` : ''}
       ${renderVideoSection(project)}
-       <section class="section-block reveal"><div class="section-header"><div><p class="eyebrow">Keep exploring</p><h2>More from the<br>project catalog.</h2></div><div><p><strong class="project-counter">${formatProjectCount(PROJECTS.length)}</strong> total</p><a class="section-link" href="/projects" data-route>Back to projects <span aria-hidden="true">↗</span></a></div></div><div class="project-index-grid">${PROJECTS.filter((item) => item.slug !== project.slug).map((item) => renderProjectCard(item)).join('')}</div></section>
+      ${others.length ? `<section class="detail-section reveal"><div class="section-head"><div><p class="eyebrow">More</p><h2>Other projects.</h2></div><a class="text-link" href="/projects" data-route>All projects ${icon('arrow')}</a></div><div class="project-grid">${others.map((item) => renderProjectCard(item)).join('')}</div></section>` : ''}
       ${renderCtaPanel()}
     </div>
   `;
@@ -566,16 +569,21 @@ function renderVideoSection(project) {
     if (video.type === 'youtube' || video.type === 'vimeo') return `<iframe src="${escapeHTML(video.src)}" title="${escapeHTML(video.title || `${project.name} video`)}" loading="lazy" allowfullscreen></iframe>`;
     return `<video controls preload="metadata" src="${escapeHTML(assetUrl(video.src || ''))}"${video.poster ? ` poster="${escapeHTML(assetUrl(video.poster))}"` : ''}></video>`;
   }).join('');
-  return `<section class="video-section reveal"><div class="gallery-header"><div><p class="eyebrow">Project video</p><h2>See it in motion.</h2></div></div><div class="video-frame">${videos}</div></section>`;
+  return `<section class="detail-section reveal"><div class="section-head"><div><p class="eyebrow">Video</p><h2>See it in action.</h2></div></div><div class="video-frame">${videos}</div></section>`;
 }
 
 function renderProjectLinks(project) {
   const links = [];
-  if (project.github) links.push(`<a class="button button-ghost button-small" href="${escapeHTML(project.github)}" target="_blank" rel="noreferrer">GitHub ${icon('external')}</a>`);
-  if (project.links?.demo) links.push(`<a class="button button-ghost button-small" href="${escapeHTML(project.links.demo)}" target="_blank" rel="noreferrer">Demo ${icon('external')}</a>`);
-  if (project.links?.download) links.push(`<a class="button button-ghost button-small" href="${escapeHTML(project.links.download)}" target="_blank" rel="noreferrer">Download ${icon('external')}</a>`);
-  if (project.discord) links.push(renderDiscordLink('Discord', 'button button-ghost button-small'));
+  if (project.links?.download) links.push(`<a class="button button-primary" href="${escapeHTML(project.links.download)}" target="_blank" rel="noopener noreferrer">Download on SpigotMC ${icon('external')}</a>`);
+  if (project.links?.demo) links.push(`<a class="button button-ghost" href="${escapeHTML(project.links.demo)}" target="_blank" rel="noopener noreferrer">Demo ${icon('external')}</a>`);
+  if (project.github) links.push(`<a class="button button-ghost" href="${escapeHTML(project.github)}" target="_blank" rel="noopener noreferrer">GitHub ${icon('external')}</a>`);
+  if (!links.length) links.push(renderDiscordLink('Ask about it on Discord', 'button button-primary'));
   return links.join('');
+}
+
+function renderStatusBadge(status) {
+  const live = String(status || '').toLowerCase() === 'released';
+  return `<span class="badge ${live ? 'badge-live' : 'badge-dev'}"><i></i>${escapeHTML(status || '')}</span>`;
 }
 
 function renderProjectImage(path, alt, options = {}) {
@@ -587,41 +595,43 @@ function renderProjectImage(path, alt, options = {}) {
 }
 
 function renderImagePlaceholder(alt = 'Project preview') {
-  return `<div class="image-placeholder" data-image-placeholder role="img" aria-label="${escapeHTML(alt)} — images coming soon"><strong>Project Preview</strong><span>Images coming soon</span></div>`;
+  return `<div class="image-placeholder" data-image-placeholder role="img" aria-label="${escapeHTML(alt)} — preview coming soon"><span class="pixel-cloud" aria-hidden="true"></span><strong>Preview coming soon</strong></div>`;
 }
 
 function renderServiceCard(service) {
-  return `<article class="service-card"><div class="service-card-top"><span class="service-number">${escapeHTML(service.number)}</span><span class="service-icon">${icon(service.icon)}</span></div><h3>${escapeHTML(service.title)}</h3><p>${escapeHTML(service.description)}</p><div class="service-card-bottom"><span class="mono-label">${escapeHTML(service.shortTitle)}</span><a class="inline-link" href="/contact?service=${encodeURIComponent(service.id)}" data-route>Request <span aria-hidden="true">↗</span></a></div></article>`;
+  return `<article class="service"><h3>${escapeHTML(service.title)}</h3><p>${escapeHTML(service.description)}</p><a class="text-link" href="/contact?service=${encodeURIComponent(service.id)}" data-route>Request this ${icon('arrow')}</a></article>`;
 }
 
 function renderServiceRow(service) {
-  return `<article class="service-row"><span class="service-row-number">${escapeHTML(service.number)}</span><h2>${escapeHTML(service.title)}</h2><p>${escapeHTML(service.description)}</p><a class="button button-ghost button-small" href="/contact?service=${encodeURIComponent(service.id)}" data-route>Request a commission <span aria-hidden="true">↗</span></a></article>`;
+  return `<article class="service-row"><h2>${escapeHTML(service.title)}</h2><p>${escapeHTML(service.description)}</p><a class="button button-ghost button-small" href="/contact?service=${encodeURIComponent(service.id)}" data-route>Request this ${icon('arrow')}</a></article>`;
 }
 
-function renderProjectCard(project, options = {}) {
-  const featured = options.featured ? ' project-card-featured' : '';
+function renderProjectCard(project) {
   const technologies = (project.technologies || []).slice(0, 4);
-  return `<a class="project-card${featured}" href="/projects/${escapeHTML(project.slug)}" data-route><div class="project-card-image image-frame" data-image-frame>${renderProjectImage(project.images?.hero, `${project.name} project preview`)}<div class="project-card-overlay"><span class="project-category">${escapeHTML(project.categoryLabel || project.category)}</span><span class="project-status">${escapeHTML(project.status)}</span></div></div><div class="project-card-body"><div class="project-card-heading"><h3>${escapeHTML(project.name)}</h3><span class="mono-label">↗</span></div><p class="project-card-description">${escapeHTML(project.shortDescription)}</p><div class="tag-list">${technologies.map((technology) => `<span class="tag">${escapeHTML(technology)}</span>`).join('')}</div><div class="project-card-footer"><span class="project-card-year">${escapeHTML(project.date || 'Project')}</span><span class="inline-link">View project <span aria-hidden="true">↗</span></span></div></div></a>`;
+  return `<a class="project-card" href="/projects/${escapeHTML(project.slug)}" data-route>
+    <div class="project-card-media image-frame" data-image-frame>${renderProjectImage(project.images?.hero, `${project.name} project preview`)}</div>
+    <div class="project-card-body">
+      <div class="project-card-top"><h3>${escapeHTML(project.name)}</h3>${renderStatusBadge(project.status)}</div>
+      <p>${escapeHTML(project.shortDescription)}</p>
+      <div class="project-card-foot"><ul class="chips">${technologies.map((technology) => `<li class="chip">${escapeHTML(technology)}</li>`).join('')}</ul><span class="project-card-price">${escapeHTML(project.price || '')}</span></div>
+    </div>
+  </a>`;
 }
 
-function renderTechnology(technology) {
-  return `<div class="tech-item"><span class="tech-mark">${escapeHTML(technology.mark)}</span><span>${escapeHTML(technology.name)}</span></div>`;
-}
-
-function renderProcessStep(step) {
-  return `<article class="process-step"><span class="process-step-number">${escapeHTML(step.number)}</span><h3>${escapeHTML(step.title)}</h3><p>${escapeHTML(step.description)}</p></article>`;
+function renderProcessStep(step, index) {
+  return `<article class="process-step"><span class="step-number">${String(index + 1).padStart(2, '0')}</span><h3>${escapeHTML(step.title)}</h3><p>${escapeHTML(step.description)}</p></article>`;
 }
 
 function renderCtaPanel() {
-  return `<section class="section-block cta-panel reveal"><div><p class="eyebrow">Have a project in mind?</p><h2>Let’s build something<br>for your server.</h2><p>Bring the idea, the problem or the rough shape of it. Start the conversation on Discord: <strong>${escapeHTML(SITE.contact.discord)}</strong>.</p></div>${renderDiscordLink('Contact Me', 'button button-primary')}</section>`;
+  return `<section class="cta-panel reveal"><div><h2>Need something built?</h2><p>Message me on Discord and tell me what your server needs. I’ll tell you what it takes.</p></div><div class="cta-actions">${renderDiscordLink('Message me on Discord', 'button button-light')}<span class="cta-handle">${escapeHTML(SITE.contact.discord)}</span></div></section>`;
 }
 
-function renderEmptyProjects(message = 'Projects are being prepared.') {
+function renderEmptyProjects(message = 'Projects are on the way.') {
   return `<div class="empty-results"><strong>${escapeHTML(message)}</strong><span>Try another category or check back soon.</span></div>`;
 }
 
 function renderNotFound(title, message) {
-  return `<div class="view not-found"><p class="eyebrow">404 / route unavailable</p><h1>${escapeHTML(title)}</h1><p>${escapeHTML(message)}</p><a class="button button-primary" href="/" data-route>Return home <span aria-hidden="true">↗</span></a></div>`;
+  return `<div class="view not-found"><p class="eyebrow">404</p><h1>${escapeHTML(title)}</h1><p class="page-lede">${escapeHTML(message)}</p><a class="button button-primary" href="/" data-route>Back to home ${icon('arrow')}</a></div>`;
 }
 
 function handleClick(event) {
