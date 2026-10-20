@@ -1,22 +1,23 @@
 <!doctype html>
-<html lang="en">
+<html lang="pt-BR" data-theme="light">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Medeiros — Minecraft Developer</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Medeiros — Configuração e plugins para Minecraft, bots de Discord</title>
   <meta name="theme-color" content="#f5f1e8">
+  <meta name="color-scheme" content="light dark">
   <meta name="msapplication-TileColor" content="#f5f1e8">
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="description" content="Medeiros is a Minecraft developer building custom plugins, server systems, Discord bots and proxy solutions.">
+  <meta name="description" content="Configuração de servidores, plugins personalizados para Minecraft e bots de Discord sob medida, feitos pelo Medeiros.">
   <meta name="author" content="Medeiros">
   <meta property="og:type" content="website">
-  <meta property="og:title" content="Medeiros — Minecraft Developer">
-  <meta property="og:description" content="Custom Minecraft plugins, server systems and Discord solutions built for your server.">
+  <meta property="og:title" content="Medeiros — Configuração e plugins para Minecraft, bots de Discord">
+  <meta property="og:description" content="Configuração de servidores, plugins personalizados para Minecraft e bots de Discord sob medida.">
   <meta property="og:url" content="https://smmezp.github.io/portfolio/">
   <meta property="og:image" content="https://smmezp.github.io/portfolio/assets/projects/heavenjoin/hero.jpg">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Medeiros — Minecraft Developer">
-  <meta name="twitter:description" content="Custom Minecraft plugins, server systems and Discord solutions built for your server.">
+  <meta name="twitter:title" content="Medeiros — Configuração e plugins para Minecraft, bots de Discord">
+  <meta name="twitter:description" content="Configuração de servidores, plugins personalizados para Minecraft e bots de Discord sob medida.">
   <meta name="twitter:image" content="https://smmezp.github.io/portfolio/assets/projects/heavenjoin/hero.jpg">
   <script>
     (() => {
@@ -25,6 +26,17 @@
       const isGitHubPagesProject = window.location.hostname.endsWith('.github.io') && pathSegments.length;
       base.href = window.location.protocol === 'file:' ? './' : (isGitHubPagesProject ? `/${pathSegments[0]}/` : '/');
       document.head.appendChild(base);
+    })();
+  </script>
+  <script>
+    /* Aplica tema e idioma salvos antes de desenhar a página, para não piscar. */
+    (() => {
+      try {
+        let theme = localStorage.getItem('medeiros-theme');
+        if (theme !== 'light' && theme !== 'dark') theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        document.documentElement.dataset.theme = theme;
+        document.documentElement.lang = localStorage.getItem('medeiros-lang') === 'en' ? 'en' : 'pt-BR';
+      } catch (error) { /* sem armazenamento */ }
     })();
   </script>
   <link rel="icon" type="image/png" sizes="16x16" href="assets/brand/favicon-16x16.png">
@@ -36,82 +48,95 @@
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=Figtree:wght@400;500;600;700&family=Silkscreen:wght@400;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=Figtree:wght@400;500;600;700&family=Noto+Sans:wght@400;500;600;700;800&family=Silkscreen:wght@400;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
+  <script src="data/i18n.js" defer></script>
   <script src="data/site.js" defer></script>
-  <script src="data/projects.js" defer></script>
+  <!-- Um arquivo por produto. Para adicionar um novo, crie o arquivo na pasta e inclua uma linha aqui. -->
+  <script src="data/products/minecraft/heavenjoin.js" defer></script>
+  <script src="data/products/minecraft/heavenclearlag.js" defer></script>
+  <script src="data/products/minecraft/heavenchat.js" defer></script>
+  <script src="data/products/minecraft/heavenlobby.js" defer></script>
   <script src="script.js" defer></script>
 </head>
-<body>
+<body data-skin="main">
   <div class="site-shell">
     <header class="site-header" data-header>
-      <a class="wordmark" href="/" data-route aria-label="Medeiros home">
+      <a class="wordmark" href="/" data-route aria-label="Medeiros">
         <img class="brand-logo" src="assets/brand/logo-main.png" alt="" width="40" height="40" decoding="async">
         <span class="wordmark-text">Medeiros</span>
       </a>
 
-      <nav class="desktop-nav" aria-label="Primary navigation">
-        <a href="/" data-route data-nav-link="home">Home</a>
-        <a href="/projects" data-route data-nav-link="projects">Projects</a>
-        <a href="/services" data-route data-nav-link="services">Services</a>
-        <a href="/about" data-route data-nav-link="about">About</a>
-        <a href="/contact" data-route data-nav-link="contact">Contact</a>
-        <a class="nav-kofi" href="https://ko-fi.com/smmezp" target="_blank" rel="noopener noreferrer" aria-label="Donate on Ko-fi">Donate</a>
-        <a class="button button-primary button-small nav-cta" href="https://discord.gg/Unbx6TpXwa" data-discord-link target="_blank" rel="noopener noreferrer">Hire me</a>
+      <nav class="desktop-nav" data-i18n-aria="nav.primary" aria-label="Navegação principal">
+        <a href="/" data-route data-nav-link="home" data-i18n="nav.home">Início</a>
+        <a href="/minecraft" data-route data-nav-link="minecraft" data-i18n="nav.minecraft">Minecraft</a>
+        <a href="/discord" data-route data-nav-link="discord" data-i18n="nav.discord">Discord</a>
+        <a href="/about" data-route data-nav-link="about" data-i18n="nav.about">Sobre</a>
+        <a href="/contact" data-route data-nav-link="contact" data-i18n="nav.contact">Contato</a>
       </nav>
 
-      <button class="menu-toggle" type="button" data-menu-toggle aria-expanded="false" aria-controls="mobileNav" aria-label="Open navigation menu">
-        <span></span><span></span>
-      </button>
+      <div class="header-tools">
+        <a class="tool-button tool-github" href="https://github.com/smmezp" target="_blank" rel="noopener noreferrer" data-i18n-aria="nav.github" aria-label="GitHub"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 19c-4.3 1.4-4.3-2.5-6-3m12 5v-3.5c0-1 .1-1.4-.5-2 2.8-.3 5.5-1.4 5.5-6a4.6 4.6 0 0 0-1.3-3.2 4.2 4.2 0 0 0-.1-3.2s-1.1-.3-3.5 1.3a12.3 12.3 0 0 0-6.2 0C6.5 2.8 5.4 3.1 5.4 3.1a4.2 4.2 0 0 0-.1 3.2A4.6 4.6 0 0 0 4 9.5c0 4.6 2.7 5.7 5.5 6-.6.6-.6 1.2-.5 2V21"/></svg></a>
+        <div class="lang-switch" role="group" data-i18n-aria="nav.language" aria-label="Idioma">
+          <button type="button" data-lang="pt" class="is-active" aria-pressed="true">PT</button>
+          <button type="button" data-lang="en" aria-pressed="false">EN</button>
+        </div>
+        <button class="tool-button theme-toggle" type="button" data-theme-toggle data-i18n-aria="nav.theme" aria-label="Alternar entre tema claro e escuro"><svg class="icon icon-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg><svg class="icon icon-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8 8 0 0 1 9.5 4 8 8 0 1 0 20 14.5Z"/></svg></button>
+        <a class="button button-primary button-small nav-cta" href="https://discord.gg/Unbx6TpXwa" data-discord-link target="_blank" rel="noopener noreferrer" data-i18n="nav.hire">Contratar</a>
+        <button class="menu-toggle" type="button" data-menu-toggle aria-expanded="false" aria-controls="mobileNav" data-i18n-aria="nav.openMenu" aria-label="Abrir menu">
+          <span></span><span></span>
+        </button>
+      </div>
     </header>
 
-    <nav class="mobile-nav" id="mobileNav" data-mobile-nav aria-label="Mobile navigation">
-      <a href="/" data-route data-nav-link="home">Home</a>
-      <a href="/projects" data-route data-nav-link="projects">Projects</a>
-      <a href="/services" data-route data-nav-link="services">Services</a>
-      <a href="/about" data-route data-nav-link="about">About</a>
-      <a href="/contact" data-route data-nav-link="contact">Contact</a>
-      <a class="mobile-nav-donate" href="https://ko-fi.com/smmezp" target="_blank" rel="noopener noreferrer" aria-label="Donate on Ko-fi">Donate</a>
-      <a class="button button-primary mobile-nav-cta" href="https://discord.gg/Unbx6TpXwa" data-discord-link target="_blank" rel="noopener noreferrer">Hire me on Discord</a>
+    <nav class="mobile-nav" id="mobileNav" data-mobile-nav data-i18n-aria="nav.primary" aria-label="Navegação principal">
+      <a href="/" data-route data-nav-link="home" data-i18n="nav.home">Início</a>
+      <a href="/minecraft" data-route data-nav-link="minecraft" data-i18n="nav.minecraft">Minecraft</a>
+      <a href="/discord" data-route data-nav-link="discord" data-i18n="nav.discord">Discord</a>
+      <a href="/about" data-route data-nav-link="about" data-i18n="nav.about">Sobre</a>
+      <a href="/contact" data-route data-nav-link="contact" data-i18n="nav.contact">Contato</a>
+      <a class="mobile-nav-extra" href="https://github.com/smmezp" target="_blank" rel="noopener noreferrer">GitHub</a>
+      <a class="mobile-nav-extra" href="https://ko-fi.com/smmezp" target="_blank" rel="noopener noreferrer" data-i18n="nav.donate">Apoiar</a>
+      <a class="button button-primary mobile-nav-cta" href="https://discord.gg/Unbx6TpXwa" data-discord-link target="_blank" rel="noopener noreferrer" data-i18n="nav.hireDiscord">Contratar no Discord</a>
     </nav>
 
     <main id="app" tabindex="-1"></main>
 
     <footer class="site-footer">
       <div class="footer-main">
-        <a class="wordmark" href="/" data-route aria-label="Medeiros home">
+        <a class="wordmark" href="/" data-route aria-label="Medeiros">
           <img class="brand-logo" src="assets/brand/logo-main.png" alt="" width="40" height="40" decoding="async">
           <span class="wordmark-text">Medeiros</span>
         </a>
-        <p>Minecraft plugins, server tools and Discord bots.</p>
-        <nav class="footer-links" aria-label="Footer">
-          <a href="/projects" data-route>Projects</a>
-          <a href="/services" data-route>Services</a>
-          <a href="/contact" data-route>Contact</a>
+        <p data-i18n="footer.tagline">Configuração e plugins para Minecraft, e bots de Discord.</p>
+        <nav class="footer-links" data-i18n-aria="nav.footer" aria-label="Rodapé">
+          <a href="/minecraft" data-route data-i18n="nav.minecraft">Minecraft</a>
+          <a href="/discord" data-route data-i18n="nav.discord">Discord</a>
+          <a href="/contact" data-route data-i18n="nav.contact">Contato</a>
+          <a href="https://github.com/smmezp" target="_blank" rel="noopener noreferrer">GitHub</a>
           <a href="https://ko-fi.com/smmezp" target="_blank" rel="noopener noreferrer">Ko-fi</a>
-          <a href="https://discord.gg/Unbx6TpXwa" data-discord-link target="_blank" rel="noopener noreferrer">Discord</a>
         </nav>
       </div>
       <div class="footer-bottom">
         <span>© <span data-current-year></span> Medeiros</span>
-        <span class="footer-status"><i></i> Open for commissions</span>
+        <span class="footer-status"><i></i> <span data-i18n="common.open">Aberto para encomendas</span></span>
       </div>
     </footer>
   </div>
 
   <div class="lightbox" data-lightbox hidden aria-hidden="true">
     <div class="lightbox-backdrop" data-lightbox-close></div>
-    <div class="lightbox-dialog" role="dialog" aria-modal="true" aria-label="Screenshot preview">
-      <button class="lightbox-close" type="button" data-lightbox-close aria-label="Close image preview">×</button>
-      <button class="lightbox-arrow lightbox-prev" type="button" data-lightbox-prev aria-label="Previous image">←</button>
+    <div class="lightbox-dialog" role="dialog" aria-modal="true">
+      <button class="lightbox-close" type="button" data-lightbox-close data-i18n-aria="lightbox.close" aria-label="Fechar imagem">×</button>
+      <button class="lightbox-arrow lightbox-prev" type="button" data-lightbox-prev data-i18n-aria="lightbox.prev" aria-label="Imagem anterior">←</button>
       <figure>
         <div class="lightbox-image-frame">
           <img data-lightbox-image src="" alt="">
-          <div class="lightbox-placeholder" data-lightbox-placeholder hidden><strong>Preview coming soon</strong></div>
+          <div class="lightbox-placeholder" data-lightbox-placeholder hidden><strong data-i18n="common.soon">Prévia em breve</strong></div>
         </div>
         <figcaption data-lightbox-caption></figcaption>
       </figure>
-      <button class="lightbox-arrow lightbox-next" type="button" data-lightbox-next aria-label="Next image">→</button>
+      <button class="lightbox-arrow lightbox-next" type="button" data-lightbox-next data-i18n-aria="lightbox.next" aria-label="Próxima imagem">→</button>
     </div>
   </div>
 
