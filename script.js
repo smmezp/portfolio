@@ -6,6 +6,16 @@
  * centralized data files, so adding a project does not require new HTML.
  */
 
+/* Se os arquivos de dados não carregarem, mostra um aviso claro em vez de travar. */
+if (!window.MEDEIROS_I18N || !window.MEDEIROS_SITE) {
+  const appRoot = document.getElementById('app');
+  if (appRoot) {
+    appRoot.innerHTML = '<div class="view not-found"><h1>Faltam arquivos do site</h1><p class="page-lede">Não consegui carregar data-i18n.js ou data-site.js. Confira se esses arquivos foram enviados para o GitHub (na raiz, junto do index.html) e recarregue a página.</p></div>';
+  }
+  window.__medeirosReady = 'missing-data';
+  throw new Error('Medeiros: arquivos de dados ausentes (data-i18n.js, data-site.js)');
+}
+
 const SITE = window.MEDEIROS_SITE;
 const I18N = window.MEDEIROS_I18N;
 const ALL_PRODUCTS = window.MEDEIROS_PRODUCTS || [];
@@ -135,6 +145,7 @@ function initialize() {
   applyTheme(theme, false);
   applyLanguage(lang, false, false);
   renderRoute(false);
+  window.__medeirosReady = '3';
 }
 
 function getSiteBasePath() {
@@ -702,7 +713,7 @@ function renderContact() {
           <form class="commission-form" id="commissionForm">
             <div class="field"><label for="commissionName">${t('contact.name')}</label><input id="commissionName" name="name" type="text" placeholder="${t('contact.namePh')}" autocomplete="name" required></div>
             <div class="field"><label for="commissionDiscord">${t('contact.discordUser')}</label><input id="commissionDiscord" name="discord" type="text" placeholder="username" autocomplete="off" required></div>
-            <div class="field"><label for="commissionEmail">Email</label><input id="commissionEmail" name="email" type="email" placeholder="voce@exemplo.com" autocomplete="email" required></div>
+            <div class="field"><label for="commissionEmail">Email</label><input id="commissionEmail" name="email" type="email" placeholder="${t('contact.emailPh')}" autocomplete="email" required></div>
             <div class="field"><label for="commissionType">${t('contact.type')}</label><select id="commissionType" name="projectType" required><option value="" disabled selected>${t('contact.typePh')}</option>${projectOptions}</select></div>
             <div class="field"><label for="commissionBudget">${t('contact.budget')}</label><select id="commissionBudget" name="budget" required><option value="" disabled selected>${t('contact.budgetPh')}</option>${budgetOptions}</select></div>
             <div class="field field-wide"><label for="commissionDescription">${t('contact.desc')}</label><textarea id="commissionDescription" name="description" placeholder="${t('contact.descPh')}" required></textarea></div>
@@ -724,7 +735,7 @@ function renderProjectDetail(project) {
     <div class="view project-detail-view">
       <section class="detail-hero">
         <div class="detail-copy reveal">
-          <nav class="breadcrumbs" aria-label="Breadcrumb"><a href="/minecraft" data-route>Minecraft</a><span>/</span><a href="/projects" data-route>${t('common.projects')}</a><span>/</span><span>${escapeHTML(project.name)}</span></nav>
+          <nav class="breadcrumbs" aria-label="${t('nav.breadcrumb')}"><a href="/minecraft" data-route>Minecraft</a><span>/</span><a href="/projects" data-route>${t('common.projects')}</a><span>/</span><span>${escapeHTML(project.name)}</span></nav>
           <div class="detail-labels"><span class="chip">${escapeHTML(L(project.categoryLabel))}</span>${renderStatusBadge(project.status)}</div>
           <h1>${escapeHTML(project.name)}</h1>
           <p class="detail-description">${escapeHTML(L(project.shortDescription))}</p>
@@ -884,7 +895,7 @@ function renderDiscord() {
 
   const serviceEmbeds = SITE.discordServices.map((service) => `
     <div class="dc-embed" style="--embed:#5865f2">
-      <p class="dc-command">${escapeHTML(service.command)}</p>
+      <p class="dc-command">${escapeHTML(L(service.command))}</p>
       <h3 class="dc-embed-title">${escapeHTML(L(service.title))}</h3>
       <p class="dc-embed-text">${escapeHTML(L(service.description))}</p>
       <a class="dc-embed-link" href="/contact?service=${encodeURIComponent(service.id)}" data-route>${t('common.request')} →</a>

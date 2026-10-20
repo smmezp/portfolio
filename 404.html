@@ -14,11 +14,11 @@
   <meta property="og:title" content="Medeiros — Configuração e plugins para Minecraft, bots de Discord">
   <meta property="og:description" content="Configuração de servidores, plugins personalizados para Minecraft e bots de Discord sob medida.">
   <meta property="og:url" content="https://smmezp.github.io/portfolio/">
-  <meta property="og:image" content="https://smmezp.github.io/portfolio/assets/projects/heavenjoin/hero.jpg">
+  <meta property="og:image" content="https://smmezp.github.io/portfolio/img-heavenjoin-hero.jpg">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Medeiros — Configuração e plugins para Minecraft, bots de Discord">
   <meta name="twitter:description" content="Configuração de servidores, plugins personalizados para Minecraft e bots de Discord sob medida.">
-  <meta name="twitter:image" content="https://smmezp.github.io/portfolio/assets/projects/heavenjoin/hero.jpg">
+  <meta name="twitter:image" content="https://smmezp.github.io/portfolio/img-heavenjoin-hero.jpg">
   <script>
     (() => {
       const base = document.createElement('base');
@@ -49,15 +49,32 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=Figtree:wght@400;500;600;700&family=Noto+Sans:wght@400;500;600;700;800&family=Silkscreen:wght@400;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css">
-  <script src="data/i18n.js" defer></script>
-  <script src="data/site.js" defer></script>
-  <!-- Um arquivo por produto. Para adicionar um novo, crie o arquivo na pasta e inclua uma linha aqui. -->
-  <script src="data/products/minecraft/heavenjoin.js" defer></script>
-  <script src="data/products/minecraft/heavenclearlag.js" defer></script>
-  <script src="data/products/minecraft/heavenchat.js" defer></script>
-  <script src="data/products/minecraft/heavenlobby.js" defer></script>
-  <script src="script.js" defer></script>
+  <link rel="stylesheet" href="style.css?v=3">
+  <script src="data-i18n.js?v=3" defer></script>
+  <script src="data-site.js?v=3" defer></script>
+  <!-- Um arquivo por produto (data-minecraft-nome.js). Para adicionar um novo, crie o arquivo e inclua uma linha aqui. -->
+  <script src="data-minecraft-heavenjoin.js?v=3" defer></script>
+  <script src="data-minecraft-heavenclearlag.js?v=3" defer></script>
+  <script src="data-minecraft-heavenchat.js?v=3" defer></script>
+  <script src="data-minecraft-heavenlobby.js?v=3" defer></script>
+  <script src="script.js?v=3" defer></script>
+  <script>
+    /* Aviso de segurança: aparece só se o script.js carregado for antigo ou não tiver sido enviado. */
+    window.addEventListener('load', () => {
+      setTimeout(() => {
+        if (window.__medeirosReady === '3') return;
+        const bar = document.createElement('div');
+        bar.setAttribute('style', 'position:fixed;left:0;right:0;bottom:0;z-index:9999;padding:14px 16px;background:#b3261e;color:#fff;font:600 15px/1.4 system-ui,sans-serif;text-align:center');
+        bar.textContent = 'Parte dos arquivos do site está desatualizada. Recarregue a página; se continuar assim, envie de novo script.js, style.css, index.html e os arquivos data-*.js no GitHub. ';
+        const button = document.createElement('button');
+        button.textContent = 'Recarregar';
+        button.setAttribute('style', 'margin-left:8px;padding:6px 12px;border:0;border-radius:8px;font:700 14px system-ui;cursor:pointer');
+        button.addEventListener('click', () => window.location.reload());
+        bar.appendChild(button);
+        document.body.appendChild(bar);
+      }, 2000);
+    });
+  </script>
 </head>
 <body data-skin="main">
   <div class="site-shell">
