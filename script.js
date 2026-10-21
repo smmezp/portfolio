@@ -133,6 +133,7 @@ function initialize() {
   });
 
   document.addEventListener('click', handleClick);
+  setupSwipe();
   document.addEventListener('input', handleInput);
   document.addEventListener('submit', handleSubmit);
   document.addEventListener('keydown', handleKeydown);
@@ -219,6 +220,51 @@ function normalizePath(path) {
   return normalized || '/';
 }
 
+/* Arrastar o dedo para o lado troca de área: direita = Discord, esquerda = Minecraft. */
+function currentMode() {
+  const path = getLocation().pathname;
+  if (path === '/discord' || path.startsWith('/discord/')) return 'discord';
+  if (path === '/minecraft' || path.startsWith('/projects') || path === '/services') return 'minecraft';
+  return 'none';
+}
+
+function setupSwipe() {
+  let start = null;
+  const blocked = (target) => {
+    if (document.querySelector('[data-lightbox]:not([hidden])')) return true;
+    if (mobileNav && mobileNav.classList.contains('is-open')) return true;
+    for (let node = target; node && node !== document.body; node = node.parentElement) {
+      const tag = node.tagName;
+      if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || tag === 'VIDEO' || tag === 'IFRAME') return true;
+      if (node.scrollWidth > node.clientWidth + 4 && ['auto', 'scroll'].includes(getComputedStyle(node).overflowX)) return true;
+    }
+    return false;
+  };
+
+  document.addEventListener('touchstart', (event) => {
+    if (event.touches.length !== 1) { start = null; return; }
+    const touch = event.touches[0];
+    const edge = 28;
+    if (touch.clientX < edge || touch.clientX > window.innerWidth - edge || blocked(event.target)) { start = null; return; }
+    start = { x: touch.clientX, y: touch.clientY, time: Date.now() };
+  }, { passive: true });
+
+  document.addEventListener('touchend', (event) => {
+    if (!start) return;
+    const touch = event.changedTouches[0];
+    const dx = touch.clientX - start.x;
+    const dy = touch.clientY - start.y;
+    const elapsed = Date.now() - start.time;
+    start = null;
+    if (Math.abs(dx) < 70 || Math.abs(dx) < Math.abs(dy) * 1.6 || elapsed > 800) return;
+    const mode = currentMode();
+    if (dx > 0 && mode !== 'discord') navigate('/discord');
+    else if (dx < 0 && mode !== 'minecraft') navigate('/minecraft');
+  }, { passive: true });
+
+  document.addEventListener('touchcancel', () => { start = null; }, { passive: true });
+}
+
 function skinForPath(path) {
   return path === '/discord' || path.startsWith('/discord/') ? 'discord' : 'main';
 }
@@ -240,26 +286,21 @@ function navigate(path) {
     renderRoute(true);
   };
 
+  /* Ao trocar de área, a página atual desliza para um lado e a nova entra pelo outro. */
   const modeChange = (fromSkin === 'discord') !== (toSkin === 'discord');
-  const wipe = document.querySelector('[data-mode-wipe]');
-  if (!modeChange || reducedMotion() || !wipe) {
+  if (!modeChange || reducedMotion() || !app) {
     go();
     return;
   }
 
-  const anchor = document.querySelector(`[data-mode="${toSkin === 'discord' ? 'discord' : 'minecraft'}"]`) || document.querySelector('[data-mode-switch]');
-  const box = anchor ? anchor.getBoundingClientRect() : { left: window.innerWidth / 2, top: 40, width: 0, height: 0 };
-  wipe.style.setProperty('--wx', `${Math.round(box.left + box.width / 2)}px`);
-  wipe.style.setProperty('--wy', `${Math.round(box.top + box.height / 2)}px`);
-  wipe.dataset.to = toSkin === 'discord' ? 'discord' : 'minecraft';
-  wipe.classList.remove('is-off');
-  wipe.classList.add('is-on');
+  const toDiscord = toSkin === 'discord';
+  app.classList.add(toDiscord ? 'is-leaving-right' : 'is-leaving-left');
   window.setTimeout(() => {
+    app.classList.remove('is-leaving-left', 'is-leaving-right');
+    app.dataset.enter = toDiscord ? 'left' : 'right';
     go();
-    wipe.classList.remove('is-on');
-    wipe.classList.add('is-off');
-    window.setTimeout(() => wipe.classList.remove('is-off'), 560);
-  }, 460);
+    window.setTimeout(() => { delete app.dataset.enter; }, 700);
+  }, 230);
 }
 
 function renderRoute(shouldScroll) {

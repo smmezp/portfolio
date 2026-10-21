@@ -716,16 +716,16 @@ html[data-theme='dark'] .theme-toggle .icon-moon { display: none; }
   .mode-option { min-width: 104px; padding: 0 12px; font-size: 13.5px; }
 }
 
-/* Troca animada de área (Minecraft <-> Discord) */
-.mode-wipe {
-  position: fixed; inset: 0; z-index: 300; pointer-events: none; visibility: hidden; background: #2f8a3c;
-  clip-path: circle(0 at var(--wx, 50%) var(--wy, 40px));
-}
-.mode-wipe[data-to='discord'] { background: #5865f2; }
-.mode-wipe.is-on { visibility: visible; animation: wipeIn .46s cubic-bezier(.65, 0, .35, 1) forwards; }
-.mode-wipe.is-off { visibility: visible; clip-path: circle(150vmax at var(--wx, 50%) var(--wy, 40px)); animation: wipeOut .55s ease forwards; }
-@keyframes wipeIn { from { clip-path: circle(0 at var(--wx, 50%) var(--wy, 40px)); } to { clip-path: circle(150vmax at var(--wx, 50%) var(--wy, 40px)); } }
-@keyframes wipeOut { from { opacity: 1; } to { opacity: 0; } }
+/* Troca animada de área (Minecraft <-> Discord): movimento lateral */
+#app.is-leaving-left .view { animation: leaveLeft .23s ease-in forwards; }
+#app.is-leaving-right .view { animation: leaveRight .23s ease-in forwards; }
+#app[data-enter='right'] .view { animation: enterRight .5s cubic-bezier(.2, .8, .2, 1) both; }
+#app[data-enter='left'] .view { animation: enterLeft .5s cubic-bezier(.2, .8, .2, 1) both; }
+@keyframes leaveLeft { to { opacity: 0; transform: translateX(-60px) scale(.985); filter: blur(3px); } }
+@keyframes leaveRight { to { opacity: 0; transform: translateX(60px) scale(.985); filter: blur(3px); } }
+@keyframes enterRight { from { opacity: 0; transform: translateX(70px); filter: blur(3px); } to { opacity: 1; transform: none; filter: none; } }
+@keyframes enterLeft { from { opacity: 0; transform: translateX(-70px); filter: blur(3px); } to { opacity: 1; transform: none; filter: none; } }
+body, .site-header, .site-footer, .tool-button, .lang-switch, .mode-switch { transition: background-color .45s ease, border-color .45s ease, color .45s ease; }
 .view { animation: viewIn .5s ease both; }
 @keyframes viewIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
 
@@ -878,3 +878,30 @@ body[data-skin='discord'] .detail-meta dt, body[data-skin='discord'] .side-label
 .desktop-nav a:not(.button) { padding: 8px 11px; }
 .header-left { gap: 16px; }
 .dc-hero h1 { font-size: clamp(2.3rem, 8.2vw, 3.9rem); }
+
+
+/* ajustes: seletor sem corte, logo maior */
+:root { --header-h: 128px; }
+.site-header { grid-template-rows: 56px 56px; }
+.mode-switch-wrap { overflow: visible; align-items: center; padding-bottom: 2px; }
+.mode-switch { box-shadow: none; }
+.site-header.is-compact { grid-template-rows: 56px 0; }
+@media (min-width: 1020px) and (max-width: 1159px) { :root { --header-h: 128px; } }
+@media (min-width: 1160px) { .site-header { grid-template-rows: var(--header-h); } }
+.brand-logo { object-fit: contain; transform: scale(1.5); }
+.wordmark { gap: 8px; }
+
+/* bandeiras no seletor de idioma */
+.lang-switch button { min-width: 42px; padding: 0 6px; }
+.lang-switch .flag { font-size: 20px; line-height: 1; font-family: 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji', sans-serif; filter: grayscale(.55); opacity: .75; transition: filter .2s ease, opacity .2s ease, transform .3s cubic-bezier(.34, 1.56, .64, 1); }
+.lang-switch button.is-active .flag { filter: none; opacity: 1; transform: scale(1.12); }
+.lang-switch button.is-active { background: var(--sky); color: inherit; }
+body[data-skin='discord'] .lang-switch button.is-active { background: var(--dc-soft); color: inherit; }
+
+@media (max-width: 480px) {
+  .header-tools { gap: 6px; }
+  .lang-switch button { min-width: 38px; }
+  .tool-button, .menu-toggle, .lang-switch { height: 40px; }
+  .tool-button, .menu-toggle { width: 40px; }
+  .wordmark-text { font-size: 1.2rem; }
+}
