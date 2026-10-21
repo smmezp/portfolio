@@ -43,7 +43,7 @@
     }
   ],
   images: {
-    hero: 'assets/projects/heavenjoin/hero.jpg',
+    hero: 'assets/projects/heavenjoin/hero.png',
     gallery: ['assets/projects/heavenjoin/1.png', 'assets/projects/heavenjoin/2.png', 'assets/projects/heavenjoin/3.png']
   },
   videos: ['assets/projects/heavenjoin/video.mp4'],
