@@ -42,7 +42,7 @@
     }
   ],
   images: {
-    hero: 'assets/projects/heavenclearlag/hero.jpg',
+    hero: 'assets/projects/heavenclearlag/hero.png',
     gallery: ['assets/projects/heavenclearlag/1.png', 'assets/projects/heavenclearlag/2.png', 'assets/projects/heavenclearlag/3.png']
   },
   videos: [],
