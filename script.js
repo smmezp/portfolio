@@ -10,18 +10,19 @@
 if (!window.MEDEIROS_I18N || !window.MEDEIROS_SITE) {
   const appRoot = document.getElementById('app');
   if (appRoot) {
-    appRoot.innerHTML = '<div class="view not-found"><h1>Faltam arquivos do site</h1><p class="page-lede">Não consegui carregar data-i18n.js ou data-site.js. Confira se esses arquivos foram enviados para o GitHub (na raiz, junto do index.html) e recarregue a página.</p></div>';
+    appRoot.innerHTML = '<div class="view not-found"><h1>Faltam arquivos do site</h1><p class="page-lede">Não consegui carregar data/i18n.js ou data/site.js. Confira se esses arquivos estão na pasta data do GitHub e recarregue a página.</p></div>';
   }
   window.__medeirosReady = 'missing-data';
-  throw new Error('Medeiros: arquivos de dados ausentes (data-i18n.js, data-site.js)');
+  throw new Error('Medeiros: arquivos de dados ausentes (data/i18n.js, data/site.js)');
 }
 
 const SITE = window.MEDEIROS_SITE;
 const I18N = window.MEDEIROS_I18N;
-const ALL_PRODUCTS = window.MEDEIROS_PRODUCTS || [];
+const ALL_PRODUCTS = (window.MEDEIROS_PRODUCTS || []).filter((product) => product && product.id !== 'meu-bot' && product.name !== 'Nome do Bot');
 const PROJECTS = ALL_PRODUCTS.filter((product) => product.brand !== 'discord');
 const DISCORD_PRODUCTS = ALL_PRODUCTS.filter((product) => product.brand === 'discord');
 const DISCORD_SERVER_URL = SITE?.contact?.discordServer || 'https://discord.gg/Unbx6TpXwa';
+const GITHUB_PROFILE_URL = (/^https:\/\/github\.com\/[^/]+\/?$/.test(SITE?.contact?.github || '') ? SITE.contact.github : 'https://github.com/smmezp').replace(/\/$/, '');
 const STORAGE_LANG = 'medeiros-lang';
 const STORAGE_THEME = 'medeiros-theme';
 const app = document.getElementById('app');
@@ -62,8 +63,9 @@ let lightboxCloseTimer = null;
 let lightboxTouchStart = null;
 
 let lang = readPref(STORAGE_LANG, ['pt', 'en'], 'pt');
+let lastMode = 'none';
+let lastScrollY = 0;
 let theme = readPref(STORAGE_THEME, ['light', 'dark'], preferredTheme());
-let dcObserver = null;
 
 function readPref(key, allowed, fallback) {
   try {
@@ -141,11 +143,12 @@ function initialize() {
   window.addEventListener('popstate', () => renderRoute(false));
   window.addEventListener('scroll', handleScroll, { passive: true });
   syncDiscordLinks();
+  syncGithubLinks();
   handleScroll();
   applyTheme(theme, false);
   applyLanguage(lang, false, false);
   renderRoute(false);
-  window.__medeirosReady = '3';
+  window.__medeirosReady = '4';
 }
 
 function getSiteBasePath() {
@@ -216,19 +219,47 @@ function normalizePath(path) {
   return normalized || '/';
 }
 
+function skinForPath(path) {
+  return path === '/discord' || path.startsWith('/discord/') ? 'discord' : 'main';
+}
+
 function navigate(path) {
   const [pathname, query = ''] = path.split('?');
   const normalized = stripSiteBasePath(pathname);
+  const fromSkin = document.body.dataset.skin || 'main';
+  const toSkin = skinForPath(normalized);
 
-  if (window.location.protocol === 'file:') {
-    const next = `index.html?route=${encodeURIComponent(normalized + (query ? `?${query}` : ''))}`;
-    window.history.pushState({}, '', next);
-  } else {
-    window.history.pushState({}, '', buildSitePath(normalized, query));
+  const go = () => {
+    if (window.location.protocol === 'file:') {
+      const next = `index.html?route=${encodeURIComponent(normalized + (query ? `?${query}` : ''))}`;
+      window.history.pushState({}, '', next);
+    } else {
+      window.history.pushState({}, '', buildSitePath(normalized, query));
+    }
+    closeMobileNav();
+    renderRoute(true);
+  };
+
+  const modeChange = (fromSkin === 'discord') !== (toSkin === 'discord');
+  const wipe = document.querySelector('[data-mode-wipe]');
+  if (!modeChange || reducedMotion() || !wipe) {
+    go();
+    return;
   }
 
-  closeMobileNav();
-  renderRoute(true);
+  const anchor = document.querySelector(`[data-mode="${toSkin === 'discord' ? 'discord' : 'minecraft'}"]`) || document.querySelector('[data-mode-switch]');
+  const box = anchor ? anchor.getBoundingClientRect() : { left: window.innerWidth / 2, top: 40, width: 0, height: 0 };
+  wipe.style.setProperty('--wx', `${Math.round(box.left + box.width / 2)}px`);
+  wipe.style.setProperty('--wy', `${Math.round(box.top + box.height / 2)}px`);
+  wipe.dataset.to = toSkin === 'discord' ? 'discord' : 'minecraft';
+  wipe.classList.remove('is-off');
+  wipe.classList.add('is-on');
+  window.setTimeout(() => {
+    go();
+    wipe.classList.remove('is-on');
+    wipe.classList.add('is-off');
+    window.setTimeout(() => wipe.classList.remove('is-off'), 560);
+  }, 460);
 }
 
 function renderRoute(shouldScroll) {
@@ -274,7 +305,7 @@ function renderRoute(shouldScroll) {
     const product = DISCORD_PRODUCTS.find((item) => item.slug === discordMatch[1]);
     skin = 'discord';
     if (product) {
-      markup = renderDiscordProductDetail(product);
+      markup = renderProjectDetail(product, 'discord');
       title = `${product.name} — Medeiros`;
       description = L(product.shortDescription);
     } else {
@@ -303,33 +334,13 @@ function renderRoute(shouldScroll) {
   setupReveal();
   setupImageFrames();
   syncDiscordLinks();
-  setupDiscordChannels();
+  syncGithubLinks();
 
   if (path === '/contact') initializeContactForm(location.query);
 
   if (shouldScroll) {
     window.scrollTo({ top: 0, behavior: reducedMotion() ? 'auto' : 'smooth' });
   }
-}
-
-function setupDiscordChannels() {
-  if (dcObserver) {
-    dcObserver.disconnect();
-    dcObserver = null;
-  }
-  const sections = [...document.querySelectorAll('.dc-section[id]')];
-  if (!sections.length || !('IntersectionObserver' in window)) return;
-  const activate = (id) => {
-    document.querySelectorAll('.dc-channel').forEach((channel) => channel.classList.toggle('is-active', channel.dataset.scroll === id));
-    const link = document.querySelector(`.dc-channel[data-scroll="${id}"]`);
-    const title = document.querySelector('[data-dc-title]');
-    if (link && title) title.textContent = link.textContent.replace('#', '').trim();
-  };
-  dcObserver = new IntersectionObserver((entries) => {
-    const visible = entries.filter((entry) => entry.isIntersecting).sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top)[0];
-    if (visible) activate(visible.target.id);
-  }, { rootMargin: '-20% 0px -65% 0px', threshold: 0 });
-  sections.forEach((section) => dcObserver.observe(section));
 }
 
 function updateMeta(title, description) {
@@ -339,6 +350,14 @@ function updateMeta(title, description) {
   if (descriptionMeta) descriptionMeta.setAttribute('content', description);
   if (ogTitle) ogTitle.setAttribute('content', title);
   if (ogDescription) ogDescription.setAttribute('content', description);
+}
+
+function syncGithubLinks() {
+  document.querySelectorAll('[data-github-link]').forEach((link) => {
+    link.href = GITHUB_PROFILE_URL;
+    link.target = '_blank';
+    link.rel = 'noopener noreferrer';
+  });
 }
 
 function syncDiscordLinks() {
@@ -409,16 +428,29 @@ function markImageMissing(image) {
 
 function updateActiveNavigation(path) {
   let active = 'home';
-  if (path.startsWith('/discord')) active = 'discord';
-  else if (path.startsWith('/minecraft') || path.startsWith('/projects') || path === '/services') active = 'minecraft';
-  else if (path === '/about') active = 'about';
-  else if (path === '/contact') active = 'contact';
+  let mode = 'none';
+  if (path.startsWith('/discord')) { active = 'discord'; mode = 'discord'; }
+  else if (path.startsWith('/minecraft') || path.startsWith('/projects') || path === '/services') { active = 'minecraft'; mode = 'minecraft'; }
+  else if (path === '/about') { active = 'about'; mode = lastMode; }
+  else if (path === '/contact') { active = 'contact'; mode = lastMode; }
+  if (mode === 'discord' || mode === 'minecraft') lastMode = mode;
+
   document.querySelectorAll('[data-nav-link]').forEach((link) => {
     const isActive = link.dataset.navLink === active;
     link.classList.toggle('is-active', isActive);
     if (isActive) link.setAttribute('aria-current', 'page');
     else link.removeAttribute('aria-current');
   });
+
+  const switchEl = document.querySelector('[data-mode-switch]');
+  if (switchEl) {
+    switchEl.dataset.active = mode;
+    switchEl.querySelectorAll('[data-mode]').forEach((option) => {
+      option.classList.toggle('is-active', option.dataset.mode === mode);
+      if (option.dataset.mode === active) option.setAttribute('aria-current', 'page');
+      else option.removeAttribute('aria-current');
+    });
+  }
 }
 
 function projectColor(project) {
@@ -495,7 +527,7 @@ function renderHub() {
             <p>${t('hub.githubText')}</p>
             <span class="github-handle">github.com/${escapeHTML(SITE.contact.githubHandle)}</span>
           </div>
-          <a class="button button-primary" href="${escapeHTML(SITE.contact.github)}" target="_blank" rel="noopener noreferrer">${t('hub.githubCta')} ${icon('external')}</a>
+          <a class="button button-primary" href="${GITHUB_PROFILE_URL}" data-github-link target="_blank" rel="noopener noreferrer">${t('hub.githubCta')} ${icon('external')}</a>
         </div>
       </section>
 
@@ -672,10 +704,10 @@ function renderAbout() {
           <ul class="chips">${SITE.technologies.map((tech) => `<li class="chip">${escapeHTML(tech)}</li>`).join('')}</ul>
           <h3>${t('about.find')}</h3>
           <p class="about-handle">Discord: <strong>${escapeHTML(SITE.contact.discord)}</strong></p>
-          <p class="about-handle">GitHub: <a class="text-link" href="${escapeHTML(SITE.contact.github)}" target="_blank" rel="noopener noreferrer">github.com/${escapeHTML(SITE.contact.githubHandle)}</a></p>
+          <p class="about-handle">GitHub: <a class="text-link" href="${GITHUB_PROFILE_URL}" data-github-link target="_blank" rel="noopener noreferrer">github.com/${escapeHTML(SITE.contact.githubHandle)}</a></p>
           <div class="button-row">
             ${renderDiscordLink(t('common.openDiscord'), 'button button-primary button-small')}
-            <a class="button button-ghost button-small" href="${escapeHTML(SITE.contact.github)}" target="_blank" rel="noopener noreferrer">${icon('github')} GitHub</a>
+            <a class="button button-ghost button-small" href="${GITHUB_PROFILE_URL}" data-github-link target="_blank" rel="noopener noreferrer">${icon('github')} GitHub</a>
           </div>
         </aside>
       </section>
@@ -700,7 +732,7 @@ function renderContact() {
             <div><span class="discord-label">Discord</span><strong class="discord-handle">${escapeHTML(SITE.contact.discord)}</strong></div>
             <div class="discord-actions"><button class="button button-ghost button-small" type="button" data-copy-discord>${t('contact.copy')}</button>${renderDiscordLink(t('common.openDiscord'), 'button button-primary button-small')}</div>
           </div>
-          <a class="github-line" href="${escapeHTML(SITE.contact.github)}" target="_blank" rel="noopener noreferrer">${icon('github')}<span><strong>GitHub</strong> github.com/${escapeHTML(SITE.contact.githubHandle)}</span>${icon('external')}</a>
+          <a class="github-line" href="${GITHUB_PROFILE_URL}" data-github-link target="_blank" rel="noopener noreferrer">${icon('github')}<span><strong>GitHub</strong> github.com/${escapeHTML(SITE.contact.githubHandle)}</span>${icon('external')}</a>
           <ol class="steps">
             <li><strong>${t('contact.s1t')}</strong><span>${t('contact.s1')}</span></li>
             <li><strong>${t('contact.s2t')}</strong><span>${t('contact.s2')}</span></li>
@@ -727,15 +759,16 @@ function renderContact() {
   `;
 }
 
-function renderProjectDetail(project) {
+function renderProjectDetail(project, brand = 'minecraft') {
   const gallery = Array.isArray(project.images?.gallery) ? project.images.gallery : [];
   const details = Array.isArray(project.details) ? project.details : [];
-  const others = PROJECTS.filter((item) => item.slug !== project.slug);
+  const isDiscord = brand === 'discord';
+  const others = (isDiscord ? DISCORD_PRODUCTS : PROJECTS).filter((item) => item.slug !== project.slug);
   return `
     <div class="view project-detail-view">
       <section class="detail-hero">
         <div class="detail-copy reveal">
-          <nav class="breadcrumbs" aria-label="${t('nav.breadcrumb')}"><a href="/minecraft" data-route>Minecraft</a><span>/</span><a href="/projects" data-route>${t('common.projects')}</a><span>/</span><span>${escapeHTML(project.name)}</span></nav>
+          <nav class="breadcrumbs" aria-label="${t('nav.breadcrumb')}">${isDiscord ? `<a href="/discord" data-route>Discord</a>` : `<a href="/minecraft" data-route>Minecraft</a><span>/</span><a href="/projects" data-route>${t('common.projects')}</a>`}<span>/</span><span>${escapeHTML(project.name)}</span></nav>
           <div class="detail-labels"><span class="chip">${escapeHTML(L(project.categoryLabel))}</span>${renderStatusBadge(project.status)}</div>
           <h1>${escapeHTML(project.name)}</h1>
           <p class="detail-description">${escapeHTML(L(project.shortDescription))}</p>
@@ -763,7 +796,7 @@ function renderProjectDetail(project) {
 
       ${gallery.length ? `<section class="detail-section reveal"><div class="section-head"><div><p class="eyebrow">${t('detail.screens')}</p><h2>${t('detail.inGame')}</h2></div><p class="section-head-note">${t('detail.tap')}</p></div><div class="gallery-grid">${gallery.map((image, index) => `<button class="gallery-item image-frame" type="button" data-image-frame data-lightbox-slug="${escapeHTML(project.slug)}" data-lightbox-index="${index + 1}" aria-label="${escapeHTML(project.name)} · ${index + 1}">${renderProjectImage(image, `${project.name} · ${index + 1}`, { loading: 'lazy' })}</button>`).join('')}</div></section>` : ''}
       ${renderVideoSection(project)}
-      ${others.length ? `<section class="detail-section reveal"><div class="section-head"><div><p class="eyebrow">${t('detail.more')}</p><h2>${t('detail.others')}</h2></div><a class="text-link" href="/projects" data-route>${t('common.allProjects')} ${icon('arrow')}</a></div><div class="project-grid">${others.map((item) => renderProjectCard(item)).join('')}</div></section>` : ''}
+      ${others.length ? `<section class="detail-section reveal"><div class="section-head"><div><p class="eyebrow">${t('detail.more')}</p><h2>${t('detail.others')}</h2></div><a class="text-link" href="${isDiscord ? '/discord' : '/projects'}" data-route>${t('common.allProjects')} ${icon('arrow')}</a></div><div class="project-grid">${others.map((item) => renderProjectCard(item, brand)).join('')}</div></section>` : ''}
       ${renderCtaPanel()}
     </div>
   `;
@@ -817,9 +850,9 @@ function renderServiceRow(service) {
   return `<article class="service-row"><h2>${escapeHTML(L(service.title))}</h2><p>${escapeHTML(L(service.description))}</p><a class="button button-ghost button-small" href="/contact?service=${encodeURIComponent(service.id)}" data-route>${t('common.request')} ${icon('arrow')}</a></article>`;
 }
 
-function renderProjectCard(project) {
+function renderProjectCard(project, brand = 'minecraft') {
   const technologies = (project.technologies || []).slice(0, 4);
-  return `<a class="project-card" href="/projects/${escapeHTML(project.slug)}" data-route>
+  return `<a class="project-card" href="${brand === 'discord' ? '/discord' : '/projects'}/${escapeHTML(project.slug)}" data-route>
     <div class="project-card-media image-frame" data-image-frame>${renderProjectImage(project.images?.hero, project.name)}</div>
     <div class="project-card-body">
       <div class="project-card-top"><h3>${escapeHTML(project.name)}</h3>${renderStatusBadge(project.status)}</div>
@@ -849,184 +882,98 @@ function renderNotFound(title, message) {
  * Página /discord — estilo próprio, inspirado na interface do Discord.
  * ------------------------------------------------------------------ */
 
-function renderDiscordEmbed({ title, text = '', color = '', fields = [], footer = '', href = '', dataRoute = false }) {
-  const style = color ? ` style="--embed:${color}"` : '';
-  const heading = title ? `<h3 class="dc-embed-title">${href ? `<a href="${escapeHTML(href)}"${dataRoute ? ' data-route' : ''}>${escapeHTML(title)}</a>` : escapeHTML(title)}</h3>` : '';
-  const body = text ? `<p class="dc-embed-text">${escapeHTML(text)}</p>` : '';
-  const grid = fields.length ? `<div class="dc-fields">${fields.map((field) => `<div class="dc-field"><strong>${escapeHTML(field.name)}</strong><span>${escapeHTML(field.value)}</span></div>`).join('')}</div>` : '';
-  const foot = footer ? `<p class="dc-embed-footer">${escapeHTML(footer)}</p>` : '';
-  return `<div class="dc-embed"${style}>${heading}${body}${grid}${foot}</div>`;
+function renderDiscordWindows() {
+  const picker = SITE.discordServices.slice(0, 4);
+  return `
+    <div class="dc-collage" aria-label="${t('dc.collageLabel')}">
+      <div class="dc-window dc-window-1">
+        <div class="dc-window-bar"><span class="dc-hash">#</span><strong>${t('dc.ex1Channel')}</strong><span class="dc-example">${t('dc.example')}</span></div>
+        <div class="dc-chat">
+          <div class="dc-chat-msg"><span class="dc-chat-avatar dc-chat-avatar-user">${escapeHTML(t('dc.ex1User').charAt(0))}</span><div><b>${t('dc.ex1User')}</b><span class="dc-chat-cmd">${t('dc.ex1Cmd')}</span></div></div>
+          <div class="dc-chat-msg"><span class="dc-chat-avatar"><img src="assets/brand/logo-main.png" alt="" width="28" height="28" decoding="async"></span><div><b>Medeiros Bot <i class="dc-tag">BOT</i></b>
+            <div class="dc-mini-embed" style="--embed:#23a55a">
+              <strong>${t('dc.ex1Title')}</strong>
+              <div class="dc-mini-fields"><div><b>${t('dc.ex1F1n')}</b><span>${t('dc.ex1F1v')}</span></div><div><b>${t('dc.ex1F2n')}</b><span>${t('dc.ex1F2v')}</span></div></div>
+              <div class="dc-mini-buttons"><span class="dc-mini-btn">${t('dc.ex1B1')}</span><span class="dc-mini-btn dc-mini-btn-ghost">${t('dc.ex1B2')}</span></div>
+            </div></div></div>
+        </div>
+      </div>
+
+      <div class="dc-window dc-window-2">
+        <div class="dc-window-bar"><span class="dc-hash">#</span><strong>${t('dc.ex2Channel')}</strong><span class="dc-example">${t('dc.example')}</span></div>
+        <div class="dc-chat"><div class="dc-chat-msg"><span class="dc-chat-avatar"><img src="assets/brand/logo-main.png" alt="" width="28" height="28" decoding="async"></span><div><b>Medeiros Bot <i class="dc-tag">BOT</i></b>
+          <div class="dc-mini-embed" style="--embed:#5865f2">
+            <strong>${t('dc.ex2Title')}</strong>
+            <div class="dc-mini-fields"><div><b>${t('dc.ex2F1n')}</b><span>24 / 100</span></div><div><b>${t('dc.ex2F2n')}</b><span>1.21</span></div><div><b>${t('dc.ex2F3n')}</b><span class="dc-online">${t('dc.ex2F3v')}</span></div></div>
+          </div></div></div></div>
+      </div>
+
+      <div class="dc-window dc-window-3">
+        <div class="dc-window-bar"><strong>${t('dc.ex3Title')}</strong><span class="dc-example">${t('dc.example')}</span></div>
+        <ul class="dc-picker">${picker.map((service, index) => `<li class="${index === 0 ? 'is-first' : ''}"><span class="dc-picker-icon">${icon(service.icon)}</span><span class="dc-picker-text"><b>${escapeHTML(L(service.command))}</b><em>${escapeHTML(L(service.title))}</em></span></li>`).join('')}</ul>
+      </div>
+    </div>`;
 }
 
-function renderDiscordProductCard(product) {
-  const live = String(product.status).toLowerCase() === 'released';
-  return renderDiscordEmbed({
-    title: product.name,
-    text: L(product.shortDescription),
-    color: live ? '#23a55a' : '#f0b232',
-    href: `/discord/${product.slug}`,
-    dataRoute: true,
-    fields: [
-      { name: t('detail.status'), value: statusLabel(product.status) },
-      { name: t('detail.price'), value: L(product.price) || t('detail.onRequest') },
-      { name: t('detail.builtWith'), value: (product.technologies || []).join(', ') }
-    ]
-  });
+function renderDiscordService(service) {
+  return `<article class="dc-service">
+    <span class="dc-service-cmd">${escapeHTML(L(service.command))}</span>
+    <h3>${escapeHTML(L(service.title))}</h3>
+    <p>${escapeHTML(L(service.description))}</p>
+    <a class="dc-service-link" href="/contact?service=${encodeURIComponent(service.id)}" data-route>${t('dc.request')}</a>
+  </article>`;
 }
 
 function renderDiscord() {
-  const channels = [
-    ['dc-welcome', t('dc.chWelcome'), 'info'],
-    ['dc-services', t('dc.chServices'), 'info'],
-    ['dc-products', t('dc.chProducts'), 'bots'],
-    ['dc-process', t('dc.chProcess'), 'bots'],
-    ['dc-hire', t('dc.chHire'), 'contact']
-  ];
-  const category = { info: t('dc.catInfo'), bots: t('dc.catBots'), contact: t('dc.catContact') };
-  let lastCategory = '';
-  const channelList = channels.map(([id, name, cat], index) => {
-    const heading = cat !== lastCategory ? `<p class="dc-category">${escapeHTML(category[cat])}</p>` : '';
-    lastCategory = cat;
-    return `${heading}<a class="dc-channel ${index === 0 ? 'is-active' : ''}" href="#${id}" data-scroll="${id}"><span class="dc-hash">#</span>${escapeHTML(name)}</a>`;
-  }).join('');
-
-  const author = `<div class="dc-avatar"><img src="assets/brand/logo-main.png" alt="" width="40" height="40" decoding="async"></div>`;
-  const header = `<div class="dc-meta"><strong class="dc-author">Medeiros</strong><span class="dc-tag">${t('dc.tag')}</span></div>`;
-
-  const serviceEmbeds = SITE.discordServices.map((service) => `
-    <div class="dc-embed" style="--embed:#5865f2">
-      <p class="dc-command">${escapeHTML(L(service.command))}</p>
-      <h3 class="dc-embed-title">${escapeHTML(L(service.title))}</h3>
-      <p class="dc-embed-text">${escapeHTML(L(service.description))}</p>
-      <a class="dc-embed-link" href="/contact?service=${encodeURIComponent(service.id)}" data-route>${t('common.request')} →</a>
-    </div>`).join('');
-
   const productsMarkup = DISCORD_PRODUCTS.length
-    ? DISCORD_PRODUCTS.map(renderDiscordProductCard).join('')
-    : `<div class="dc-embed dc-embed-empty" style="--embed:#80848e"><h3 class="dc-embed-title">${t('dc.emptyTitle')}</h3><p class="dc-embed-text">${t('dc.emptyText')}</p><a class="dc-embed-link" href="/projects" data-route>${t('dc.emptyLink')} →</a></div>`;
-
-  const steps = SITE.process.map((step, index) => `<li><span class="dc-step">${index + 1}</span><div><strong>${escapeHTML(L(step.title))}</strong><span>${escapeHTML(L(step.description))}</span></div></li>`).join('');
-
+    ? `<div class="project-grid">${DISCORD_PRODUCTS.map((product) => renderProjectCard(product, 'discord')).join('')}</div>`
+    : `<div class="dc-empty"><span class="dc-empty-icon">${icon('spark')}</span><div><h3>${t('dc.emptyTitle')}</h3><p>${t('dc.emptyText')}</p></div><a class="button button-primary button-small" href="/minecraft" data-route>${t('dc.emptyLink')} ${icon('arrow')}</a></div>`;
   return `
     <div class="view discord-view">
-      <div class="dc-app">
-        <aside class="dc-sidebar" aria-label="${t('dc.channels')}">
-          <div class="dc-server"><img class="dc-server-icon" src="assets/brand/logo-main.png" alt="" width="32" height="32" decoding="async"><strong>Medeiros · Bots</strong></div>
-          <nav class="dc-channels">${channelList}</nav>
-          <div class="dc-user"><span class="dc-user-avatar"><img src="assets/brand/logo-main.png" alt="" width="32" height="32" decoding="async"><i></i></span><span class="dc-user-text"><strong>Medeiros</strong><em>${t('dc.online')}</em></span></div>
-        </aside>
-
-        <div class="dc-main">
-          <header class="dc-topbar"><span class="dc-hash">#</span><strong data-dc-title>${escapeHTML(channels[0][1])}</strong><span class="dc-topic">${t('dc.topic')}</span></header>
-          <div class="dc-feed">
-            <section class="dc-section" id="dc-welcome">
-              <div class="dc-message">${author}<div class="dc-body">${header}
-                <p class="dc-text">${t('dc.welcomeText')}</p>
-                ${renderDiscordEmbed({
-                  title: t('dc.welcomeEmbedTitle'),
-                  text: t('dc.welcomeEmbedText'),
-                  color: '#5865f2',
-                  fields: [
-                    { name: t('dc.f1n'), value: t('dc.f1v') },
-                    { name: t('dc.f2n'), value: t('dc.f2v') },
-                    { name: t('dc.f3n'), value: t('dc.f3v') }
-                  ]
-                })}
-                <div class="dc-buttons">
-                  ${renderDiscordLink(t('dc.btnHire'), 'dc-btn dc-btn-primary')}
-                  <a class="dc-btn dc-btn-secondary" href="#dc-services" data-scroll="dc-services">${t('dc.btnServices')}</a>
-                  <a class="dc-btn dc-btn-secondary" href="${escapeHTML(SITE.contact.github)}" target="_blank" rel="noopener noreferrer">GitHub</a>
-                </div>
-              </div></div>
-            </section>
-
-            <section class="dc-section" id="dc-services">
-              <div class="dc-divider"><span># ${escapeHTML(channels[1][1])}</span></div>
-              <div class="dc-message">${author}<div class="dc-body">${header}
-                <p class="dc-text">${t('dc.servicesText')}</p>
-                <div class="dc-embed-grid">${serviceEmbeds}</div>
-              </div></div>
-            </section>
-
-            <section class="dc-section" id="dc-products">
-              <div class="dc-divider"><span># ${escapeHTML(channels[2][1])}</span></div>
-              <div class="dc-message">${author}<div class="dc-body">${header}
-                <p class="dc-text">${t('dc.productsText')}</p>
-                <div class="dc-embed-grid">${productsMarkup}</div>
-              </div></div>
-            </section>
-
-            <section class="dc-section" id="dc-process">
-              <div class="dc-divider"><span># ${escapeHTML(channels[3][1])}</span></div>
-              <div class="dc-message">${author}<div class="dc-body">${header}
-                <p class="dc-text">${t('dc.processText')}</p>
-                <div class="dc-embed" style="--embed:#23a55a"><ol class="dc-steps">${steps}</ol></div>
-              </div></div>
-            </section>
-
-            <section class="dc-section" id="dc-hire">
-              <div class="dc-divider"><span># ${escapeHTML(channels[4][1])}</span></div>
-              <div class="dc-message">${author}<div class="dc-body">${header}
-                <p class="dc-text">${t('dc.hireText')}</p>
-                ${renderDiscordEmbed({
-                  title: t('dc.hireEmbedTitle'),
-                  text: t('dc.hireEmbedText'),
-                  color: '#23a55a',
-                  fields: [
-                    { name: 'Discord', value: SITE.contact.discord },
-                    { name: 'GitHub', value: `github.com/${SITE.contact.githubHandle}` }
-                  ]
-                })}
-                <div class="dc-buttons">
-                  ${renderDiscordLink(t('dc.btnJoin'), 'dc-btn dc-btn-success')}
-                  <button class="dc-btn dc-btn-secondary" type="button" data-copy-discord>${t('contact.copy')}</button>
-                  <a class="dc-btn dc-btn-secondary" href="/contact" data-route>${t('dc.btnBrief')}</a>
-                </div>
-              </div></div>
-            </section>
+      <section class="hero dc-hero">
+        <div class="hero-copy">
+          <p class="status-pill"><i></i> ${t('common.open')}</p>
+          <h1>${t('dc.h1a')} <span class="mark">${t('dc.h1b')}</span> ${t('dc.h1c')}</h1>
+          <p class="lede">${t('dc.lede')}</p>
+          <div class="button-row">
+            <a class="button button-primary" href="#dc-services" data-scroll="dc-services">${t('dc.ctaServices')} ${icon('arrow')}</a>
+            ${renderDiscordLink(t('common.hire'), 'button button-ghost')}
           </div>
-          <a class="dc-input" href="${escapeHTML(DISCORD_SERVER_URL)}" data-discord-link target="_blank" rel="noopener noreferrer"><span class="dc-plus">+</span><span>${t('dc.input')}</span></a>
+          <ul class="hero-facts">
+            <li><strong>${t('dc.fact1A')}</strong> ${t('dc.fact1B')}</li>
+            <li><strong>${t('dc.fact2A')}</strong> ${t('dc.fact2B')}</li>
+            <li><strong>${t('hub.factTestedA')}</strong> ${t('hub.factTestedB')}</li>
+          </ul>
         </div>
+        ${renderDiscordWindows()}
+      </section>
 
-        <aside class="dc-members" aria-label="${t('dc.members')}">
-          <p class="dc-category">${t('dc.membersOnline')} — 1</p>
-          <div class="dc-member"><span class="dc-user-avatar"><img src="assets/brand/logo-main.png" alt="" width="32" height="32" decoding="async"><i></i></span><span class="dc-user-text"><strong>Medeiros</strong><em>${t('dc.role')}</em></span></div>
-          <p class="dc-category">${t('dc.tech')} — ${SITE.discordTechnologies.length}</p>
-          ${SITE.discordTechnologies.map((tech) => `<div class="dc-role"><i></i>${escapeHTML(tech)}</div>`).join('')}
-        </aside>
-      </div>
-    </div>
-  `;
-}
-
-function renderDiscordProductDetail(product) {
-  return `
-    <div class="view discord-view">
-      <div class="dc-app dc-app-single">
-        <div class="dc-main">
-          <header class="dc-topbar"><span class="dc-hash">#</span><strong>${escapeHTML(product.slug)}</strong><span class="dc-topic">${escapeHTML(L(product.categoryLabel))}</span></header>
-          <div class="dc-feed">
-            <section class="dc-section">
-              <div class="dc-message"><div class="dc-avatar"><img src="assets/brand/logo-main.png" alt="" width="40" height="40" decoding="async"></div><div class="dc-body">
-                <div class="dc-meta"><strong class="dc-author">Medeiros</strong><span class="dc-tag">${t('dc.tag')}</span></div>
-                <p class="dc-text">${escapeHTML(L(product.fullDescription))}</p>
-                ${renderDiscordEmbed({
-                  title: product.name,
-                  text: L(product.shortDescription),
-                  color: '#5865f2',
-                  fields: [
-                    { name: t('detail.status'), value: statusLabel(product.status) },
-                    { name: t('detail.price'), value: L(product.price) || t('detail.onRequest') },
-                    { name: t('detail.builtWith'), value: (product.technologies || []).join(', ') }
-                  ]
-                })}
-                <div class="dc-embed" style="--embed:#23a55a"><h3 class="dc-embed-title">${t('detail.features')}</h3><ul class="dc-list">${(L(product.features) || []).map((feature) => `<li>${escapeHTML(feature)}</li>`).join('')}</ul></div>
-                <div class="dc-buttons">${product.links?.invite ? `<a class="dc-btn dc-btn-primary" href="${escapeHTML(product.links.invite)}" target="_blank" rel="noopener noreferrer">${t('detail.invite')}</a>` : renderDiscordLink(t('detail.ask'), 'dc-btn dc-btn-primary')}<a class="dc-btn dc-btn-secondary" href="/discord" data-route>${t('dc.back')}</a></div>
-              </div></div>
-            </section>
-          </div>
+      <section class="section reveal" id="dc-services">
+        <div class="section-head">
+          <div><p class="eyebrow">${t('common.services')}</p><h2>${t('dc.servicesTitle')}</h2></div>
+          <div class="section-head-side"><p>${t('dc.servicesText')}</p></div>
         </div>
-      </div>
+        <div class="dc-service-grid">${SITE.discordServices.map(renderDiscordService).join('')}</div>
+      </section>
+
+      <section class="section reveal" id="dc-products">
+        <div class="section-head">
+          <div><p class="eyebrow">${t('dc.productsEyebrow')}</p><h2>${t('dc.productsTitle')}</h2></div>
+          <div class="section-head-side"><p>${t('dc.productsText')}</p></div>
+        </div>
+        ${productsMarkup}
+      </section>
+
+      <section class="section reveal" id="dc-process">
+        <div class="section-head"><div><p class="eyebrow">${t('common.howItWorks')}</p><h2>${t('dc.processTitle')}</h2></div></div>
+        <div class="process-grid">${SITE.process.map(renderProcessStep).join('')}</div>
+        <div class="toolbelt">
+          <span class="toolbelt-label">${t('common.workingWith')}</span>
+          <ul class="chips">${SITE.discordTechnologies.map((tech) => `<li class="chip">${escapeHTML(tech)}</li>`).join('')}</ul>
+        </div>
+      </section>
+
+      ${renderCtaPanel()}
     </div>
   `;
 }
@@ -1168,7 +1115,14 @@ function handleKeydown(event) {
 }
 
 function handleScroll() {
-  if (header) header.classList.toggle('is-scrolled', window.scrollY > 12);
+  const y = window.scrollY;
+  if (header) {
+    header.classList.toggle('is-scrolled', y > 12);
+    const menuOpen = header.classList.contains('menu-open');
+    if (!menuOpen && window.innerWidth < 1160 && y > 140 && y > lastScrollY + 6) header.classList.add('is-compact');
+    else if (y < lastScrollY - 6 || y < 90 || menuOpen) header.classList.remove('is-compact');
+  }
+  lastScrollY = y;
 }
 
 function initializeContactForm(query) {
@@ -1209,6 +1163,7 @@ function toggleMobileNav() {
   if (!menuToggle) return;
   const isOpen = mobileNav.classList.toggle('is-open');
   header.classList.toggle('menu-open', isOpen);
+  if (isOpen) header.classList.remove('is-compact');
   menuToggle.setAttribute('aria-expanded', String(isOpen));
   menuToggle.setAttribute('aria-label', t(isOpen ? 'nav.closeMenu' : 'nav.openMenu'));
 }
