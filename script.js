@@ -23,6 +23,9 @@ const PROJECTS = ALL_PRODUCTS.filter((product) => product.brand !== 'discord');
 const DISCORD_PRODUCTS = ALL_PRODUCTS.filter((product) => product.brand === 'discord');
 const DISCORD_SERVER_URL = SITE?.contact?.discordServer || 'https://discord.gg/Unbx6TpXwa';
 const GITHUB_PROFILE_URL = (/^https:\/\/github\.com\/[^/]+\/?$/.test(SITE?.contact?.github || '') ? SITE.contact.github : 'https://github.com/smmezp').replace(/\/$/, '');
+/* Três áreas, da esquerda para a direita: Minecraft | Início | Discord. */
+const MODE_ORDER = ['minecraft', 'home', 'discord'];
+const MODE_ROUTE = { minecraft: '/minecraft', home: '/', discord: '/discord' };
 const STORAGE_LANG = 'medeiros-lang';
 const STORAGE_THEME = 'medeiros-theme';
 const app = document.getElementById('app');
@@ -63,7 +66,6 @@ let lightboxCloseTimer = null;
 let lightboxTouchStart = null;
 
 let lang = readPref(STORAGE_LANG, ['pt', 'en'], 'pt');
-let lastMode = 'none';
 let lastScrollY = 0;
 let theme = readPref(STORAGE_THEME, ['light', 'dark'], preferredTheme());
 
@@ -115,6 +117,7 @@ function applyLanguage(next, persist = true, rerender = true) {
   if (persist) writePref(STORAGE_LANG, lang);
   document.querySelectorAll('[data-i18n]').forEach((element) => { element.textContent = t(element.dataset.i18n); });
   document.querySelectorAll('[data-i18n-aria]').forEach((element) => { element.setAttribute('aria-label', t(element.dataset.i18nAria)); });
+  document.querySelectorAll('[data-i18n-title]').forEach((element) => { element.setAttribute('title', t(element.dataset.i18nTitle)); });
   document.querySelectorAll('[data-lang]').forEach((button) => {
     const active = button.dataset.lang === lang;
     button.classList.toggle('is-active', active);
@@ -134,6 +137,7 @@ function initialize() {
 
   document.addEventListener('click', handleClick);
   setupSwipe();
+  setupModeSwitchDrag();
   document.addEventListener('input', handleInput);
   document.addEventListener('submit', handleSubmit);
   document.addEventListener('keydown', handleKeydown);
@@ -221,88 +225,6 @@ function normalizePath(path) {
 }
 
 /* Arrastar o dedo para o lado troca de área: direita = Discord, esquerda = Minecraft. */
-function currentMode() {
-  const path = getLocation().pathname;
-  if (path === '/discord' || path.startsWith('/discord/')) return 'discord';
-  if (path === '/minecraft' || path.startsWith('/projects') || path === '/services') return 'minecraft';
-  return 'none';
-}
-
-function setupSwipe() {
-  let start = null;
-  const blocked = (target) => {
-    if (document.querySelector('[data-lightbox]:not([hidden])')) return true;
-    if (mobileNav && mobileNav.classList.contains('is-open')) return true;
-    for (let node = target; node && node !== document.body; node = node.parentElement) {
-      const tag = node.tagName;
-      if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || tag === 'VIDEO' || tag === 'IFRAME') return true;
-      if (node.scrollWidth > node.clientWidth + 4 && ['auto', 'scroll'].includes(getComputedStyle(node).overflowX)) return true;
-    }
-    return false;
-  };
-
-  document.addEventListener('touchstart', (event) => {
-    if (event.touches.length !== 1) { start = null; return; }
-    const touch = event.touches[0];
-    const edge = 28;
-    if (touch.clientX < edge || touch.clientX > window.innerWidth - edge || blocked(event.target)) { start = null; return; }
-    start = { x: touch.clientX, y: touch.clientY, time: Date.now() };
-  }, { passive: true });
-
-  document.addEventListener('touchend', (event) => {
-    if (!start) return;
-    const touch = event.changedTouches[0];
-    const dx = touch.clientX - start.x;
-    const dy = touch.clientY - start.y;
-    const elapsed = Date.now() - start.time;
-    start = null;
-    if (Math.abs(dx) < 70 || Math.abs(dx) < Math.abs(dy) * 1.6 || elapsed > 800) return;
-    const mode = currentMode();
-    if (dx > 0 && mode !== 'discord') navigate('/discord');
-    else if (dx < 0 && mode !== 'minecraft') navigate('/minecraft');
-  }, { passive: true });
-
-  document.addEventListener('touchcancel', () => { start = null; }, { passive: true });
-}
-
-function skinForPath(path) {
-  return path === '/discord' || path.startsWith('/discord/') ? 'discord' : 'main';
-}
-
-function navigate(path) {
-  const [pathname, query = ''] = path.split('?');
-  const normalized = stripSiteBasePath(pathname);
-  const fromSkin = document.body.dataset.skin || 'main';
-  const toSkin = skinForPath(normalized);
-
-  const go = () => {
-    if (window.location.protocol === 'file:') {
-      const next = `index.html?route=${encodeURIComponent(normalized + (query ? `?${query}` : ''))}`;
-      window.history.pushState({}, '', next);
-    } else {
-      window.history.pushState({}, '', buildSitePath(normalized, query));
-    }
-    closeMobileNav();
-    renderRoute(true);
-  };
-
-  /* Ao trocar de área, a página atual desliza para um lado e a nova entra pelo outro. */
-  const modeChange = (fromSkin === 'discord') !== (toSkin === 'discord');
-  if (!modeChange || reducedMotion() || !app) {
-    go();
-    return;
-  }
-
-  const toDiscord = toSkin === 'discord';
-  app.classList.add(toDiscord ? 'is-leaving-right' : 'is-leaving-left');
-  window.setTimeout(() => {
-    app.classList.remove('is-leaving-left', 'is-leaving-right');
-    app.dataset.enter = toDiscord ? 'left' : 'right';
-    go();
-    window.setTimeout(() => { delete app.dataset.enter; }, 700);
-  }, 230);
-}
-
 function renderRoute(shouldScroll) {
   const location = getLocation();
   const path = location.pathname;
@@ -468,13 +390,9 @@ function markImageMissing(image) {
 }
 
 function updateActiveNavigation(path) {
-  let active = 'home';
-  let mode = 'none';
-  if (path.startsWith('/discord')) { active = 'discord'; mode = 'discord'; }
-  else if (path.startsWith('/minecraft') || path.startsWith('/projects') || path === '/services') { active = 'minecraft'; mode = 'minecraft'; }
-  else if (path === '/about') { active = 'about'; mode = lastMode; }
-  else if (path === '/contact') { active = 'contact'; mode = lastMode; }
-  if (mode === 'discord' || mode === 'minecraft') lastMode = mode;
+  const mode = modeOfPath(path);
+  let active = mode;
+  if (mode === 'home') active = path === '/about' ? 'about' : (path === '/contact' ? 'contact' : 'home');
 
   document.querySelectorAll('[data-nav-link]').forEach((link) => {
     const isActive = link.dataset.navLink === active;
@@ -488,7 +406,7 @@ function updateActiveNavigation(path) {
     switchEl.dataset.active = mode;
     switchEl.querySelectorAll('[data-mode]').forEach((option) => {
       option.classList.toggle('is-active', option.dataset.mode === mode);
-      if (option.dataset.mode === active) option.setAttribute('aria-current', 'page');
+      if (option.dataset.mode === mode) option.setAttribute('aria-current', 'page');
       else option.removeAttribute('aria-current');
     });
   }
@@ -1017,6 +935,152 @@ function renderDiscord() {
       ${renderCtaPanel()}
     </div>
   `;
+}
+
+function modeOfPath(path) {
+  if (path === '/discord' || path.startsWith('/discord/')) return 'discord';
+  if (path === '/minecraft' || path.startsWith('/projects') || path === '/services') return 'minecraft';
+  return 'home';
+}
+
+function currentMode() {
+  return modeOfPath(getLocation().pathname);
+}
+
+function navigate(path) {
+  const [pathname, query = ''] = path.split('?');
+  const normalized = stripSiteBasePath(pathname);
+  const fromMode = currentMode();
+  const toMode = modeOfPath(normalized);
+
+  const go = () => {
+    if (window.location.protocol === 'file:') {
+      const next = `index.html?route=${encodeURIComponent(normalized + (query ? `?${query}` : ''))}`;
+      window.history.pushState({}, '', next);
+    } else {
+      window.history.pushState({}, '', buildSitePath(normalized, query));
+    }
+    closeMobileNav();
+    renderRoute(true);
+  };
+
+  if (fromMode === toMode || reducedMotion() || !app) {
+    go();
+    return;
+  }
+
+  /* A bolinha do seletor já acompanha, e a página desliza no sentido do movimento. */
+  const switchEl = document.querySelector('[data-mode-switch]');
+  if (switchEl) switchEl.dataset.active = toMode;
+  const forward = MODE_ORDER.indexOf(toMode) > MODE_ORDER.indexOf(fromMode);
+  app.classList.add(forward ? 'is-leaving-left' : 'is-leaving-right');
+  window.setTimeout(() => {
+    app.classList.remove('is-leaving-left', 'is-leaving-right');
+    app.dataset.enter = forward ? 'right' : 'left';
+    go();
+    window.setTimeout(() => { delete app.dataset.enter; }, 700);
+  }, 230);
+}
+
+function stepMode(direction) {
+  const index = MODE_ORDER.indexOf(currentMode()) + direction;
+  if (index < 0 || index >= MODE_ORDER.length) return;
+  navigate(MODE_ROUTE[MODE_ORDER[index]]);
+}
+
+/* Arrastar a tela: dedo para a esquerda avança (Minecraft > Início > Discord), para a direita volta. */
+function setupSwipe() {
+  let start = null;
+  const blocked = (target) => {
+    if (document.querySelector('[data-lightbox]:not([hidden])')) return true;
+    if (mobileNav && mobileNav.classList.contains('is-open')) return true;
+    for (let node = target; node && node !== document.body; node = node.parentElement) {
+      const tag = node.tagName;
+      if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || tag === 'VIDEO' || tag === 'IFRAME') return true;
+      if (node.matches && node.matches('[data-mode-switch]')) return true;
+      if (node.scrollWidth > node.clientWidth + 4 && ['auto', 'scroll'].includes(getComputedStyle(node).overflowX)) return true;
+    }
+    return false;
+  };
+
+  document.addEventListener('touchstart', (event) => {
+    if (event.touches.length !== 1) { start = null; return; }
+    const touch = event.touches[0];
+    const edge = 28;
+    if (touch.clientX < edge || touch.clientX > window.innerWidth - edge || blocked(event.target)) { start = null; return; }
+    start = { x: touch.clientX, y: touch.clientY, time: Date.now() };
+  }, { passive: true });
+
+  document.addEventListener('touchend', (event) => {
+    if (!start) return;
+    const touch = event.changedTouches[0];
+    const dx = touch.clientX - start.x;
+    const dy = touch.clientY - start.y;
+    const elapsed = Date.now() - start.time;
+    start = null;
+    if (Math.abs(dx) < 70 || Math.abs(dx) < Math.abs(dy) * 1.6 || elapsed > 800) return;
+    stepMode(dx < 0 ? 1 : -1);
+  }, { passive: true });
+
+  document.addEventListener('touchcancel', () => { start = null; }, { passive: true });
+}
+
+/* Também dá para arrastar a própria bolinha do seletor até a área desejada. */
+function setupModeSwitchDrag() {
+  const switchEl = document.querySelector('[data-mode-switch]');
+  const thumb = switchEl ? switchEl.querySelector('.mode-thumb') : null;
+  if (!switchEl || !thumb) return;
+  let drag = null;
+  let suppressClick = false;
+  const segment = (rect) => (rect.width - 8) / 3;
+
+  switchEl.addEventListener('pointerdown', (event) => {
+    if (event.pointerType === 'mouse' && event.button !== 0) return;
+    const rect = switchEl.getBoundingClientRect();
+    drag = { startX: event.clientX, rect, moved: false, startIndex: Math.max(0, MODE_ORDER.indexOf(switchEl.dataset.active)), x: 0 };
+  });
+
+  switchEl.addEventListener('pointermove', (event) => {
+    if (!drag) return;
+    const dx = event.clientX - drag.startX;
+    if (!drag.moved && Math.abs(dx) > 6) {
+      drag.moved = true;
+      switchEl.classList.add('is-dragging');
+      try { switchEl.setPointerCapture(event.pointerId); } catch (error) { /* ignorado */ }
+    }
+    if (drag.moved) {
+      const size = segment(drag.rect);
+      drag.x = Math.max(0, Math.min(size * 2, drag.startIndex * size + dx));
+      thumb.style.transform = `translateX(${drag.x}px)`;
+    }
+  });
+
+  const finish = () => {
+    if (!drag) return;
+    const state = drag;
+    drag = null;
+    if (!state.moved) return;
+    suppressClick = true;
+    window.setTimeout(() => { suppressClick = false; }, 0);
+    switchEl.classList.remove('is-dragging');
+    const index = Math.max(0, Math.min(2, Math.round(state.x / segment(state.rect))));
+    thumb.style.transform = '';
+    const target = MODE_ORDER[index];
+    if (target === currentMode()) {
+      switchEl.dataset.active = target;
+    } else {
+      navigate(MODE_ROUTE[target]);
+    }
+  };
+  switchEl.addEventListener('dragstart', (event) => event.preventDefault());
+  switchEl.addEventListener('pointerup', finish);
+  switchEl.addEventListener('pointercancel', finish);
+  switchEl.addEventListener('click', (event) => {
+    if (suppressClick) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+  }, true);
 }
 
 function handleClick(event) {

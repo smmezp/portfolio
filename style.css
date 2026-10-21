@@ -663,7 +663,6 @@ html[data-theme='dark'] .theme-toggle .icon-moon { display: none; }
 
 /* ajustes finos */
 .door-tile .image-frame { display: block; width: 100%; }
-.hero-hub h1 { font-size: clamp(2.3rem, 8.4vw, 4rem); }
 
 /* =====================================================================
  * Cabeçalho com seletor Minecraft / Discord no centro
@@ -679,27 +678,26 @@ html[data-theme='dark'] .theme-toggle .icon-moon { display: none; }
 .mode-switch-wrap { grid-area: mode; display: flex; justify-content: center; overflow: hidden; transition: opacity .25s ease, visibility .25s ease; }
 
 .mode-switch {
-  position: relative; isolation: isolate; display: inline-grid; grid-template-columns: 1fr 1fr; padding: 4px;
-  background: var(--surface); border: 1.5px solid var(--edge); border-radius: 999px; box-shadow: 0 3px 0 var(--edge);
+  position: relative; isolation: isolate; display: inline-grid; grid-template-columns: repeat(3, 1fr); padding: 4px;
+  background: var(--surface); border: 1.5px solid var(--edge); border-radius: 999px; touch-action: pan-y; user-select: none; -webkit-user-select: none;
 }
 .mode-option {
-  position: relative; z-index: 1; display: inline-flex; align-items: center; justify-content: center; gap: 8px;
-  min-width: 124px; height: 38px; padding: 0 16px; border-radius: 999px; font-weight: 800; font-size: 14.5px;
-  color: var(--ink-2); transition: color .3s ease;
+  position: relative; z-index: 1; display: inline-grid; place-items: center; min-width: 64px; height: 40px; padding: 0 12px;
+  border-radius: 999px; color: var(--ink-2); transition: color .3s ease; -webkit-tap-highlight-color: transparent;
 }
-.mode-option .icon { width: 17px; height: 17px; transition: transform .4s cubic-bezier(.34, 1.56, .64, 1); }
+.mode-option .icon { width: 20px; height: 20px; transition: transform .4s cubic-bezier(.34, 1.56, .64, 1); pointer-events: none; }
 .mode-option:hover { color: var(--ink); }
 .mode-option.is-active, .mode-option.is-active:hover { color: #fff; }
-.mode-option.is-active .icon { transform: scale(1.18) rotate(-8deg); }
+.mode-option.is-active .icon { transform: scale(1.18); }
 .mode-thumb {
-  position: absolute; z-index: 0; top: 4px; bottom: 4px; left: 4px; width: calc(50% - 4px); border-radius: 999px;
-  background: #2f8a3c; opacity: 0; transform: translateX(0);
-  transition: transform .55s cubic-bezier(.34, 1.45, .64, 1), background-color .4s ease, opacity .3s ease, box-shadow .4s ease;
+  position: absolute; z-index: 0; top: 4px; bottom: 4px; left: 4px; width: calc((100% - 8px) / 3); border-radius: 999px;
+  background: #2f62f2; transform: translateX(0);
+  transition: transform .55s cubic-bezier(.34, 1.45, .64, 1), background-color .4s ease, box-shadow .4s ease;
 }
-.mode-switch[data-active='minecraft'] .mode-thumb { opacity: 1; transform: translateX(0); background: #2f8a3c; box-shadow: 0 0 0 3px rgba(47, 138, 60, .22); }
-.mode-switch[data-active='discord'] .mode-thumb { opacity: 1; transform: translateX(100%); background: #5865f2; box-shadow: 0 0 0 3px rgba(88, 101, 242, .26); }
-.mode-switch[data-active='none'] { animation: modeNudge 3.2s ease-in-out 1.2s 2; }
-@keyframes modeNudge { 0%, 100% { transform: translateY(0); } 8% { transform: translateY(-3px); } 16% { transform: translateY(0); } }
+.mode-switch.is-dragging .mode-thumb { transition: background-color .2s ease; }
+.mode-switch[data-active='minecraft'] .mode-thumb { transform: translateX(0); background: #2f8a3c; box-shadow: 0 0 0 3px rgba(47, 138, 60, .22); }
+.mode-switch[data-active='home'] .mode-thumb { transform: translateX(100%); background: #2f62f2; box-shadow: 0 0 0 3px rgba(47, 98, 242, .22); }
+.mode-switch[data-active='discord'] .mode-thumb { transform: translateX(200%); background: #5865f2; box-shadow: 0 0 0 3px rgba(88, 101, 242, .26); }
 
 @media (max-width: 1159px) {
   .site-header.is-compact { grid-template-rows: 56px 0; row-gap: 0; padding-bottom: 4px; }
@@ -713,7 +711,7 @@ html[data-theme='dark'] .theme-toggle .icon-moon { display: none; }
   .mode-switch-wrap { overflow: visible; }
 }
 @media (max-width: 380px) {
-  .mode-option { min-width: 104px; padding: 0 12px; font-size: 13.5px; }
+  .mode-option { min-width: 56px; padding: 0 8px; }
 }
 
 /* Troca animada de área (Minecraft <-> Discord): movimento lateral */
@@ -734,14 +732,8 @@ body, .site-header, .site-footer, .tool-button, .lang-switch, .mode-switch { tra
  * com a cara do Discord
  * ===================================================================== */
 
-body[data-skin='discord'] {
-  --font-display: 'Noto Sans', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
-  --font-body: 'Noto Sans', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
-  --radius: 14px;
-  --brand: #5865f2;
-  --cta: #5865f2;
-  font-family: var(--font-body);
-}
+/* Só as cores mudam: fontes, tamanhos, botões e cabeçalho são idênticos ao Minecraft. */
+body[data-skin='discord'] { --brand: #5865f2; --cta: #5865f2; }
 html[data-theme='dark'] body[data-skin='discord'] {
   --paper: #1e1f22; --paper-2: #2b2d31; --surface: #2b2d31;
   --ink: #f2f3f5; --ink-2: #dbdee1; --ink-3: #949ba4;
@@ -754,43 +746,18 @@ html[data-theme='light'] body[data-skin='discord'] {
   --line: #dcdee3; --edge: #dcdee3; --sky: #e3e5ff; --brand-dark: #4752c4;
   --dc-bg: #ffffff; --dc-embed: #f2f3f5; --dc-hover: #ebedef; --dc-link: #006ce7; --dc-soft: rgba(88, 101, 242, .12); --dc-soft-ink: #4752c4;
 }
-body[data-skin='discord'] h1, body[data-skin='discord'] h2, body[data-skin='discord'] h3 { letter-spacing: -0.012em; font-weight: 800; }
 body[data-skin='discord'] .mark { background: linear-gradient(transparent 62%, rgba(88, 101, 242, .5) 62%, rgba(88, 101, 242, .5) 92%, transparent 92%); }
-body[data-skin='discord'] .eyebrow { font-family: var(--font-body); font-weight: 700; font-size: 14px; letter-spacing: 0; text-transform: lowercase; color: var(--ink-3); }
-body[data-skin='discord'] .eyebrow::before { content: '#'; width: auto; height: auto; background: none; font-size: 20px; line-height: 1; font-weight: 500; color: var(--ink-3); }
-body[data-skin='discord'] .status-pill i, body[data-skin='discord'] .footer-status i { background: #23a55a; box-shadow: 0 0 0 4px rgba(35, 165, 90, .22); }
-body[data-skin='discord'] .status-pill { border-radius: 8px; }
-body[data-skin='discord'] .button { border-radius: 8px; border-color: transparent; font-family: var(--font-body); font-weight: 700; }
-body[data-skin='discord'] .button:hover { transform: none; box-shadow: none; }
+body[data-skin='discord'] .eyebrow::before { content: '#'; width: auto; height: auto; background: none; font-size: 15px; line-height: 1; }
 body[data-skin='discord'] .button-primary { background: #5865f2; color: #fff; }
 body[data-skin='discord'] .button-primary:hover { background: #4752c4; color: #fff; }
-body[data-skin='discord'] .button-ghost { background: var(--paper-2); color: var(--ink); }
-body[data-skin='discord'] .button-ghost:hover { background: var(--dc-hover); }
 body[data-skin='discord'] .button-light { background: #fff; color: #3b45b8; }
-body[data-skin='discord'] .text-link { color: var(--dc-link); }
-body[data-skin='discord'] .lang-switch button.is-active { background: #5865f2; color: #fff; }
-body[data-skin='discord'] .tool-button, body[data-skin='discord'] .lang-switch, body[data-skin='discord'] .menu-toggle { border-radius: 10px; }
-body[data-skin='discord'] .desktop-nav a.is-active { background: var(--dc-soft); color: var(--dc-soft-ink); }
-body[data-skin='discord'] .mobile-nav a.is-active { color: var(--dc-soft-ink); }
-body[data-skin='discord'] .mode-switch { box-shadow: none; }
-body[data-skin='discord'] .site-footer { border-top-width: 1px; border-top-color: var(--line); }
-body[data-skin='discord'] .chip { border-radius: 6px; background: var(--paper-2); border-color: transparent; }
-body[data-skin='discord'] .step-number { display: inline-grid; place-items: center; width: 34px; height: 34px; border-radius: 50%; background: #5865f2; color: #fff; font-family: var(--font-body); font-weight: 800; font-size: 14px; }
-body[data-skin='discord'] .process-step { border-radius: 14px; border-color: var(--line); }
-body[data-skin='discord'] .project-card, body[data-skin='discord'] .side-card, body[data-skin='discord'] .details-card { border: 1px solid var(--line); border-radius: 14px; }
-body[data-skin='discord'] .project-card-media { border-bottom: 1px solid var(--line); }
-body[data-skin='discord'] .project-card:hover { transform: translateY(-4px); box-shadow: 0 16px 30px -18px rgba(0, 0, 0, .55); border-color: #5865f2; }
-body[data-skin='discord'] .detail-visual, body[data-skin='discord'] .gallery-item, body[data-skin='discord'] .video-frame { border: 1px solid var(--line); border-radius: 14px; box-shadow: none; }
-body[data-skin='discord'] .check-list li::before { background-color: #23a55a; border-radius: 50%; }
-body[data-skin='discord'] .cta-panel { border: 0; border-radius: 22px; box-shadow: none; background: linear-gradient(135deg, #5865f2, #4752c4); }
 body[data-skin='discord'] .badge-live { background: rgba(35, 165, 90, .18); color: #23a55a; }
-body[data-skin='discord'] .detail-meta dt, body[data-skin='discord'] .side-label, body[data-skin='discord'] .toolbelt-label, body[data-skin='discord'] .project-card-price { font-family: var(--font-body); font-weight: 700; letter-spacing: .04em; }
 
 .dc-hash { color: var(--ink-3); font-weight: 500; }
 .dc-hero { align-items: center; }
 
 /* "janelas" de exemplo na capa */
-.dc-collage { position: relative; width: 100%; max-width: 560px; margin: 0 auto; aspect-ratio: 1 / 1.08; }
+.dc-collage { font-family: 'Noto Sans', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; position: relative; width: 100%; max-width: 560px; margin: 0 auto; aspect-ratio: 1 / 1.08; }
 .dc-window {
   position: absolute; overflow: hidden; background: var(--dc-bg); color: var(--ink-2); border: 1px solid var(--line); border-radius: 14px;
   box-shadow: 0 22px 44px -22px rgba(0, 0, 0, .55); animation: dcFloat 6s ease-in-out infinite;
@@ -877,7 +844,6 @@ body[data-skin='discord'] .detail-meta dt, body[data-skin='discord'] .side-label
 .desktop-nav { gap: 2px; }
 .desktop-nav a:not(.button) { padding: 8px 11px; }
 .header-left { gap: 16px; }
-.dc-hero h1 { font-size: clamp(2.3rem, 8.2vw, 3.9rem); }
 
 
 /* ajustes: seletor sem corte, logo maior */
@@ -905,3 +871,9 @@ body[data-skin='discord'] .lang-switch button.is-active { background: var(--dc-s
   .tool-button, .menu-toggle { width: 40px; }
   .wordmark-text { font-size: 1.2rem; }
 }
+
+/* Título da capa igual em todas as áreas */
+.hero h1 { font-size: clamp(2.4rem, 8.4vw, 4rem); }
+
+.mode-option { -webkit-user-drag: none; user-drag: none; }
+.mode-switch.is-dragging { cursor: grabbing; }
