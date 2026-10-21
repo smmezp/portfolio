@@ -42,7 +42,7 @@
     }
   ],
   images: {
-    hero: 'assets/projects/heavenchat/hero.jpg',
+    hero: 'assets/projects/heavenchat/hero.png',
     gallery: ['assets/projects/heavenchat/1.png', 'assets/projects/heavenchat/2.png', 'assets/projects/heavenchat/3.png']
   },
   videos: [],
