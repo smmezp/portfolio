@@ -43,7 +43,7 @@
     }
   ],
   images: {
-    hero: 'assets/projects/heavenlobby/hero.jpg',
+    hero: 'assets/projects/heavenlobby/hero.png',
     gallery: []
   },
   videos: [],
