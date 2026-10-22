@@ -51,6 +51,8 @@ const ICON_PATHS = {
   ticket: '<path d=\"M3 9a2 2 0 0 0 0 6v3h18v-3a2 2 0 0 1 0-6V6H3v3Z\"/><path d=\"M13 6v12\" stroke-dasharray=\"2 3\"/>',
   link: '<path d=\"M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1\"/><path d=\"M14 10a4 4 0 0 0-5.7 0l-3 3A4 4 0 0 0 11 18.7l1-1\"/>',
   users: '<circle cx=\"9\" cy=\"8\" r=\"3.5\"/><path d=\"M2.5 20c0-3.6 2.9-6 6.5-6s6.5 2.4 6.5 6\"/><path d=\"M16 5a3.5 3.5 0 0 1 0 6.5\"/><path d=\"M18 14.3c2.3.7 3.5 2.6 3.5 5.7\"/>',
+  instagram: '<rect x=\"3\" y=\"3\" width=\"18\" height=\"18\" rx=\"5\"/><circle cx=\"12\" cy=\"12\" r=\"4\"/><circle cx=\"17.5\" cy=\"6.5\" r=\"1\" fill=\"currentColor\"/>',
+  tiktok: '<path d=\"M14 3v11.5a3.5 3.5 0 1 1-3.5-3.5\"/><path d=\"M14 3c.4 2.4 2 4 4.5 4.2\"/>',
   arrow: '<path d="M5 12h14"/><path d="m13 6 6 6-6 6"/>',
   search: '<circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.5 4.5"/>',
   external: '<path d="M14 4h6v6"/><path d="m20 4-9 9"/><path d="M18 13v5a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h5"/>'
@@ -67,7 +69,8 @@ let lightboxTouchStart = null;
 
 let lang = readPref(STORAGE_LANG, ['pt', 'en'], 'pt');
 let lastScrollY = 0;
-let theme = readPref(STORAGE_THEME, ['light', 'dark'], preferredTheme());
+let themePref = readPref(STORAGE_THEME, ['system', 'light', 'dark'], 'system');
+let theme = themePref === 'system' ? preferredTheme() : themePref;
 
 function readPref(key, allowed, fallback) {
   try {
@@ -104,11 +107,73 @@ function L(value) {
 }
 
 function applyTheme(next, persist = true) {
-  theme = next === 'dark' ? 'dark' : 'light';
+  themePref = ['system', 'light', 'dark'].includes(next) ? next : 'system';
+  theme = themePref === 'system' ? preferredTheme() : themePref;
   document.documentElement.dataset.theme = theme;
+  document.documentElement.dataset.themePref = themePref;
   const meta = document.querySelector('meta[name="theme-color"]');
   if (meta) meta.setAttribute('content', theme === 'dark' ? '#0f1424' : '#f5f1e8');
-  if (persist) writePref(STORAGE_THEME, theme);
+  if (persist) writePref(STORAGE_THEME, themePref);
+  document.querySelectorAll('[data-theme-option]').forEach((option) => {
+    const selected = option.dataset.themeOption === themePref;
+    option.classList.toggle('is-selected', selected);
+    option.setAttribute('aria-checked', String(selected));
+  });
+}
+
+/* Menu "Aparência": Sistema, Claro ou Escuro. */
+function setupThemeMenu() {
+  const toggle = document.querySelector('[data-theme-toggle]');
+  const menu = document.querySelector('[data-theme-menu]');
+  if (!toggle || !menu) return;
+
+  const close = (returnFocus) => {
+    menu.hidden = true;
+    toggle.setAttribute('aria-expanded', 'false');
+    if (returnFocus) toggle.focus();
+  };
+  const open = () => {
+    menu.hidden = false;
+    toggle.setAttribute('aria-expanded', 'true');
+    const selected = menu.querySelector('[aria-checked="true"]') || menu.querySelector('[data-theme-option]');
+    if (selected) selected.focus({ preventScroll: true });
+  };
+
+  toggle.addEventListener('click', (event) => {
+    event.stopPropagation();
+    if (menu.hidden) open();
+    else close(false);
+  });
+  menu.addEventListener('click', (event) => {
+    const option = event.target.closest('[data-theme-option]');
+    if (!option) return;
+    event.stopPropagation();
+    applyTheme(option.dataset.themeOption);
+    close(true);
+  });
+  document.addEventListener('click', (event) => {
+    if (!menu.hidden && !event.target.closest('.theme-menu-wrap')) close(false);
+  });
+  document.addEventListener('keydown', (event) => {
+    if (menu.hidden) return;
+    if (event.key === 'Escape') {
+      close(true);
+    } else if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+      event.preventDefault();
+      const items = [...menu.querySelectorAll('[data-theme-option]')];
+      const index = items.indexOf(document.activeElement);
+      const step = event.key === 'ArrowDown' ? 1 : -1;
+      items[(index + step + items.length) % items.length].focus();
+    }
+  });
+
+  /* No modo "Sistema", acompanha o dispositivo quando ele troca de claro para escuro. */
+  if (window.matchMedia) {
+    const query = window.matchMedia('(prefers-color-scheme: dark)');
+    const onChange = () => { if (themePref === 'system') applyTheme('system', false); };
+    if (query.addEventListener) query.addEventListener('change', onChange);
+    else if (query.addListener) query.addListener(onChange);
+  }
 }
 
 function applyLanguage(next, persist = true, rerender = true) {
@@ -150,7 +215,8 @@ function initialize() {
   syncDiscordLinks();
   syncGithubLinks();
   handleScroll();
-  applyTheme(theme, false);
+  applyTheme(themePref, false);
+  setupThemeMenu();
   applyLanguage(lang, false, false);
   renderRoute(false);
   window.__medeirosReady = '4';
@@ -225,7 +291,7 @@ function normalizePath(path) {
 }
 
 /* Arrastar o dedo para o lado troca de área: direita = Discord, esquerda = Minecraft. */
-function renderRoute(shouldScroll) {
+function renderRoute(shouldScroll, enter) {
   const location = getLocation();
   const path = location.pathname;
   const projectMatch = path.match(/^\/projects\/([^/]+)$/);
@@ -288,6 +354,8 @@ function renderRoute(shouldScroll) {
     title = t('meta.notFoundTitle');
   }
 
+  if (enter) app.dataset.enter = enter;
+  else delete app.dataset.enter;
   document.body.dataset.skin = skin;
   app.innerHTML = markup;
   document.title = title;
@@ -302,7 +370,7 @@ function renderRoute(shouldScroll) {
   if (path === '/contact') initializeContactForm(location.query);
 
   if (shouldScroll) {
-    window.scrollTo({ top: 0, behavior: reducedMotion() ? 'auto' : 'smooth' });
+    jumpToTop();
   }
 }
 
@@ -664,6 +732,8 @@ function renderAbout() {
           <h3>${t('about.find')}</h3>
           <p class="about-handle">Discord: <strong>${escapeHTML(SITE.contact.discord)}</strong></p>
           <p class="about-handle">GitHub: <a class="text-link" href="${GITHUB_PROFILE_URL}" data-github-link target="_blank" rel="noopener noreferrer">github.com/${escapeHTML(SITE.contact.githubHandle)}</a></p>
+          <p class="about-handle">Instagram: <a class="text-link" href="${escapeHTML(SITE.contact.instagram)}" target="_blank" rel="noopener noreferrer">${escapeHTML(SITE.contact.instagramHandle)}</a></p>
+          <p class="about-handle">TikTok: <a class="text-link" href="${escapeHTML(SITE.contact.tiktok)}" target="_blank" rel="noopener noreferrer">${escapeHTML(SITE.contact.tiktokHandle)}</a></p>
           <div class="button-row">
             ${renderDiscordLink(t('common.openDiscord'), 'button button-primary button-small')}
             <a class="button button-ghost button-small" href="${GITHUB_PROFILE_URL}" data-github-link target="_blank" rel="noopener noreferrer">${icon('github')} GitHub</a>
@@ -691,7 +761,11 @@ function renderContact() {
             <div><span class="discord-label">Discord</span><strong class="discord-handle">${escapeHTML(SITE.contact.discord)}</strong></div>
             <div class="discord-actions"><button class="button button-ghost button-small" type="button" data-copy-discord>${t('contact.copy')}</button>${renderDiscordLink(t('common.openDiscord'), 'button button-primary button-small')}</div>
           </div>
-          <a class="github-line" href="${GITHUB_PROFILE_URL}" data-github-link target="_blank" rel="noopener noreferrer">${icon('github')}<span><strong>GitHub</strong> github.com/${escapeHTML(SITE.contact.githubHandle)}</span>${icon('external')}</a>
+          <div class="social-list">
+            <a class="github-line" href="${GITHUB_PROFILE_URL}" data-github-link target="_blank" rel="noopener noreferrer">${icon('github')}<span><strong>GitHub</strong> github.com/${escapeHTML(SITE.contact.githubHandle)}</span>${icon('external')}</a>
+            <a class="github-line" href="${escapeHTML(SITE.contact.instagram)}" target="_blank" rel="noopener noreferrer">${icon('instagram')}<span><strong>Instagram</strong> ${escapeHTML(SITE.contact.instagramHandle)}</span>${icon('external')}</a>
+            <a class="github-line" href="${escapeHTML(SITE.contact.tiktok)}" target="_blank" rel="noopener noreferrer">${icon('tiktok')}<span><strong>TikTok</strong> ${escapeHTML(SITE.contact.tiktokHandle)}</span>${icon('external')}</a>
+          </div>
           <ol class="steps">
             <li><strong>${t('contact.s1t')}</strong><span>${t('contact.s1')}</span></li>
             <li><strong>${t('contact.s2t')}</strong><span>${t('contact.s2')}</span></li>
@@ -702,9 +776,9 @@ function renderContact() {
           <h2>${t('contact.formTitle')}</h2>
           <p class="form-hint">${t('contact.formHint')}</p>
           <form class="commission-form" id="commissionForm">
-            <div class="field"><label for="commissionName">${t('contact.name')}</label><input id="commissionName" name="name" type="text" placeholder="${t('contact.namePh')}" autocomplete="name" required></div>
-            <div class="field"><label for="commissionDiscord">${t('contact.discordUser')}</label><input id="commissionDiscord" name="discord" type="text" placeholder="username" autocomplete="off" required></div>
-            <div class="field"><label for="commissionEmail">Email</label><input id="commissionEmail" name="email" type="email" placeholder="${t('contact.emailPh')}" autocomplete="email" required></div>
+            <div class="field"><label for="commissionName">${t('contact.name')}</label><input id="commissionName" name="name" type="text" placeholder="${t('contact.namePh')}" autocomplete="name" required><small class="field-hint">${t('contact.nameHint')}</small></div>
+            <div class="field"><label for="commissionDiscord">${t('contact.discordUser')}</label><input id="commissionDiscord" name="discord" type="text" placeholder="username" autocomplete="off" required><small class="field-hint">${t('contact.discordHint')}</small></div>
+            <div class="field"><label for="commissionEmail">Email</label><input id="commissionEmail" name="email" type="email" placeholder="${t('contact.emailPh')}" autocomplete="email" required><small class="field-hint">${t('contact.emailHint')}</small></div>
             <div class="field"><label for="commissionType">${t('contact.type')}</label><select id="commissionType" name="projectType" required><option value="" disabled selected>${t('contact.typePh')}</option>${projectOptions}</select></div>
             <div class="field"><label for="commissionBudget">${t('contact.budget')}</label><select id="commissionBudget" name="budget" required><option value="" disabled selected>${t('contact.budgetPh')}</option>${budgetOptions}</select></div>
             <div class="field field-wide"><label for="commissionDescription">${t('contact.desc')}</label><textarea id="commissionDescription" name="description" placeholder="${t('contact.descPh')}" required></textarea></div>
@@ -947,13 +1021,43 @@ function currentMode() {
   return modeOfPath(getLocation().pathname);
 }
 
+function jumpToTop() {
+  const root = document.documentElement;
+  const previous = root.style.scrollBehavior;
+  root.style.scrollBehavior = 'auto';
+  window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+  window.requestAnimationFrame(() => { root.style.scrollBehavior = previous; });
+}
+
+function refreshCurrent(path) {
+  closeMobileNav();
+  if (path === '/') {
+    window.scrollTo({ top: 0, behavior: reducedMotion() ? 'auto' : 'smooth' });
+    return;
+  }
+  jumpToTop();
+  if (reducedMotion() || !app) {
+    renderRoute(false);
+    return;
+  }
+  renderRoute(false, 'refresh');
+}
+
 function navigate(path) {
   const [pathname, query = ''] = path.split('?');
   const normalized = stripSiteBasePath(pathname);
+  const here = getLocation();
+
+  /* Clicar de novo na página em que você já está: atualiza (a Início só volta ao topo). */
+  if (normalized === here.pathname && query === here.query.toString()) {
+    refreshCurrent(normalized);
+    return;
+  }
+
   const fromMode = currentMode();
   const toMode = modeOfPath(normalized);
 
-  const go = () => {
+  const go = (enter) => {
     if (window.location.protocol === 'file:') {
       const next = `index.html?route=${encodeURIComponent(normalized + (query ? `?${query}` : ''))}`;
       window.history.pushState({}, '', next);
@@ -961,7 +1065,7 @@ function navigate(path) {
       window.history.pushState({}, '', buildSitePath(normalized, query));
     }
     closeMobileNav();
-    renderRoute(true);
+    renderRoute(true, enter);
   };
 
   if (fromMode === toMode || reducedMotion() || !app) {
@@ -970,15 +1074,16 @@ function navigate(path) {
   }
 
   /* A bolinha do seletor já acompanha, e a página desliza no sentido do movimento. */
+  const root = document.documentElement;
+  root.classList.add('is-switching');
+  window.setTimeout(() => root.classList.remove('is-switching'), 900);
   const switchEl = document.querySelector('[data-mode-switch]');
   if (switchEl) switchEl.dataset.active = toMode;
   const forward = MODE_ORDER.indexOf(toMode) > MODE_ORDER.indexOf(fromMode);
   app.classList.add(forward ? 'is-leaving-left' : 'is-leaving-right');
   window.setTimeout(() => {
     app.classList.remove('is-leaving-left', 'is-leaving-right');
-    app.dataset.enter = forward ? 'right' : 'left';
-    go();
-    window.setTimeout(() => { delete app.dataset.enter; }, 700);
+    go(forward ? 'right' : 'left');
   }, 230);
 }
 
@@ -1087,11 +1192,6 @@ function handleClick(event) {
   const langButton = event.target.closest('[data-lang]');
   if (langButton) {
     applyLanguage(langButton.dataset.lang);
-    return;
-  }
-
-  if (event.target.closest('[data-theme-toggle]')) {
-    applyTheme(theme === 'dark' ? 'light' : 'dark');
     return;
   }
 
@@ -1249,7 +1349,7 @@ function initializeContactForm(query) {
 
 function setupReveal(scope = document) {
   const elements = scope.querySelectorAll ? scope.querySelectorAll('.reveal:not(.is-visible)') : document.querySelectorAll('.reveal:not(.is-visible)');
-  if (reducedMotion() || !('IntersectionObserver' in window)) {
+  if (reducedMotion() || !('IntersectionObserver' in window) || (app && app.dataset.enter)) {
     elements.forEach((element) => element.classList.add('is-visible'));
     return;
   }
