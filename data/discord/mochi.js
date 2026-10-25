@@ -71,7 +71,7 @@
     gallery: []
   },
 
-  videos: [],
+  videos: ['assets/projects/mochi/hero.png'],
 
   links: {
     download: '',
