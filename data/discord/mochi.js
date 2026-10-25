@@ -11,21 +11,21 @@
  * Este arquivo NÃO é carregado pelo site (o nome começa com "_").
  */
 (window.MEDEIROS_PRODUCTS = window.MEDEIROS_PRODUCTS || []).push({
-  id: 'meu-bot',
-  slug: 'meu-bot',
+  id: 'mochi',
+  slug: 'mochi',
   brand: 'discord',
-  name: 'Nome do Bot',
+  name: 'Mochi',
   category: 'discord-bots',
   categoryLabel: { pt: 'Bot de Discord', en: 'Discord Bot' },
   status: 'development', // 'released' ou 'development'
-  price: { pt: 'Sob consulta', en: 'On request' },
+  price: { pt: 'Incomprável', en: 'Unbuyable' },
   date: '2026',
   technologies: ['Discord.js', 'JavaScript'],
-  shortDescription: { pt: 'Uma frase sobre o bot.', en: 'One sentence about the bot.' },
-  fullDescription: { pt: 'Descrição completa do bot.', en: 'Full description of the bot.' },
-  features: { pt: ['Recurso 1', 'Recurso 2'], en: ['Feature 1', 'Feature 2'] },
+  shortDescription: { pt: 'Um bot completo para o meu portfólio.', en: 'A complete bot for my portfolio.' },
+  fullDescription: { pt: 'Um bot com mudança de linguagem por cargo, logs, tickets, e muito mais para a melhor experiência do cliente na hora de comprar.', en: 'A bot with role-based language switching, logs, tickets, and much more to provide the best customer experience when making a purchase.' },
+  features: { pt: ['Ticket', 'Registro', 'Mudança de Linguagem'], en: ['Ticket', 'Logs', 'Language change'] },
   details: [],
-  images: { hero: '' /* ex.: 'img-meu-bot-hero.jpg' */, gallery: [] },
+  images: { hero: 'assets/projects/mochi/hero.png' , gallery: [] },
   videos: [],
   links: { download: '', invite: '' },
   github: ''
