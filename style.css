@@ -929,3 +929,40 @@ html.is-switching .lang-switch, html.is-switching .mode-switch { transition: non
 .theme-check .icon { width: 20px; height: 20px; stroke-width: 2.6; }
 .theme-option.is-selected .theme-check { opacity: 1; }
 @media (prefers-reduced-motion: reduce) { .theme-menu { animation: none; } }
+
+
+/* =====================================================================
+ * Página de termos de serviço
+ * ===================================================================== */
+.terms-updated { margin-top: 16px; }
+.terms-layout { display: grid; gap: 28px; align-items: start; padding-bottom: 8px; }
+.terms-toc { padding: 18px; background: var(--surface); border: 1.5px solid var(--edge); border-radius: var(--radius); }
+.terms-toc ol { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 2px; margin-top: 10px; }
+.terms-toc a { display: flex; gap: 10px; align-items: baseline; padding: 8px 10px; border-radius: 10px; font-weight: 600; font-size: 15px; color: var(--ink-2); transition: background-color .15s ease, color .15s ease; }
+.terms-toc a span { font-family: var(--font-pixel); font-size: 11px; color: var(--brand-dark); }
+.terms-toc a:hover { background: var(--paper-2); color: var(--ink); }
+.terms-intro { max-width: 68ch; margin-bottom: 8px; font-size: 1.15rem; color: var(--ink-2); }
+.term { display: grid; grid-template-columns: 40px minmax(0, 1fr); gap: 4px 14px; padding: 26px 0; border-top: 1px solid var(--line); scroll-margin-top: 150px; }
+.term:first-of-type { border-top: 1.5px solid var(--edge); }
+.term-number { padding-top: 9px; font-family: var(--font-pixel); font-size: 14px; color: var(--brand-dark); }
+.term h2 { margin-bottom: 8px; font-size: 1.5rem; letter-spacing: -0.02em; }
+.term p { max-width: 68ch; color: var(--ink-2); }
+.term p + p { margin-top: 10px; }
+.terms-help {
+  display: grid; gap: 18px; align-items: center; margin-top: 18px; padding: 26px; background: var(--surface);
+  border: 1.5px solid var(--edge); border-radius: 20px; box-shadow: 5px 5px 0 var(--edge);
+}
+.terms-help h2 { margin-bottom: 6px; font-size: 1.5rem; }
+.terms-help p { color: var(--ink-2); }
+.terms-help .button { width: fit-content; }
+
+@media (min-width: 760px) {
+  .terms-help { grid-template-columns: 1fr auto; padding: 30px 34px; }
+  .term { grid-template-columns: 56px minmax(0, 1fr); }
+}
+@media (min-width: 1020px) {
+  .terms-layout { grid-template-columns: 270px minmax(0, 1fr); gap: 56px; }
+  .terms-toc { position: sticky; top: calc(var(--header-h) + 24px); }
+  .terms-toc ol { grid-template-columns: 1fr; }
+  .term { scroll-margin-top: calc(var(--header-h) + 24px); }
+}

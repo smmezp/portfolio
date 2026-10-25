@@ -20,6 +20,7 @@ window.MEDEIROS_I18N = {
       discordTitle: 'Bots de Discord — Medeiros', discordDesc: 'Bots de Discord sob medida: moderação, tickets, integração com Minecraft, comandos personalizados e mais.',
       aboutTitle: 'Sobre — Medeiros', aboutDesc: 'Conheça o Medeiros, desenvolvedor de configurações, plugins e bots fáceis de manter.',
       contactTitle: 'Contato — Medeiros', contactDesc: 'Conte ao Medeiros o que o seu servidor de Minecraft ou comunidade de Discord precisa.',
+      termsTitle: 'Termos de serviço — Medeiros', termsDesc: 'Regras de pedidos, pagamentos, reembolsos, revisões, entrega e mais para os serviços do Medeiros.',
       notFoundTitle: 'Página não encontrada — Medeiros'
     },
     common: {
@@ -106,7 +107,14 @@ window.MEDEIROS_I18N = {
       project: 'Plugin não encontrado', projectText: 'Este plugin não está no catálogo atual.',
       product: 'Bot não encontrado', productText: 'Este bot não está no catálogo atual.'
     },
-    footer: { tagline: 'Configuração e plugins para Minecraft, e bots de Discord.' },
+    footer: { tagline: 'Configuração e plugins para Minecraft, e bots de Discord.', terms: 'Termos de serviço' },
+    terms: {
+      eyebrow: 'Termos', title: 'Termos de serviço',
+      lede: 'Como funcionam os pedidos: preço, pagamento, reembolsos, revisões, entrega e mais.',
+      updated: 'Última atualização', toc: 'Nesta página',
+      helpTitle: 'Ficou com alguma dúvida?', helpText: 'Fale comigo antes de pedir. Abra um ticket no Discord e a gente conversa.', helpCta: 'Abrir ticket no Discord',
+      missing: 'Não consegui carregar o texto dos termos. Confira se o arquivo data/terms.js foi enviado.'
+    },
     dc: {
       h1a: 'Bots de Discord', h1b: 'sob medida', h1c: 'para a sua comunidade.',
       lede: 'Moderação, tickets, integração com o seu servidor de Minecraft e comandos feitos do jeito que a sua comunidade funciona. Nada de bot genérico.',
@@ -147,6 +155,7 @@ window.MEDEIROS_I18N = {
       discordTitle: 'Discord bots — Medeiros', discordDesc: 'Tailor-made Discord bots: moderation, tickets, Minecraft integration, custom commands and more.',
       aboutTitle: 'About — Medeiros', aboutDesc: 'Meet Medeiros, a developer of configurations, plugins and bots that are easy to maintain.',
       contactTitle: 'Contact — Medeiros', contactDesc: 'Tell Medeiros what your Minecraft server or Discord community needs.',
+      termsTitle: 'Terms of Service — Medeiros', termsDesc: 'Rules for orders, payments, refunds, revisions, delivery and more for Medeiros’ services.',
       notFoundTitle: 'Page not found — Medeiros'
     },
     common: {
@@ -233,7 +242,14 @@ window.MEDEIROS_I18N = {
       project: 'Plugin not found', projectText: 'This plugin is not in the current catalog.',
       product: 'Bot not found', productText: 'This bot is not in the current catalog.'
     },
-    footer: { tagline: 'Minecraft configuration and plugins, and Discord bots.' },
+    footer: { tagline: 'Minecraft configuration and plugins, and Discord bots.', terms: 'Terms of Service' },
+    terms: {
+      eyebrow: 'Terms', title: 'Terms of Service',
+      lede: 'How orders work: pricing, payment, refunds, revisions, delivery and more.',
+      updated: 'Last updated', toc: 'On this page',
+      helpTitle: 'Got a question?', helpText: 'Talk to me before ordering. Open a ticket on Discord and we’ll chat.', helpCta: 'Open a ticket on Discord',
+      missing: 'I couldn’t load the terms text. Check that the file data/terms.js was uploaded.'
+    },
     dc: {
       h1a: 'Tailor-made', h1b: 'Discord bots', h1c: 'for your community.',
       lede: 'Moderation, tickets, integration with your Minecraft server and commands built the way your community works. No generic bots.',

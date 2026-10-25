@@ -18,6 +18,7 @@ if (!window.MEDEIROS_I18N || !window.MEDEIROS_SITE) {
 
 const SITE = window.MEDEIROS_SITE;
 const I18N = window.MEDEIROS_I18N;
+const TERMS = window.MEDEIROS_TERMS || null;
 const ALL_PRODUCTS = (window.MEDEIROS_PRODUCTS || []).filter((product) => product && product.id !== 'meu-bot' && product.name !== 'Nome do Bot');
 const PROJECTS = ALL_PRODUCTS.filter((product) => product.brand !== 'discord');
 const DISCORD_PRODUCTS = ALL_PRODUCTS.filter((product) => product.brand === 'discord');
@@ -345,6 +346,10 @@ function renderRoute(shouldScroll, enter) {
     markup = renderAbout();
     title = t('meta.aboutTitle');
     description = t('meta.aboutDesc');
+  } else if (path === '/terms') {
+    markup = renderTerms();
+    title = t('meta.termsTitle');
+    description = t('meta.termsDesc');
   } else if (path === '/contact') {
     markup = renderContact();
     title = t('meta.contactTitle');
@@ -460,7 +465,11 @@ function markImageMissing(image) {
 function updateActiveNavigation(path) {
   const mode = modeOfPath(path);
   let active = mode;
-  if (mode === 'home') active = path === '/about' ? 'about' : (path === '/contact' ? 'contact' : 'home');
+  if (mode === 'home') {
+    if (path === '/about') active = 'about';
+    else if (path === '/contact') active = 'contact';
+    else active = path === '/' ? 'home' : '';
+  }
 
   document.querySelectorAll('[data-nav-link]').forEach((link) => {
     const isActive = link.dataset.navLink === active;
@@ -686,6 +695,49 @@ function getFilteredProjects() {
     const haystack = [project.name, L(project.shortDescription), L(project.fullDescription), ...(project.technologies || []), ...(L(project.features) || [])].join(' ').toLowerCase();
     return categoryMatch && (!query || haystack.includes(query));
   });
+}
+
+/* **negrito** simples dentro dos textos dos termos */
+function formatInline(text) {
+  return escapeHTML(text).replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+}
+
+function renderTerms() {
+  if (!TERMS) {
+    return `<div class="view not-found"><p class="eyebrow">${t('terms.eyebrow')}</p><h1>${t('terms.title')}</h1><p class="page-lede">${t('terms.missing')}</p></div>`;
+  }
+  const sections = TERMS.sections || [];
+  const number = (index) => String(index + 1).padStart(2, '0');
+  const toc = sections.map((section, index) => `<li><a href="#term-${index + 1}" data-scroll="term-${index + 1}"><span>${number(index)}</span>${escapeHTML(L(section.title))}</a></li>`).join('');
+  const articles = sections.map((section, index) => `
+    <article class="term" id="term-${index + 1}">
+      <span class="term-number">${number(index)}</span>
+      <div class="term-body">
+        <h2>${escapeHTML(L(section.title))}</h2>
+        ${(L(section.body) || []).map((paragraph) => `<p>${formatInline(paragraph)}</p>`).join('')}
+      </div>
+    </article>`).join('');
+  return `
+    <div class="view terms-view">
+      <section class="page-head reveal">
+        <p class="eyebrow">${t('terms.eyebrow')}</p>
+        <h1>${t('terms.title')}</h1>
+        <p class="page-lede">${t('terms.lede')}</p>
+        <p class="terms-updated"><span class="chip">${t('terms.updated')}: ${escapeHTML(L(TERMS.updated))}</span></p>
+      </section>
+      <section class="terms-layout reveal">
+        <nav class="terms-toc" aria-label="${t('terms.toc')}"><p class="side-label">${t('terms.toc')}</p><ol>${toc}</ol></nav>
+        <div class="terms-content">
+          <p class="terms-intro">${formatInline(L(TERMS.intro) || '')}</p>
+          ${articles}
+          <div class="terms-help">
+            <div><h2>${t('terms.helpTitle')}</h2><p>${t('terms.helpText')}</p></div>
+            ${renderDiscordLink(t('terms.helpCta'), 'button button-primary')}
+          </div>
+        </div>
+      </section>
+    </div>
+  `;
 }
 
 function renderServices() {
