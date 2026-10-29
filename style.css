@@ -966,3 +966,8 @@ html.is-switching .lang-switch, html.is-switching .mode-switch { transition: non
   .terms-toc ol { grid-template-columns: 1fr; }
   .term { scroll-margin-top: calc(var(--header-h) + 24px); }
 }
+
+/* Link "pular para o conteúdo": só aparece ao navegar pelo teclado. */
+.skip-link{position:fixed;left:12px;top:-60px;z-index:10000;padding:10px 16px;border-radius:10px;background:#111827;color:#fff;font-weight:700;text-decoration:none;transition:top .15s}
+.skip-link:focus{top:12px}
+@media (prefers-reduced-motion: reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}}

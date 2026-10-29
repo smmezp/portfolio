@@ -1,7 +1,8 @@
 {
   "name": "Medeiros — Minecraft Developer",
   "short_name": "Medeiros",
-  "description": "Custom Minecraft plugins, server systems and Discord solutions built by Medeiros.",
+  "description": "Configuração e plugins personalizados para Minecraft e bots de Discord, feitos pelo Medeiros.",
+  "lang": "pt-BR",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",

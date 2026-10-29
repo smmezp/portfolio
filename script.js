@@ -220,7 +220,7 @@ function initialize() {
   setupThemeMenu();
   applyLanguage(lang, false, false);
   renderRoute(false);
-  window.__medeirosReady = '4';
+  window.__medeirosReady = '6';
 }
 
 function getSiteBasePath() {
