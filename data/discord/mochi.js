@@ -67,7 +67,7 @@
   details: [],
 
   images: {
-    hero: 'assets/projects/mochi/hero.png',
+    hero: 'assets/projects/mochi/hero.webp',
     gallery: []
   },
 

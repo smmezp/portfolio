@@ -67,6 +67,7 @@ let lastFocusedElement = null;
 let toastTimer = null;
 let lightboxCloseTimer = null;
 let lightboxTouchStart = null;
+let termsObserver = null;
 
 let lang = readPref(STORAGE_LANG, ['pt', 'en'], 'pt');
 let lastScrollY = 0;
@@ -128,12 +129,26 @@ function setupThemeMenu() {
   const menu = document.querySelector('[data-theme-menu]');
   if (!toggle || !menu) return;
 
+  const isOpen = () => !menu.hidden && !menu.classList.contains('is-closing');
+  let closeTimer = null;
+  /* Fecha com animação: o menu só some de verdade quando a animação de saída termina. */
   const close = (returnFocus) => {
-    menu.hidden = true;
+    if (!isOpen()) return;
     toggle.setAttribute('aria-expanded', 'false');
     if (returnFocus) toggle.focus();
+    menu.classList.add('is-closing');
+    const finish = () => {
+      window.clearTimeout(closeTimer);
+      if (!menu.classList.contains('is-closing')) return;
+      menu.classList.remove('is-closing');
+      menu.hidden = true;
+    };
+    menu.addEventListener('animationend', finish, { once: true });
+    closeTimer = window.setTimeout(finish, 400);
   };
   const open = () => {
+    window.clearTimeout(closeTimer);
+    menu.classList.remove('is-closing');
     menu.hidden = false;
     toggle.setAttribute('aria-expanded', 'true');
     const selected = menu.querySelector('[aria-checked="true"]') || menu.querySelector('[data-theme-option]');
@@ -142,21 +157,21 @@ function setupThemeMenu() {
 
   toggle.addEventListener('click', (event) => {
     event.stopPropagation();
-    if (menu.hidden) open();
-    else close(false);
+    if (isOpen()) close(false);
+    else open();
   });
   menu.addEventListener('click', (event) => {
     const option = event.target.closest('[data-theme-option]');
     if (!option) return;
     event.stopPropagation();
-    applyTheme(option.dataset.themeOption);
-    close(true);
+    /* Escolher uma opção não fecha o menu; ele fecha pelo botão, clicando fora ou com Esc. */
+    switchTheme(option.dataset.themeOption, toggle);
   });
   document.addEventListener('click', (event) => {
-    if (!menu.hidden && !event.target.closest('.theme-menu-wrap')) close(false);
+    if (isOpen() && !event.target.closest('.theme-menu-wrap')) close(false);
   });
   document.addEventListener('keydown', (event) => {
-    if (menu.hidden) return;
+    if (!isOpen()) return;
     if (event.key === 'Escape') {
       close(true);
     } else if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
@@ -184,13 +199,22 @@ function applyLanguage(next, persist = true, rerender = true) {
   document.querySelectorAll('[data-i18n]').forEach((element) => { element.textContent = t(element.dataset.i18n); });
   document.querySelectorAll('[data-i18n-aria]').forEach((element) => { element.setAttribute('aria-label', t(element.dataset.i18nAria)); });
   document.querySelectorAll('[data-i18n-title]').forEach((element) => { element.setAttribute('title', t(element.dataset.i18nTitle)); });
+  document.querySelectorAll('.lang-switch').forEach((group) => {
+    const thumb = group.querySelector('.lang-thumb');
+    if (thumb && group.dataset.langActive !== lang) {
+      thumb.classList.remove('is-moving');
+      void thumb.offsetWidth; /* reinicia a animação de esticar */
+      thumb.classList.add('is-moving');
+    }
+    group.dataset.langActive = lang;
+  });
   document.querySelectorAll('[data-lang]').forEach((button) => {
     const active = button.dataset.lang === lang;
     button.classList.toggle('is-active', active);
     button.setAttribute('aria-pressed', String(active));
   });
   if (menuToggle) menuToggle.setAttribute('aria-label', t(mobileNav.classList.contains('is-open') ? 'nav.closeMenu' : 'nav.openMenu'));
-  if (rerender) renderRoute(false);
+  if (rerender) renderRoute(false, 'lang');
 }
 
 
@@ -218,9 +242,10 @@ function initialize() {
   handleScroll();
   applyTheme(themePref, false);
   setupThemeMenu();
+  setupTilt();
   applyLanguage(lang, false, false);
   renderRoute(false);
-  window.__medeirosReady = '6';
+  window.__medeirosReady = '7';
 }
 
 function getSiteBasePath() {
@@ -367,16 +392,16 @@ function renderRoute(shouldScroll, enter) {
   updateMeta(title, description);
   updateActiveNavigation(path);
   syncRouteLinks();
+  /* Rola antes de preparar as animações, para saber o que já está visível na tela. */
+  if (shouldScroll) jumpToTop();
   setupReveal();
+  setupHeadlines();
   setupImageFrames();
   syncDiscordLinks();
   syncGithubLinks();
 
   if (path === '/contact') initializeContactForm(location.query);
-
-  if (shouldScroll) {
-    jumpToTop();
-  }
+  if (path === '/terms') setupTermsSpy();
 }
 
 function updateMeta(title, description) {
@@ -515,15 +540,17 @@ function renderHub() {
             <a class="button button-discord" href="/discord" data-route>${t('hub.ctaDiscord')} ${icon('arrow')}</a>
           </div>
           <ul class="hero-facts">
-            <li><strong>${released.length}</strong> ${t(released.length === 1 ? 'hub.factPlugin' : 'hub.factPlugins')}</li>
+            ${renderReleasedFact(released.length)}
             <li><strong>${t('hub.factTestedA')}</strong> ${t('hub.factTestedB')}</li>
             <li><strong>${t('hub.factEasyA')}</strong> ${t('hub.factEasyB')}</li>
           </ul>
         </div>
         <div class="hub-doors">
           <a class="door door-minecraft" href="/minecraft" data-route>
-            <div class="door-art" aria-hidden="true">
-              ${thumbs.map((project, index) => `<span class="door-tile door-tile-${index + 1}"><span class="image-frame" data-image-frame>${renderProjectImage(project.images?.hero, project.name, { loading: 'eager' })}</span></span>`).join('')}
+            <div class="door-art${thumbs.length ? '' : ' door-art-scene'}" aria-hidden="true">
+              ${thumbs.length
+                ? thumbs.map((project, index) => `<span class="door-tile door-tile-${index + 1}"><span class="image-frame" data-image-frame>${renderProjectImage(project.images?.hero, project.name, { loading: 'eager' })}</span></span>`).join('')
+                : renderPixelScene()}
             </div>
             <div class="door-body">
               <span class="door-label">Minecraft</span>
@@ -587,15 +614,16 @@ function renderMinecraftHome() {
             ${renderDiscordLink(t('common.hire'), 'button button-ghost')}
           </div>
           <ul class="hero-facts">
-            <li><strong>${released.length}</strong> ${t(released.length === 1 ? 'hub.factPlugin' : 'hub.factPlugins')}</li>
+            ${renderReleasedFact(released.length)}
             <li><strong>${t('mc.factConfigA')}</strong> ${t('mc.factConfigB')}</li>
             <li><strong>${t('hub.factTestedA')}</strong> ${t('hub.factTestedB')}</li>
           </ul>
         </div>
 
-        <div class="hero-collage" aria-label="${t('mc.collageLabel')}">
+        <div class="hero-collage"${collage.length ? ` aria-label="${t('mc.collageLabel')}"` : ' aria-hidden="true"'}>
           <span class="pixel-cloud pixel-cloud-a" aria-hidden="true"></span>
           <span class="pixel-cloud pixel-cloud-b" aria-hidden="true"></span>
+          ${collage.length ? '' : `<div class="scene-card">${renderPixelScene()}</div>`}
           ${collage.map((project, index) => `
             <a class="collage-card collage-card-${index + 1}" href="/projects/${escapeHTML(project.slug)}" data-route>
               <div class="image-frame" data-image-frame>${renderProjectImage(project.images?.hero, `${project.name}`, { loading: 'eager' })}</div>
@@ -864,7 +892,7 @@ function renderProjectDetail(project, brand = 'minecraft') {
             <div><dt>${t('detail.status')}</dt><dd>${escapeHTML(statusLabel(project.status))}</dd></div>
           </dl>
         </div>
-        <div class="detail-visual image-frame reveal" data-image-frame>${renderProjectImage(project.images?.hero, project.name, { loading: 'eager', fetchPriority: 'high' })}</div>
+        <div class="detail-visual image-frame" data-image-frame style="view-transition-name: project-media">${renderProjectImage(project.images?.hero, project.name, { loading: 'eager', fetchPriority: 'high' })}</div>
       </section>
 
       <section class="detail-body">
@@ -889,8 +917,9 @@ function renderProjectDetail(project, brand = 'minecraft') {
 
 function renderVideoSection(project) {
   if (!Array.isArray(project.videos) || !project.videos.length) return '';
+  const poster = project.images?.hero ? ` poster="${escapeHTML(assetUrl(project.images.hero))}"` : '';
   const videos = project.videos.map((video) => {
-    if (typeof video === 'string') return `<video controls preload="metadata" src="${escapeHTML(assetUrl(video))}"></video>`;
+    if (typeof video === 'string') return `<video controls playsinline preload="metadata" src="${escapeHTML(assetUrl(video))}"${poster}></video>`;
     if (video.type === 'youtube' || video.type === 'vimeo') return `<iframe src="${escapeHTML(video.src)}" title="${escapeHTML(video.title || project.name)}" loading="lazy" allowfullscreen></iframe>`;
     return `<video controls preload="metadata" src="${escapeHTML(assetUrl(video.src || ''))}"${video.poster ? ` poster="${escapeHTML(assetUrl(video.poster))}"` : ''}></video>`;
   }).join('');
@@ -945,6 +974,51 @@ function renderProjectCard(project, brand = 'minecraft') {
       <div class="project-card-foot"><ul class="chips">${technologies.map((technology) => `<li class="chip">${escapeHTML(technology)}</li>`).join('')}</ul><span class="project-card-price">${escapeHTML(L(project.price) || '')}</span></div>
     </div>
   </a>`;
+}
+
+/* "N plugins publicados" só aparece quando há algum publicado. */
+function renderReleasedFact(count) {
+  if (!count) return '';
+  return `<li><strong>${count}</strong> ${t(count === 1 ? 'hub.factPlugin' : 'hub.factPlugins')}</li>`;
+}
+
+/*
+ * Paisagem em pixel art (nuvens + chão de grama + árvore), no mesmo estilo das
+ * nuvens do site. Ocupa a arte do Minecraft enquanto não há plugins com imagem.
+ */
+function pixelGround() {
+  const width = 96;
+  const bumps = [0, 0, 1, 1, 1, 0, 0, 0, 0, 1, 2, 2, 2, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 2, 2, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 1, 1, 0];
+  const rects = [];
+  const px = (x, y, w, h, fill) => rects.push(`<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${fill}"/>`);
+  for (let x = 0; x < width; x += 1) {
+    const top = 10 - bumps[x % bumps.length];
+    px(x, top, 1, 16 - top, '#8d5c36');
+    px(x, top, 1, 1, '#6cc04a');
+    if ((x * 7) % 5 < 2) px(x, top + 1, 1, 1, '#58a83a');
+    if ((x * 13) % 7 === 3) px(x, top + 3, 1, 1, '#6b4427');
+    if ((x * 11) % 9 === 4) px(x, top + 5, 1, 1, '#6b4427');
+  }
+  /* árvores */
+  [[70, 4], [20, 6]].forEach(([x, y], i) => {
+    const h = 10 - bumps[x % bumps.length] - y;
+    px(x, y, 2, h, '#6b4427');
+    px(x - 3, y - 4, 8, 2, '#4f9a35');
+    px(x - 4, y - 2, 10, 2, '#5fb043');
+    px(x - 2, y, 2, 1, '#4f9a35');
+    px(x + 2, y, 2, 1, '#4f9a35');
+    if (!i) px(x - 1, y - 3, 2, 1, '#79cc58');
+  });
+  return `<svg class="scene-ground" viewBox="0 0 96 16" preserveAspectRatio="xMidYMax slice" shape-rendering="crispEdges" aria-hidden="true">${rects.join('')}</svg>`;
+}
+
+function renderPixelScene() {
+  return `<div class="pixel-scene" aria-hidden="true">
+    <span class="pixel-cloud scene-cloud scene-cloud-1"></span>
+    <span class="pixel-cloud scene-cloud scene-cloud-2"></span>
+    <span class="pixel-cloud scene-cloud scene-cloud-3"></span>
+    ${pixelGround()}
+  </div>`;
 }
 
 function renderProcessStep(step, index) {
@@ -1095,7 +1169,8 @@ function refreshCurrent(path) {
   renderRoute(false, 'refresh');
 }
 
-function navigate(path) {
+/* media: imagem do card clicado, que "voa" até o topo da página do projeto. */
+function navigate(path, media = null) {
   const [pathname, query = ''] = path.split('?');
   const normalized = stripSiteBasePath(pathname);
   const here = getLocation();
@@ -1120,13 +1195,39 @@ function navigate(path) {
     renderRoute(true, enter);
   };
 
-  if (fromMode === toMode || reducedMotion() || !app) {
+  if (reducedMotion() || !app) {
     go();
     return;
   }
 
-  /* A bolinha do seletor já acompanha, e a página desliza no sentido do movimento. */
   const root = document.documentElement;
+
+  /*
+   * Com View Transitions: o cabeçalho fica parado, a página desliza no sentido
+   * do seletor (ou sobe com um fade, dentro da mesma área).
+   */
+  if (document.startViewTransition) {
+    const forwardMode = MODE_ORDER.indexOf(toMode) > MODE_ORDER.indexOf(fromMode);
+    root.dataset.nav = fromMode === toMode ? 'fade' : (forwardMode ? 'forward' : 'back');
+    root.classList.add('is-switching');
+    if (media) {
+      const current = document.querySelector('.detail-visual');
+      if (current) current.style.viewTransitionName = 'none';
+      media.style.viewTransitionName = 'project-media';
+    }
+    document.startViewTransition(() => go('vt')).finished.finally(() => {
+      delete root.dataset.nav;
+      root.classList.remove('is-switching');
+    });
+    return;
+  }
+
+  if (fromMode === toMode) {
+    go();
+    return;
+  }
+
+  /* Sem View Transitions: a bolinha do seletor já acompanha, e a página desliza no sentido do movimento. */
   root.classList.add('is-switching');
   window.setTimeout(() => root.classList.remove('is-switching'), 900);
   const switchEl = document.querySelector('[data-mode-switch]');
@@ -1243,7 +1344,7 @@ function setupModeSwitchDrag() {
 function handleClick(event) {
   const langButton = event.target.closest('[data-lang]');
   if (langButton) {
-    applyLanguage(langButton.dataset.lang);
+    switchLanguage(langButton.dataset.lang);
     return;
   }
 
@@ -1258,7 +1359,7 @@ function handleClick(event) {
   const routeLink = event.target.closest('[data-route]');
   if (routeLink) {
     event.preventDefault();
-    navigate(routeLink.getAttribute('href') || '/');
+    navigate(routeLink.getAttribute('href') || '/', routeLink.querySelector('.project-card-media'));
     return;
   }
 
@@ -1369,6 +1470,14 @@ function handleKeydown(event) {
   if (!lightbox.hidden && (event.key === 'ArrowLeft' || event.key === 'ArrowRight')) {
     moveLightbox(event.key === 'ArrowLeft' ? -1 : 1);
   }
+  /* Com a imagem ampliada aberta, o Tab circula só pelos botões dela. */
+  if (!lightbox.hidden && event.key === 'Tab') {
+    const focusable = [...lightbox.querySelectorAll('button:not([disabled])')];
+    const index = focusable.indexOf(document.activeElement);
+    const next = event.shiftKey ? (index <= 0 ? focusable.length - 1 : index - 1) : (index + 1) % focusable.length;
+    event.preventDefault();
+    focusable[next]?.focus();
+  }
 }
 
 function handleScroll() {
@@ -1376,7 +1485,7 @@ function handleScroll() {
   if (header) {
     header.classList.toggle('is-scrolled', y > 12);
     const menuOpen = header.classList.contains('menu-open');
-    if (!menuOpen && window.innerWidth < 1160 && y > 140 && y > lastScrollY + 6) header.classList.add('is-compact');
+    if (!menuOpen && window.innerWidth < 1020 && y > 140 && y > lastScrollY + 6) header.classList.add('is-compact');
     else if (y < lastScrollY - 6 || y < 90 || menuOpen) header.classList.remove('is-compact');
   }
   lastScrollY = y;
@@ -1399,11 +1508,35 @@ function initializeContactForm(query) {
   }
 }
 
+/* Termos: o índice destaca a seção que está sendo lida. */
+function setupTermsSpy() {
+  termsObserver?.disconnect();
+  const links = [...document.querySelectorAll('.terms-toc a[data-scroll]')];
+  if (!links.length || !('IntersectionObserver' in window)) return;
+  termsObserver = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (!entry.isIntersecting) return;
+      links.forEach((link) => link.classList.toggle('is-current', link.dataset.scroll === entry.target.id));
+    });
+  }, { rootMargin: '-35% 0px -60% 0px' });
+  document.querySelectorAll('.term[id]').forEach((term) => termsObserver.observe(term));
+}
+
 function setupReveal(scope = document) {
-  const elements = scope.querySelectorAll ? scope.querySelectorAll('.reveal:not(.is-visible)') : document.querySelectorAll('.reveal:not(.is-visible)');
-  if (reducedMotion() || !('IntersectionObserver' in window) || (app && app.dataset.enter)) {
+  let elements = [...(scope.querySelectorAll ? scope.querySelectorAll('.reveal:not(.is-visible)') : document.querySelectorAll('.reveal:not(.is-visible)'))];
+  const enter = app ? app.dataset.enter : '';
+  if (reducedMotion() || !('IntersectionObserver' in window) || (enter && enter !== 'vt')) {
     elements.forEach((element) => element.classList.add('is-visible'));
     return;
+  }
+
+  /* Na troca com View Transitions, o que já está na tela aparece na hora (sem piscar); o resto anima ao rolar. */
+  if (enter === 'vt') {
+    elements = elements.filter((element) => {
+      if (element.getBoundingClientRect().top >= window.innerHeight) return true;
+      element.classList.add('is-instant', 'is-visible');
+      return false;
+    });
   }
 
   const observer = new IntersectionObserver((entries, currentObserver) => {
@@ -1423,12 +1556,22 @@ function toggleMobileNav() {
   if (isOpen) header.classList.remove('is-compact');
   menuToggle.setAttribute('aria-expanded', String(isOpen));
   menuToggle.setAttribute('aria-label', t(isOpen ? 'nav.closeMenu' : 'nav.openMenu'));
+  /* Com o menu aberto, o conteúdo por trás sai da navegação por teclado. */
+  setPageInert(isOpen);
+  if (isOpen) mobileNav.querySelector('a')?.focus({ preventScroll: true });
+}
+
+function setPageInert(inert) {
+  if (app) app.inert = inert;
+  const footer = document.querySelector('.site-footer');
+  if (footer) footer.inert = inert;
 }
 
 function closeMobileNav() {
   if (!menuToggle || !mobileNav.classList.contains('is-open')) return;
   mobileNav.classList.remove('is-open');
   header.classList.remove('menu-open');
+  setPageInert(false);
   menuToggle.setAttribute('aria-expanded', 'false');
   menuToggle.setAttribute('aria-label', t('nav.openMenu'));
 }
@@ -1558,6 +1701,104 @@ function escapeHTML(value) {
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&#039;');
+}
+
+/* Troca de idioma: o texto da página faz um fade cruzado (a bolinha do seletor desliza no CSS). */
+function switchLanguage(next) {
+  const target = next === 'en' ? 'en' : 'pt';
+  if (target === lang) return;
+  const root = document.documentElement;
+  if (!document.startViewTransition || reducedMotion()) {
+    applyLanguage(target);
+    return;
+  }
+  root.dataset.nav = 'lang';
+  root.classList.add('is-switching');
+  document.startViewTransition(() => applyLanguage(target)).finished.finally(() => {
+    delete root.dataset.nav;
+    root.classList.remove('is-switching');
+  });
+}
+
+/* Troca de tema com um círculo que se abre a partir do botão de aparência. */
+function switchTheme(next, origin) {
+  const root = document.documentElement;
+  if (!document.startViewTransition || reducedMotion() || !origin) {
+    applyTheme(next);
+    return;
+  }
+  const rect = origin.getBoundingClientRect();
+  const x = rect.left + rect.width / 2;
+  const y = rect.top + rect.height / 2;
+  root.style.setProperty('--theme-x', `${x}px`);
+  root.style.setProperty('--theme-y', `${y}px`);
+  root.style.setProperty('--theme-r', `${Math.hypot(Math.max(x, window.innerWidth - x), Math.max(y, window.innerHeight - y))}px`);
+  root.dataset.nav = 'theme';
+  root.classList.add('is-switching');
+  document.startViewTransition(() => applyTheme(next)).finished.finally(() => {
+    delete root.dataset.nav;
+    root.classList.remove('is-switching');
+  });
+}
+
+/*
+ * Títulos sobem palavra por palavra e o marca-texto se desenha em seguida.
+ * Dentro de uma seção que ainda não apareceu, a animação espera (fica pausada).
+ */
+function setupHeadlines() {
+  if (!app || reducedMotion()) return;
+  app.querySelectorAll('h1, .section-head h2, .cta-panel h2').forEach((heading) => {
+    let index = 0;
+    const wrap = (node) => {
+      [...node.childNodes].forEach((child) => {
+        if (child.nodeType === Node.ELEMENT_NODE) {
+          wrap(child);
+          return;
+        }
+        if (child.nodeType !== Node.TEXT_NODE) return;
+        const fragment = document.createDocumentFragment();
+        child.textContent.split(/(\s+)/).forEach((part) => {
+          if (!part) return;
+          if (/^\s+$/.test(part)) {
+            fragment.append(part);
+            return;
+          }
+          const word = document.createElement('span');
+          const inner = document.createElement('span');
+          word.className = 'word';
+          inner.textContent = part;
+          inner.style.setProperty('--w', index);
+          index += 1;
+          word.append(inner);
+          fragment.append(word);
+        });
+        child.replaceWith(fragment);
+      });
+    };
+    wrap(heading);
+    heading.style.setProperty('--words', index);
+    heading.classList.add('is-split');
+  });
+}
+
+/* Inclinação leve dos cards seguindo o mouse (só com mouse, e sem movimento reduzido). */
+function setupTilt() {
+  if (!window.matchMedia || !window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
+  let current = null;
+  document.addEventListener('pointermove', (event) => {
+    const card = event.target instanceof Element ? event.target.closest('.door, .project-card, .scene-card') : null;
+    if (current && current !== card) {
+      current.style.removeProperty('--rx');
+      current.style.removeProperty('--ry');
+    }
+    current = card;
+    if (!card || reducedMotion()) return;
+    const rect = card.getBoundingClientRect();
+    const x = (event.clientX - rect.left) / rect.width - 0.5;
+    const y = (event.clientY - rect.top) / rect.height - 0.5;
+    card.style.setProperty('--ry', `${(x * 5).toFixed(2)}deg`);
+    card.style.setProperty('--rx', `${(-y * 5).toFixed(2)}deg`);
+  }, { passive: true });
 }
 
 function reducedMotion() {

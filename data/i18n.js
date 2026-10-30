@@ -53,11 +53,11 @@ window.MEDEIROS_I18N = {
       collageLabel: 'Plugins publicados',
       servicesTitle: 'O que eu faço.', servicesText: 'De um ajuste pequeno a um plugin completo. Traga o problema e a gente resolve o resto.',
       workEyebrow: 'Trabalhos', workTitle: 'Plugins que você já pode usar.',
-      workText: 'Os plugins publicados levam direto ao SpigotMC. Cada um tem página própria, com imagens e lista de recursos.',
+      workText: 'Cada plugin tem página própria, com imagens e lista de recursos.',
       processTitle: 'Um pedido, passo a passo.'
     },
     projects: {
-      title: 'Meus plugins', lede: 'Plugins e sistemas para servidores de Minecraft. Os publicados levam ao SpigotMC; os outros estão a caminho.',
+      title: 'Meus plugins', lede: 'Plugins e sistemas para servidores de Minecraft.',
       all: 'Todos', search: 'Buscar plugins', shown: 'exibidos', one: 'projeto', many: 'projetos',
       noMatch: 'Nenhum plugin encontrado.', noCategory: 'Nenhum plugin nesta categoria ainda.',
       empty: 'Os plugins estão a caminho.', emptyHint: 'Tente outra categoria ou volte em breve.'
@@ -69,7 +69,7 @@ window.MEDEIROS_I18N = {
     about: {
       title: 'Olá, eu sou o Medeiros',
       lede: 'Eu configuro servidores de Minecraft, crio plugins personalizados e bots de Discord que mantêm a comunidade em sincronia com o servidor.',
-      p1: 'Publico meus próprios plugins no SpigotMC e atendo encomendas de servidores que precisam de algo específico. Tudo que eu faço é pensado para ser configurado por quem administra o servidor, não só por mim.',
+      p1: 'Atendo encomendas de servidores e comunidades que precisam de algo específico. Tudo que eu faço é pensado para ser configurado por quem administra o servidor, não só por mim.',
       p2: 'Se algo que eu fiz der problema no seu servidor, quero saber. Correções e atualizações fazem parte do trabalho.',
       pr1t: 'Claro para os jogadores', pr1: 'As pessoas precisam entender o que o sistema está fazendo assim que o veem.',
       pr2t: 'Flexível para a staff', pr2: 'As opções existem para decisões de verdade, com padrões que funcionam desde o primeiro dia.',
@@ -130,7 +130,7 @@ window.MEDEIROS_I18N = {
       request: '/solicitar',
       productsEyebrow: 'Bots', productsTitle: 'Bots publicados.', productsText: 'Os bots que eu publicar aparecem aqui, cada um com a sua própria página.',
       emptyTitle: 'Os primeiros bots estão a caminho',
-      emptyText: 'Ainda não publiquei bots por aqui. Enquanto isso, veja os plugins de Minecraft que já estão no ar ou peça o seu bot.',
+      emptyText: 'Ainda não publiquei bots por aqui. Enquanto isso, conheça a área Minecraft ou peça o seu bot.',
       emptyLink: 'Ver Minecraft',
       processTitle: 'Um bot, passo a passo.'
     },
@@ -188,11 +188,11 @@ window.MEDEIROS_I18N = {
       collageLabel: 'Released plugins',
       servicesTitle: 'What I do.', servicesText: 'From a small fix to a full plugin. Bring the problem and we’ll work out the rest.',
       workEyebrow: 'Selected work', workTitle: 'Plugins you can use today.',
-      workText: 'Released plugins link straight to SpigotMC. Each one has its own page with screenshots and a feature list.',
+      workText: 'Each plugin has its own page with screenshots and a feature list.',
       processTitle: 'A commission, step by step.'
     },
     projects: {
-      title: 'My plugins', lede: 'Plugins and systems for Minecraft servers. Released ones link to SpigotMC, the rest are on the way.',
+      title: 'My plugins', lede: 'Plugins and systems for Minecraft servers.',
       all: 'All', search: 'Search plugins', shown: 'shown', one: 'project', many: 'projects',
       noMatch: 'No plugins match that search.', noCategory: 'No plugins in this category yet.',
       empty: 'Plugins are on the way.', emptyHint: 'Try another category or check back soon.'
@@ -204,7 +204,7 @@ window.MEDEIROS_I18N = {
     about: {
       title: 'Hi, I’m Medeiros',
       lede: 'I configure Minecraft servers, build custom plugins and make Discord bots that keep a community in sync with its server.',
-      p1: 'I release my own plugins on SpigotMC and take commissions from servers that need something specific. Everything I build is meant to be configured by the people who run the server, not just by me.',
+      p1: 'I take commissions from servers and communities that need something specific. Everything I build is meant to be configured by the people who run the server, not just by me.',
       p2: 'If something I made breaks on your server, I want to hear about it. Fixes and updates are part of the work.',
       pr1t: 'Clear for players', pr1: 'People should understand what a system is doing the moment they see it.',
       pr2t: 'Flexible for staff', pr2: 'Settings exist for real decisions, with defaults that work from day one.',
@@ -265,7 +265,7 @@ window.MEDEIROS_I18N = {
       request: '/request',
       productsEyebrow: 'Bots', productsTitle: 'Published bots.', productsText: 'Bots I publish will show up here, each with its own page.',
       emptyTitle: 'The first bots are on the way',
-      emptyText: 'I haven’t published any bots here yet. In the meantime, see the Minecraft plugins that are already live, or ask for your own bot.',
+      emptyText: 'I haven’t published any bots here yet. In the meantime, explore the Minecraft side or ask for your own bot.',
       emptyLink: 'See Minecraft',
       processTitle: 'A bot, step by step.'
     },

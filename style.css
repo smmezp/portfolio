@@ -566,7 +566,7 @@ html[data-theme='dark'] .theme-toggle .icon-moon { display: none; }
   .wordmark-text { display: none; }
 }
 
-@media (min-width: 1160px) {
+@media (min-width: 1020px) {
   .site-header { gap: 24px; }
   .desktop-nav { display: flex; margin-left: auto; }
   .menu-toggle, .mobile-nav { display: none !important; }
@@ -699,12 +699,11 @@ html[data-theme='dark'] .theme-toggle .icon-moon { display: none; }
 .mode-switch[data-active='home'] .mode-thumb { transform: translateX(100%); background: #2f62f2; box-shadow: 0 0 0 3px rgba(47, 98, 242, .22); }
 .mode-switch[data-active='discord'] .mode-thumb { transform: translateX(200%); background: #5865f2; box-shadow: 0 0 0 3px rgba(88, 101, 242, .26); }
 
-@media (max-width: 1159px) {
+@media (max-width: 1019px) {
   .site-header { transition: transform .3s ease, border-color .2s ease; }
   .site-header.is-compact { transform: translateY(-110%); }
 }
-@media (min-width: 1020px) and (max-width: 1159px) { :root { --header-h: 120px; } }
-@media (min-width: 1160px) {
+@media (min-width: 1020px) {
   :root { --header-h: 78px; }
   .site-header { grid-template-columns: 1fr auto 1fr; grid-template-areas: "left mode tools"; grid-template-rows: var(--header-h); row-gap: 0; padding-top: 0; padding-bottom: 0; }
   .desktop-nav { margin-left: 0; }
@@ -851,8 +850,7 @@ body[data-skin='discord'] .badge-live { background: rgba(35, 165, 90, .18); colo
 .site-header { grid-template-rows: 56px 56px; }
 .mode-switch-wrap { overflow: visible; align-items: center; padding-bottom: 2px; }
 .mode-switch { box-shadow: none; }
-@media (min-width: 1020px) and (max-width: 1159px) { :root { --header-h: 128px; } }
-@media (min-width: 1160px) { .site-header { grid-template-rows: var(--header-h); } }
+@media (min-width: 1020px) { .site-header { grid-template-rows: var(--header-h); } }
 .brand-logo { object-fit: contain; transform: scale(1.5); }
 .wordmark { gap: 8px; }
 
@@ -879,7 +877,7 @@ body[data-skin='discord'] .lang-switch button.is-active { background: var(--dc-s
 
 
 /* ---- barra de cima mais baixa no computador ---- */
-@media (min-width: 1160px) {
+@media (min-width: 1020px) {
   :root { --header-h: 60px; }
   .hero { padding-top: 34px; }
 }
@@ -971,3 +969,372 @@ html.is-switching .lang-switch, html.is-switching .mode-switch { transition: non
 .skip-link{position:fixed;left:12px;top:-60px;z-index:10000;padding:10px 16px;border-radius:10px;background:#111827;color:#fff;font-weight:700;text-decoration:none;transition:top .15s}
 .skip-link:focus{top:12px}
 @media (prefers-reduced-motion: reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}}
+
+
+/* =====================================================================
+ * Acabamento (polimento visual)
+ * Mantém a identidade (papel, contorno, sombra deslocada, pixel art) e
+ * refina a execução: movimento, vidro no cabeçalho, profundidade e detalhes.
+ * ===================================================================== */
+
+:root {
+  --ease-out: cubic-bezier(.22, 1, .36, 1);
+  --ease-spring: cubic-bezier(.34, 1.56, .64, 1);
+  --shadow-soft: 0 22px 44px -28px rgba(18, 24, 41, .45);
+}
+html[data-theme='dark'] { --shadow-soft: 0 22px 44px -24px rgba(0, 0, 0, .7); }
+
+/* ---------- Cabeçalho de vidro ---------- */
+
+.site-header {
+  background: color-mix(in srgb, var(--paper) 76%, transparent);
+  -webkit-backdrop-filter: blur(16px) saturate(1.5);
+  backdrop-filter: blur(16px) saturate(1.5);
+  view-transition-name: site-header;
+  transition: transform .45s var(--ease-out), box-shadow .4s var(--ease-out), border-color .3s ease, background-color .45s ease;
+}
+.site-header.is-scrolled { box-shadow: 0 12px 30px -24px rgba(18, 24, 41, .5); }
+html[data-theme='dark'] .site-header.is-scrolled { box-shadow: 0 12px 30px -20px rgba(0, 0, 0, .8); }
+.desktop-nav a:not(.button) { transition: color .2s ease, background-color .25s var(--ease-out); }
+.tool-button { transition: background-color .2s ease, transform .3s var(--ease-out); }
+.tool-button:hover { transform: translateY(-1px); }
+.mode-option:active .icon { transform: scale(.92); }
+
+/* Bandeiras em SVG (aparecem iguais em qualquer sistema) */
+/* Bandeiras (desenho do Twemoji), com respiro entre elas */
+.lang-switch { gap: 4px; padding: 3px 4px; }
+.lang-switch button { display: grid; place-items: center; width: auto; height: 100%; min-width: 0; aspect-ratio: auto; padding: 0 7px; border-radius: 8px; background: transparent; overflow: visible; }
+.lang-switch button.is-active { background: var(--sky); }
+body[data-skin='discord'] .lang-switch button.is-active { background: var(--dc-soft); }
+.lang-switch button:hover:not(.is-active) { background: var(--paper-2); }
+.lang-switch img.flag {
+  display: block; width: 22px; height: 22px; border-radius: 6px; box-shadow: 0 0 0 1px rgba(18, 24, 41, .12);
+  filter: saturate(.35); opacity: .6;
+  transition: filter .25s ease, opacity .25s ease, transform .4s var(--ease-spring);
+}
+.lang-switch button:hover img.flag { filter: none; opacity: 1; transform: translateY(-1px); }
+.lang-switch button.is-active img.flag { filter: none; opacity: 1; transform: none; }
+.lang-switch button:active img.flag { transform: scale(.92); }
+
+/* Menu mobile entra deslizando */
+.mobile-nav.is-open { animation: menuIn .35s var(--ease-out) both; }
+.mobile-nav.is-open > * { animation: menuItemIn .45s var(--ease-out) both; }
+.mobile-nav.is-open > :nth-child(2) { animation-delay: .03s; }
+.mobile-nav.is-open > :nth-child(3) { animation-delay: .06s; }
+.mobile-nav.is-open > :nth-child(4) { animation-delay: .09s; }
+.mobile-nav.is-open > :nth-child(5) { animation-delay: .12s; }
+.mobile-nav.is-open > :nth-child(6) { animation-delay: .15s; }
+.mobile-nav.is-open > :nth-child(n+7) { animation-delay: .18s; }
+@keyframes menuIn { from { opacity: 0; transform: translateY(-8px); } }
+@keyframes menuItemIn { from { opacity: 0; translate: 0 10px; } }
+
+/* ---------- Botões e links ---------- */
+
+.button {
+  transition: transform .28s var(--ease-out), box-shadow .28s var(--ease-out), background-color .2s ease, color .2s ease, border-color .2s ease;
+}
+.button .icon { transition: transform .35s var(--ease-out); }
+.button:hover .icon { transform: translateX(3px); }
+.button:active { transform: translate(1px, 1px); box-shadow: 0 0 0 var(--edge); transition-duration: .08s; }
+.text-link .icon { transition: transform .35s var(--ease-out); }
+.text-link:hover .icon { transform: translateX(3px); }
+
+/* ---------- Profundidade nos cards (a sombra deslocada continua sendo a assinatura) ---------- */
+
+.project-card { transition: transform .35s var(--ease-out), box-shadow .35s var(--ease-out); }
+.project-card:hover { box-shadow: 6px 6px 0 var(--edge), var(--shadow-soft); }
+.project-card:hover .project-image { transform: scale(1.04); }
+
+.door { transition: transform .35s var(--ease-out), box-shadow .35s var(--ease-out); }
+.door:hover { box-shadow: 8px 8px 0 var(--edge), var(--shadow-soft); }
+.door-discord:hover { box-shadow: 8px 8px 0 #1f2a9c, var(--shadow-soft); }
+.door-go .icon { transition: transform .35s var(--ease-out); }
+.door:hover .door-go .icon { transform: translateX(4px); }
+
+.github-card, .swap-card, .terms-help { transition: transform .35s var(--ease-out), box-shadow .35s var(--ease-out); }
+.github-card:hover, .terms-help:hover { transform: translate(-2px, -2px); box-shadow: 7px 7px 0 var(--edge), var(--shadow-soft); }
+.swap-card:hover { transform: translate(-2px, -2px); box-shadow: 7px 7px 0 #1f2a9c, var(--shadow-soft); }
+.github-line { transition: transform .28s var(--ease-out), box-shadow .28s var(--ease-out); }
+
+.process-step:hover { transform: translateY(-3px); border-color: color-mix(in srgb, var(--edge) 35%, var(--line)); box-shadow: var(--shadow-soft); }
+.service h3 { transition: color .25s ease; }
+.service:hover h3 { color: var(--brand-dark); }
+.detail-visual { box-shadow: 6px 6px 0 var(--edge), var(--shadow-soft); }
+.gallery-item { transition: transform .3s var(--ease-out), box-shadow .3s var(--ease-out); }
+
+/* Imagens aparecem suavemente quando terminam de carregar */
+.image-frame .project-image { transition: opacity .5s ease, transform .8s var(--ease-out); }
+.image-frame.is-image-loading .project-image { opacity: 0; }
+
+/* ---------- Revelação ao rolar, com cascata nos cards ---------- */
+
+.reveal { transform: none; translate: 0 18px; transition: opacity .8s var(--ease-out), translate .9s var(--ease-out); }
+.reveal.is-visible { translate: 0 0; }
+.reveal :is(.process-grid, .service-grid, .dc-service-grid, .project-grid, .principles, .details-grid, .gallery-grid, .check-list) > * {
+  opacity: 0; translate: 0 16px;
+  transition: opacity .7s var(--ease-out) var(--d, 0s), translate .8s var(--ease-out) var(--d, 0s),
+    transform .35s var(--ease-out), box-shadow .35s var(--ease-out), border-color .25s ease;
+}
+.reveal.is-visible :is(.process-grid, .service-grid, .dc-service-grid, .project-grid, .principles, .details-grid, .gallery-grid, .check-list) > * { opacity: 1; translate: 0 0; }
+:is(.process-grid, .service-grid, .dc-service-grid, .project-grid, .principles, .details-grid, .gallery-grid, .check-list) > :nth-child(2) { --d: .07s; }
+:is(.process-grid, .service-grid, .dc-service-grid, .project-grid, .principles, .details-grid, .gallery-grid, .check-list) > :nth-child(3) { --d: .14s; }
+:is(.process-grid, .service-grid, .dc-service-grid, .project-grid, .principles, .details-grid, .gallery-grid, .check-list) > :nth-child(4) { --d: .21s; }
+:is(.process-grid, .service-grid, .dc-service-grid, .project-grid, .principles, .details-grid, .gallery-grid, .check-list) > :nth-child(5) { --d: .28s; }
+:is(.process-grid, .service-grid, .dc-service-grid, .project-grid, .principles, .details-grid, .gallery-grid, .check-list) > :nth-child(n+6) { --d: .35s; }
+
+/* Capa: o texto entra em sequência na primeira visita */
+.hero-copy > *, .detail-copy > * { animation: heroIn .8s var(--ease-out) both; }
+.hero-copy > :nth-child(2), .detail-copy > :nth-child(2) { animation-delay: .06s; }
+.hero-copy > :nth-child(3), .detail-copy > :nth-child(3) { animation-delay: .12s; }
+.hero-copy > :nth-child(4), .detail-copy > :nth-child(4) { animation-delay: .18s; }
+.hero-copy > :nth-child(n+5), .detail-copy > :nth-child(n+5) { animation-delay: .24s; }
+.hub-doors > * { animation: heroIn .9s var(--ease-out) both; animation-delay: .15s; }
+.hub-doors > :nth-child(2) { animation-delay: .27s; }
+.hero-collage > .scene-card { animation: heroIn .9s var(--ease-out) .2s both; }
+@keyframes heroIn { from { opacity: 0; translate: 0 18px; } }
+
+/* ---------- Ilustrações ---------- */
+
+/* Paisagem em pixel art (porta do Minecraft e capa da página Minecraft) */
+.door-art-scene { padding: 0; align-items: stretch; }
+.pixel-scene { position: relative; flex: 1; align-self: stretch; min-height: 150px; overflow: hidden; }
+.scene-ground { position: absolute; left: 0; bottom: 0; width: 100%; height: 56%; transition: translate .5s var(--ease-out); }
+.door:hover .scene-ground { translate: 0 -3px; }
+.scene-cloud { position: absolute; background-image: var(--cloud-white); animation: cloudSway 14s ease-in-out infinite alternate; }
+.scene-cloud-1 { width: 20%; top: 12%; left: 7%; }
+.scene-cloud-2 { width: 13%; top: 30%; left: 52%; opacity: .75; animation-duration: 18s; animation-delay: -6s; }
+.scene-cloud-3 { width: 17%; top: 9%; left: 77%; opacity: .9; animation-duration: 16s; animation-delay: -3s; }
+@keyframes cloudSway { to { translate: 22px 0; } }
+
+.scene-card {
+  position: absolute; left: 6%; right: 6%; top: 50%; translate: 0 -50%; aspect-ratio: 16 / 10; z-index: 2; display: flex; padding: 8px;
+  background: var(--surface); border: 1.5px solid var(--edge); border-radius: 18px; box-shadow: var(--shadow);
+  rotate: -2deg; transition: rotate .45s var(--ease-out), box-shadow .35s var(--ease-out);
+}
+.scene-card .pixel-scene { border-radius: 11px; background: linear-gradient(160deg, #3d6bf4 0%, #4aa3fb 60%, #7cc9ff 100%); }
+.scene-card .scene-ground { height: auto; aspect-ratio: 96 / 16; }
+.scene-card:hover { rotate: 0deg; box-shadow: 7px 7px 0 var(--edge), var(--shadow-soft); }
+
+/* Porta do Discord: as linhas do chat se escrevem ao abrir a página */
+.door-art-discord .dc-mini b, .door-art-discord .dc-mini em { transform-origin: left; animation: lineGrow .8s var(--ease-out) both; }
+.door-art-discord .dc-mini-1 b { animation-delay: .35s; }
+.door-art-discord .dc-mini-2 b { animation-delay: .55s; }
+.door-art-discord .dc-mini-2 em { animation-delay: .7s; }
+.door-art-discord .dc-mini i { animation: heroIn .5s var(--ease-out) both; animation-delay: .3s; }
+.door-art-discord .dc-mini-2 i { animation-delay: .5s; }
+.dc-mini-command { animation: heroIn .5s var(--ease-out) .95s both; transition: transform .35s var(--ease-spring); }
+.door-discord:hover .dc-mini-command { transform: translateY(-3px); }
+@keyframes lineGrow { from { transform: scaleX(0); } }
+
+/* Janelas do Discord: entram em cascata e a conversa acontece em sequência */
+.dc-window { animation: dcIn .8s var(--ease-out) both, dcFloat 6s ease-in-out infinite; }
+.dc-window-1 { animation-delay: .1s, 1s; }
+.dc-window-2 { animation-delay: .28s, -1.2s; }
+.dc-window-3 { animation-delay: .46s, -3.4s; }
+.dc-window-1 .dc-chat-msg { animation: heroIn .5s var(--ease-out) both; animation-delay: .6s; }
+.dc-window-1 .dc-chat-msg:nth-child(2) { animation-delay: 1.15s; }
+.dc-picker li { transition: background-color .2s ease; }
+.dc-picker li:hover { background: var(--dc-hover); }
+@keyframes dcIn { from { opacity: 0; translate: 0 22px; } }
+
+/* ---------- Formulário e termos ---------- */
+
+input, select, textarea { transition: border-color .2s ease, box-shadow .25s var(--ease-out), background-color .2s ease; }
+input:focus-visible, select:focus-visible, textarea:focus-visible {
+  outline: 2px solid transparent; border-color: var(--brand);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--brand) 22%, transparent);
+}
+.terms-toc a.is-current { background: var(--sky); color: var(--ink); }
+
+/* ---------- Rodapé: o slogan não fica mais espremido ---------- */
+
+@media (min-width: 760px) {
+  .footer-main { grid-template-columns: auto minmax(220px, 1fr) minmax(0, auto); }
+  .footer-links { justify-content: flex-end; }
+}
+
+/* ---------- Troca de página (View Transitions) ---------- */
+
+::view-transition-old(root), ::view-transition-new(root) { animation-duration: .5s; animation-timing-function: var(--ease-out); }
+html[data-nav='forward']::view-transition-old(root) { animation-name: vtOutLeft; }
+html[data-nav='forward']::view-transition-new(root) { animation-name: vtInRight; }
+html[data-nav='back']::view-transition-old(root) { animation-name: vtOutRight; }
+html[data-nav='back']::view-transition-new(root) { animation-name: vtInLeft; }
+html[data-nav='fade']::view-transition-old(root) { animation: vtFadeOut .22s ease both; }
+html[data-nav='fade']::view-transition-new(root) { animation: vtFadeUp .45s var(--ease-out) both; }
+::view-transition-group(site-header) { animation: none; }
+::view-transition-old(site-header) { display: none; }
+::view-transition-new(site-header) { animation: none; }
+::view-transition-group(project-media) { animation-duration: .6s; animation-timing-function: var(--ease-out); }
+::view-transition-old(project-media), ::view-transition-new(project-media) { height: 100%; object-fit: cover; }
+/* Durante a troca, a própria transição já faz o fade: a página não anima de novo por cima */
+#app[data-enter='vt'] .view { animation: none; }
+@keyframes vtOutLeft { to { opacity: 0; transform: translateX(-48px); } }
+@keyframes vtOutRight { to { opacity: 0; transform: translateX(48px); } }
+@keyframes vtInRight { from { opacity: 0; transform: translateX(56px); } }
+@keyframes vtInLeft { from { opacity: 0; transform: translateX(-56px); } }
+@keyframes vtFadeOut { to { opacity: 0; } }
+@keyframes vtFadeUp { from { opacity: 0; transform: translateY(14px); } }
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal, .reveal :is(.process-grid, .service-grid, .dc-service-grid, .project-grid, .principles, .details-grid, .gallery-grid, .check-list) > * { opacity: 1; translate: 0 0; }
+  ::view-transition-group(*), ::view-transition-old(*), ::view-transition-new(*) { animation: none !important; }
+}
+
+
+/* ---------- Mais movimento ("molho"), sempre discreto ---------- */
+
+/* Elementos que já estavam na tela durante a troca de página aparecem na hora, sem piscar */
+.reveal.is-instant { transition: none; }
+.reveal.is-instant :is(.process-grid, .service-grid, .dc-service-grid, .project-grid, .principles, .details-grid, .gallery-grid, .check-list) > * {
+  transition-duration: 0s, 0s, .35s, .35s, .25s;
+  transition-delay: 0s;
+}
+
+/* Títulos: palavras sobem e o marca-texto se desenha */
+/* Recorta só embaixo (de onde a palavra sobe): pontuação e acentos nas laterais e em cima não são cortados */
+.is-split .word { display: inline-block; vertical-align: top; padding-bottom: .1em; margin-bottom: -.1em; clip-path: inset(-1em -.5em 0 -.5em); }
+.is-split .word > span { display: inline-block; animation: wordUp .9s var(--ease-out) both; animation-delay: calc(var(--w) * 45ms + .05s); }
+.is-split .mark { animation: markDraw .8s var(--ease-out) both; animation-delay: calc(var(--words) * 45ms + .2s); }
+.reveal:not(.is-visible) .is-split .word > span, .reveal:not(.is-visible) .is-split .mark { animation-play-state: paused; }
+.hero-copy > h1.is-split, .detail-copy > h1.is-split { animation: none; }
+@keyframes wordUp { from { transform: translateY(112%); } }
+@keyframes markDraw {
+  from { background-size: 0% 100%; background-repeat: no-repeat; }
+  to { background-size: 100% 100%; background-repeat: no-repeat; }
+}
+
+/* Marcador das etiquetas (o quadradinho / o #) entra com um giro */
+.eyebrow::before { transition: transform .6s var(--ease-spring) .15s; }
+.reveal:not(.is-visible) .eyebrow::before { transform: scale(0) rotate(-90deg); }
+
+/* Cabeçalho desce ao abrir o site, e uma linha fina mostra o quanto da página já foi lido */
+.site-header { animation: headerIn .7s var(--ease-out) both; }
+@keyframes headerIn { from { opacity: 0; translate: 0 -12px; } }
+@supports (animation-timeline: scroll()) {
+  .site-header::after {
+    content: ''; position: absolute; left: 0; right: 0; bottom: -1px; height: 2px;
+    background: var(--brand); transform-origin: left; transform: scaleX(0);
+    animation: readProgress linear both; animation-timeline: scroll(root);
+  }
+  @keyframes readProgress { to { transform: scaleX(1); } }
+}
+
+/* Logo gira ao passar o mouse; ícone da área ativa "pula" ao trocar */
+.brand-logo { transition: transform .8s var(--ease-spring); }
+.wordmark:hover .brand-logo { transform: scale(1.5) rotate(72deg); }
+.mode-option.is-active .icon { animation: iconPop .55s var(--ease-spring); }
+@keyframes iconPop { from { transform: scale(.6) rotate(-12deg); } }
+
+/* Bolinha de "aberto para encomendas" com um pulso suave */
+.status-pill i, .footer-status i { animation: statusPulse 2.4s ease-out infinite; }
+@keyframes statusPulse {
+  0% { box-shadow: 0 0 0 0 rgba(59, 181, 74, .45); }
+  70%, 100% { box-shadow: 0 0 0 8px rgba(59, 181, 74, 0); }
+}
+
+/* Cards inclinam levemente seguindo o mouse */
+.door:hover { transform: perspective(900px) translate(-3px, -3px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)); }
+.project-card:hover { transform: perspective(900px) translate(-3px, -3px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)); }
+.scene-card:hover { transform: perspective(900px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)); }
+.scene-card { transition: rotate .45s var(--ease-out), transform .35s var(--ease-out), box-shadow .35s var(--ease-out); }
+
+/* Chips, comandos e links com microinterações */
+.chip { transition: transform .25s var(--ease-out), border-color .2s ease; }
+.chip:hover { transform: translateY(-2px); border-color: var(--edge); }
+.dc-service-cmd::after {
+  content: ''; display: inline-block; width: .5em; height: 1em; margin-left: 2px; vertical-align: -2px;
+  background: currentColor; opacity: 0;
+}
+.dc-service:hover .dc-service-cmd::after { animation: caretBlink 1s steps(1) infinite; }
+@keyframes caretBlink { 0%, 49% { opacity: 1; } 50%, 100% { opacity: 0; } }
+.footer-links a { background: linear-gradient(currentColor, currentColor) 0 100% / 0 1.5px no-repeat; transition: color .2s ease, background-size .35s var(--ease-out); }
+.footer-links a:hover { background-size: 100% 1.5px; }
+
+/* Painel final: levanta no hover e a nuvem pixelada flutua */
+.cta-panel { transition: transform .35s var(--ease-out), box-shadow .35s var(--ease-out); }
+.cta-panel:hover { transform: translate(-2px, -2px); box-shadow: 9px 9px 0 var(--edge), var(--shadow-soft); }
+.cta-panel::after { animation: cloudSway 12s ease-in-out infinite alternate; }
+.hero-collage > .pixel-cloud { animation: cloudSway 16s ease-in-out infinite alternate; }
+.hero-collage > .pixel-cloud-b { animation-duration: 20s; animation-delay: -7s; }
+
+/* Troca de tema: um círculo se abre a partir do botão de aparência */
+html[data-nav='theme']::view-transition-old(root) { animation: none; }
+html[data-nav='theme']::view-transition-new(root) { animation: themeReveal .65s var(--ease-out) both; }
+/* Na troca de tema o cabeçalho vai junto com a página (um único círculo) */
+html[data-nav='theme'] .site-header { view-transition-name: none; }
+@keyframes themeReveal {
+  from { clip-path: circle(0 at var(--theme-x) var(--theme-y)); }
+  to { clip-path: circle(var(--theme-r) at var(--theme-x) var(--theme-y)); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal:not(.is-visible) .eyebrow::before { transform: none; }
+  .site-header::after { display: none; }
+}
+
+
+/* ---------- Cursor do Jake (32px, o tamanho padrão do Windows; 64px em telas de alta densidade) ---------- */
+
+@media (hover: hover) and (pointer: fine) {
+  html {
+    cursor: url('assets/cursors/jake-arrow.png') 9 4, auto;
+    cursor: -webkit-image-set(url('assets/cursors/jake-arrow.png') 1x, url('assets/cursors/jake-arrow@2x.png') 2x) 9 4, auto;
+  }
+  a[href], button:not(:disabled), select, label[for], summary, .mode-option, .gallery-item {
+    cursor: url('assets/cursors/jake-hand.png') 12 5, pointer;
+    cursor: -webkit-image-set(url('assets/cursors/jake-hand.png') 1x, url('assets/cursors/jake-hand@2x.png') 2x) 12 5, pointer;
+  }
+  input, textarea {
+    cursor: url('assets/cursors/jake-text.png') 16 16, text;
+    cursor: -webkit-image-set(url('assets/cursors/jake-text.png') 1x, url('assets/cursors/jake-text@2x.png') 2x) 16 16, text;
+  }
+  .mode-switch.is-dragging, .mode-switch.is-dragging * { cursor: grabbing; }
+}
+
+
+/* ---------- Troca de idioma e de cor: animações no cabeçalho ---------- */
+
+/* Idioma: um destaque desliza de uma bandeira para a outra, e a bandeira escolhida dá um pulinho */
+.lang-switch { position: relative; isolation: isolate; }
+.lang-thumb {
+  position: absolute; z-index: -1; top: 3px; bottom: 3px; left: 4px; width: calc((100% - 12px) / 2);
+  border-radius: 8px; background: var(--sky);
+  box-shadow: inset 0 0 0 1.5px color-mix(in srgb, var(--brand) 30%, transparent);
+  transition: transform .55s var(--ease-spring), background-color .3s ease;
+}
+/* O destaque estica enquanto desliza, como um elástico */
+.lang-thumb.is-moving { animation: thumbStretch .6s var(--ease-out); }
+@keyframes thumbStretch { 0% { scale: 1 1; } 35% { scale: 1.32 .82; } 70% { scale: .96 1.05; } 100% { scale: 1 1; } }
+body[data-skin='discord'] .lang-thumb { background: var(--dc-soft); }
+.lang-switch[data-lang-active='en'] .lang-thumb { transform: translateX(calc(100% + 4px)); }
+.lang-switch button.is-active, body[data-skin='discord'] .lang-switch button.is-active { background: transparent; }
+.lang-switch button.is-active img.flag { animation: flagPop .5s var(--ease-spring); }
+@keyframes flagPop { 0% { transform: scale(.7) rotate(-8deg); } 60% { transform: scale(1.12) rotate(3deg); } }
+
+/* Troca de idioma: a página desce e some, e volta subindo já no novo idioma (o cabeçalho fica parado) */
+html[data-nav='lang']::view-transition-old(root) { animation: langOut .32s cubic-bezier(.55, 0, .75, .2) both; }
+html[data-nav='lang']::view-transition-new(root) { animation: langIn .7s var(--ease-out) .16s both; }
+@keyframes langOut { to { opacity: 0; transform: translateY(36px); filter: blur(3px); } }
+@keyframes langIn { from { opacity: 0; transform: translateY(36px); filter: blur(3px); } }
+/* Ao trocar de idioma a página não refaz as animações de entrada */
+#app[data-enter='lang'] .view, #app[data-enter='lang'] .hero-copy > *, #app[data-enter='lang'] .detail-copy > *,
+#app[data-enter='lang'] .hub-doors > *, #app[data-enter='lang'] .hero-collage > .scene-card,
+#app[data-enter='lang'] .word > span, #app[data-enter='lang'] .mark { animation: none; }
+#app[data-enter='lang'] :is(.dc-mini b, .dc-mini em, .dc-mini i, .dc-mini-command, .dc-window .dc-chat-msg) { animation: none; }
+#app[data-enter='lang'] .dc-window { animation: dcFloat 6s ease-in-out infinite; }
+
+/* Cor: o sol e a lua giram ao trocar, e o botão dá um "clique" */
+.theme-toggle .icon { animation: themeIconIn .6s var(--ease-spring); }
+@keyframes themeIconIn { from { opacity: 0; transform: rotate(-120deg) scale(.4); } }
+.theme-toggle:active .icon { transform: scale(.85); }
+.theme-toggle .icon { transition: transform .2s var(--ease-out); }
+
+@media (prefers-reduced-motion: reduce) {
+  .lang-thumb { transition: none; }
+}
+
+
+/* Menu de aparência: sai com a mesma animação de entrada, ao contrário */
+.theme-menu.is-closing { animation: themeMenuOut .18s ease-in forwards; pointer-events: none; }
+@keyframes themeMenuOut { to { opacity: 0; transform: translateY(-6px) scale(.97); } }

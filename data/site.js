@@ -8,7 +8,7 @@ window.MEDEIROS_SITE = {
   name: 'Medeiros',
   contact: {
     discord: 'smmezp',
-    discordServer: 'https://discord.gg/jutpUtkjQ5',
+    discordServer: 'https://discord.gg/Unbx6TpXwa',
     github: 'https://github.com/smmezp',
     githubHandle: 'smmezp',
     instagram: 'https://www.instagram.com/o.medeiros.dev/',
