@@ -23,7 +23,7 @@ const ALL_PRODUCTS = (window.MEDEIROS_PRODUCTS || []).filter((product) => produc
 const PROJECTS = ALL_PRODUCTS.filter((product) => product.brand !== 'discord');
 const DISCORD_PRODUCTS = ALL_PRODUCTS.filter((product) => product.brand === 'discord');
 /* Sites (página /sites): um arquivo por site em data/sites/<nome>.js */
-const WEBSITES = (window.MEDEIROS_WEBSITES || []).filter((site) => site && site.url);
+const WEBSITES = (window.MEDEIROS_WEBSITES || []).filter((site) => site && site.name);
 const DISCORD_SERVER_URL = SITE?.contact?.discordServer || 'https://discord.gg/Unbx6TpXwa';
 const GITHUB_PROFILE_URL = (/^https:\/\/github\.com\/[^/]+\/?$/.test(SITE?.contact?.github || '') ? SITE.contact.github : 'https://github.com/smmezp').replace(/\/$/, '');
 /* Quatro áreas, da esquerda para a direita: Minecraft | Início | Discord | Sites. */
@@ -748,7 +748,7 @@ function renderSitesCollage(shots) {
   return `
     <div class="ws-collage" aria-hidden="true">
       <div class="ws-window ws-window-browser">
-        <div class="ws-bar"><span class="ws-dots"><i></i><i></i><i></i></span><span class="ws-url">${main ? escapeHTML(host(main.url)) : 'seusite.com'}</span></div>
+        <div class="ws-bar"><span class="ws-dots"><i></i><i></i><i></i></span><span class="ws-url">${main?.url ? escapeHTML(host(main.url)) : 'seusite.com'}</span></div>
         <div class="ws-screen image-frame" data-image-frame>${main ? renderProjectImage(main.images?.hero, main.name, { loading: 'eager' }) : renderImagePlaceholder('')}</div>
       </div>
       <div class="ws-window ws-window-code">
@@ -772,19 +772,25 @@ function renderSiteService(service) {
 }
 
 function renderSiteCard(site) {
-  const url = escapeHTML(site.url);
+  /* Sem `url` (site ainda não publicado): o card aparece sem links e sem o botão "Visitar". */
+  const url = site.url ? escapeHTML(site.url) : '';
   const highlights = (L(site.highlights) || site.technologies || []).slice(0, 4);
   const external = 'target="_blank" rel="noopener noreferrer"';
+  const media = renderProjectImage(site.images?.hero, site.name);
+  const title = escapeHTML(site.name);
+  const actions = [
+    url ? `<a class="button button-primary button-small" href="${url}" ${external}>${t('sites.visit')} ${icon('external')}</a>` : '',
+    site.repo ? `<a class="button button-ghost button-small" href="${escapeHTML(site.repo)}" ${external}>${icon('github')} ${t('sites.code')}</a>` : ''
+  ].join('');
   return `<article class="project-card site-card">
-    <a class="project-card-media image-frame site-card-media" data-image-frame href="${url}" ${external} tabindex="-1" aria-hidden="true">${renderProjectImage(site.images?.hero, site.name)}</a>
+    ${url
+      ? `<a class="project-card-media image-frame site-card-media" data-image-frame href="${url}" ${external} tabindex="-1" aria-hidden="true">${media}</a>`
+      : `<div class="project-card-media image-frame site-card-media" data-image-frame>${media}</div>`}
     <div class="project-card-body">
-      <div class="project-card-top"><h3><a class="site-card-title" href="${url}" ${external}>${escapeHTML(site.name)}</a></h3>${renderStatusBadge(site.status)}</div>
+      <div class="project-card-top"><h3>${url ? `<a class="site-card-title" href="${url}" ${external}>${title}</a>` : title}</h3>${renderStatusBadge(site.status)}</div>
       <p>${escapeHTML(L(site.shortDescription))}</p>
       <ul class="chips">${highlights.map((item) => `<li class="chip">${escapeHTML(item)}</li>`).join('')}</ul>
-      <div class="site-card-actions">
-        <a class="button button-primary button-small" href="${url}" ${external}>${t('sites.visit')} ${icon('external')}</a>
-        ${site.repo ? `<a class="button button-ghost button-small" href="${escapeHTML(site.repo)}" ${external}>${icon('github')} ${t('sites.code')}</a>` : ''}
-      </div>
+      ${actions ? `<div class="site-card-actions">${actions}</div>` : ''}
     </div>
   </article>`;
 }
@@ -1057,6 +1063,7 @@ function renderProjectLinks(project) {
   const links = [];
   if (project.links?.download) links.push(`<a class="button button-primary" href="${escapeHTML(project.links.download)}" target="_blank" rel="noopener noreferrer">${t('detail.download')} ${icon('external')}</a>`);
   if (project.links?.invite) links.push(`<a class="button button-primary" href="${escapeHTML(project.links.invite)}" target="_blank" rel="noopener noreferrer">${t('detail.invite')} ${icon('external')}</a>`);
+  if (project.links?.website) links.push(`<a class="button button-ghost" href="${escapeHTML(project.links.website)}" target="_blank" rel="noopener noreferrer">${t('sites.visit')} ${icon('external')}</a>`);
   if (project.github) links.push(`<a class="button button-ghost" href="${escapeHTML(project.github)}" target="_blank" rel="noopener noreferrer">GitHub ${icon('external')}</a>`);
   if (!links.length) links.push(renderDiscordLink(t('detail.ask'), 'button button-primary'));
   return links.join('');
