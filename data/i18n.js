@@ -69,7 +69,9 @@ window.MEDEIROS_I18N = {
       servicesText: 'Do primeiro rascunho ao site no ar: design, código, tradução e publicação.',
       processTitle: 'Do pedido ao site no ar',
       codeLine: 'Seu projeto aqui', codeCta: 'Começar',
-      chipFast: 'Rápido'
+      chipFast: 'Rápido',
+      check1: 'Funciona bem no celular', check2: 'Português e inglês', check3: 'Publicado de graça', check4: 'Imagem para compartilhar',
+      request: 'Pedir este'
     },
     sites: {
       eyebrow: 'Sites', title: 'Sites que eu fiz', lede: 'Páginas publicadas e funcionando: rápidas, bonitas e pensadas para celular, tablet e computador. Clique para abrir o site ou ver o código.',
@@ -224,7 +226,9 @@ window.MEDEIROS_I18N = {
       servicesText: 'From the first sketch to a live site: design, code, translation and publishing.',
       processTitle: 'From request to live site',
       codeLine: 'Your project here', codeCta: 'Get started',
-      chipFast: 'Fast'
+      chipFast: 'Fast',
+      check1: 'Works great on phones', check2: 'English and Portuguese', check3: 'Published for free', check4: 'Share image included',
+      request: 'Ask for this'
     },
     sites: {
       eyebrow: 'Websites', title: 'Websites I built', lede: 'Published, working pages: fast, good-looking and built for phones, tablets and desktops. Click to open the site or see the code.',

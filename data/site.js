@@ -156,6 +156,7 @@ window.MEDEIROS_SITE = {
   siteServices: [
     {
       id: 'site-landing',
+      file: 'landing.html',
       icon: 'browser',
       projectType: 'website',
       title: { pt: 'Landing pages', en: 'Landing pages' },
@@ -166,6 +167,7 @@ window.MEDEIROS_SITE = {
     },
     {
       id: 'site-community',
+      file: 'comunidade.html',
       icon: 'users',
       projectType: 'website',
       title: { pt: 'Sites para servidores e comunidades', en: 'Sites for servers and communities' },
@@ -176,6 +178,7 @@ window.MEDEIROS_SITE = {
     },
     {
       id: 'site-tools',
+      file: 'ferramenta.js',
       icon: 'code',
       projectType: 'website',
       title: { pt: 'Ferramentas interativas', en: 'Interactive tools' },
@@ -186,6 +189,7 @@ window.MEDEIROS_SITE = {
     },
     {
       id: 'site-portfolio',
+      file: 'portfolio.html',
       icon: 'spark',
       projectType: 'website',
       title: { pt: 'Portfólios e páginas pessoais', en: 'Portfolios and personal pages' },
@@ -196,6 +200,7 @@ window.MEDEIROS_SITE = {
     },
     {
       id: 'site-publish',
+      file: 'deploy.yml',
       icon: 'globe',
       projectType: 'website',
       title: { pt: 'Publicação e domínio', en: 'Publishing and domain' },
@@ -206,6 +211,7 @@ window.MEDEIROS_SITE = {
     },
     {
       id: 'site-fixes',
+      file: 'ajustes.css',
       icon: 'wrench',
       projectType: 'website',
       title: { pt: 'Ajustes e melhorias', en: 'Fixes and improvements' },

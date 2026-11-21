@@ -689,7 +689,7 @@ function renderMinecraftHome() {
 function renderSites() {
   const shots = WEBSITES.slice(0, 2);
   const sitesMarkup = WEBSITES.length
-    ? `<div class="project-grid">${WEBSITES.map(renderSiteCard).join('')}</div>`
+    ? `<div class="ws-site-list">${WEBSITES.map(renderSiteCard).join('')}</div>`
     : renderEmptyProjects(t('sites.empty'));
   return `
     <div class="view sites-view">
@@ -716,7 +716,7 @@ function renderSites() {
           <div><p class="eyebrow">${t('common.services')}</p><h2>${t('ws.servicesTitle')}</h2></div>
           <div class="section-head-side"><p>${t('ws.servicesText')}</p></div>
         </div>
-        <div class="service-grid ws-service-grid">${(SITE.siteServices || []).map(renderSiteService).join('')}</div>
+        <div class="ws-service-grid">${(SITE.siteServices || []).map(renderSiteService).join('')}</div>
       </section>
 
       <section class="section reveal" id="ws-sites">
@@ -741,34 +741,39 @@ function renderSites() {
   `;
 }
 
-/* Capa da área Sites: uma janela de navegador com o site, um editor de código e um "celular". */
+/* Capa da área Sites: um navegador com o site publicado e um "checklist" do que todo site sai com. */
 function renderSitesCollage(shots) {
   const main = shots[0];
-  const host = (url) => { try { return new URL(url).host + new URL(url).pathname.replace(/\/$/, ''); } catch (error) { return url; } };
+  const host = (url) => { try { const u = new URL(url); return u.host + u.pathname.replace(/\/$/, ''); } catch (error) { return url; } };
+  const checks = ['ws.check1', 'ws.check2', 'ws.check3', 'ws.check4'];
   return `
     <div class="ws-collage" aria-hidden="true">
-      <div class="ws-window ws-window-browser">
-        <div class="ws-bar"><span class="ws-dots"><i></i><i></i><i></i></span><span class="ws-url">${main?.url ? escapeHTML(host(main.url)) : 'seusite.com'}</span></div>
+      <div class="ws-browser">
+        <div class="ws-tabs">
+          <span class="ws-dots"><i></i><i></i><i></i></span>
+          <span class="ws-tab is-active"><img src="assets/brand/favicon-32x32.png" alt="" width="14" height="14">${main ? escapeHTML(main.name) : 'Site'}<b>×</b></span>
+          <span class="ws-tab ws-tab-new">+</span>
+        </div>
+        <div class="ws-address">
+          <span class="ws-nav">‹ ›</span>
+          <span class="ws-url"><svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>${main ? escapeHTML(host(main.url)) : 'seusite.com'}</span>
+        </div>
         <div class="ws-screen image-frame" data-image-frame>${main ? renderProjectImage(main.images?.hero, main.name, { loading: 'eager' }) : renderImagePlaceholder('')}</div>
       </div>
-      <div class="ws-window ws-window-code">
-        <div class="ws-bar"><span class="ws-dots"><i></i><i></i><i></i></span><span class="ws-url">index.html</span></div>
-        <pre class="ws-code"><span class="c-tag">&lt;section</span> <span class="c-attr">class</span>=<span class="c-str">"hero"</span><span class="c-tag">&gt;</span>
-  <span class="c-tag">&lt;h1&gt;</span>${escapeHTML(t('ws.codeLine'))}<span class="c-tag">&lt;/h1&gt;</span>
-  <span class="c-tag">&lt;a</span> <span class="c-attr">href</span>=<span class="c-str">"/start"</span><span class="c-tag">&gt;</span>${escapeHTML(t('ws.codeCta'))}<span class="c-tag">&lt;/a&gt;</span>
-<span class="c-tag">&lt;/section&gt;</span></pre>
+      <div class="ws-check">
+        <div class="ws-check-head"><span class="ws-check-file">checklist.md</span><span class="ws-check-ok">${checks.length}/${checks.length}</span></div>
+        <ul>${checks.map((key) => `<li><span class="ws-tick"><svg viewBox="0 0 24 24"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></span>${t(key)}</li>`).join('')}</ul>
       </div>
-      <div class="ws-phone">
-        <div class="ws-phone-notch"></div>
-        <div class="ws-phone-screen"><span class="ws-m-bar"><b></b><i></i></span><span class="ws-m-title"><i></i><i></i></span><span class="ws-m-shot image-frame" data-image-frame>${main ? renderProjectImage(main.images?.hero, main.name, { loading: 'eager' }) : ''}</span><span class="ws-m-text"><i></i><i></i><i></i></span><span class="ws-m-btn"></span></div>
-      </div>
-      <span class="ws-chip ws-chip-1">${icon('spark')} ${t('ws.chipFast')}</span>
-      <span class="ws-chip ws-chip-2">${icon('globe')} PT / EN</span>
     </div>`;
 }
 
 function renderSiteService(service) {
-  return `<article class="service ws-service"><span class="ws-service-icon">${icon(service.icon)}</span><h3>${escapeHTML(L(service.title))}</h3><p>${escapeHTML(L(service.description))}</p><a class="text-link" href="/contact?service=${encodeURIComponent(service.id)}" data-route>${t('common.request')} ${icon('arrow')}</a></article>`;
+  return `<article class="ws-service">
+    <div class="ws-service-top"><span class="ws-service-icon">${icon(service.icon)}</span><span class="ws-service-file">${escapeHTML(service.file || '')}</span></div>
+    <h3>${escapeHTML(L(service.title))}</h3>
+    <p>${escapeHTML(L(service.description))}</p>
+    <a class="ws-service-link" href="/contact?service=${encodeURIComponent(service.id)}" data-route>${t('ws.request')} ${icon('arrow')}</a>
+  </article>`;
 }
 
 function renderSiteCard(site) {
