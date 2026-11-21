@@ -119,8 +119,8 @@ window.MEDEIROS_I18N = {
     detail: {
       year: 'Ano', price: 'Preço', status: 'Status', onRequest: 'Sob consulta', overview: 'Visão geral', features: 'Recursos',
       builtWith: 'Feito com', similar: 'Precisa de algo parecido?', similarText: 'Aceito encomendas de plugins personalizados e configuração.',
-      talk: 'Falar no Discord', screens: 'Imagens', inGame: 'No jogo', tap: 'Toque em uma imagem para ampliar.',
-      video: 'Vídeo', seeAction: 'Veja funcionando', more: 'Mais', others: 'Outros plugins',
+      talk: 'Falar no Discord', screens: 'Imagens', inGame: 'No jogo', inBot: 'Por dentro', tap: 'Toque em uma imagem para ampliar.',
+      video: 'Vídeo', seeAction: 'Veja funcionando', more: 'Mais', others: 'Outros plugins', othersBots: 'Outros bots', allBots: 'Ver todos os bots',
       download: 'Baixar no SpigotMC', invite: 'Adicionar ao servidor', ask: 'Perguntar no Discord'
     },
     lightbox: { hero: 'capa', gallery: 'imagem', close: 'Fechar imagem', prev: 'Imagem anterior', next: 'Próxima imagem' },
@@ -276,8 +276,8 @@ window.MEDEIROS_I18N = {
     detail: {
       year: 'Year', price: 'Price', status: 'Status', onRequest: 'On request', overview: 'Overview', features: 'Features',
       builtWith: 'Built with', similar: 'Need something similar?', similarText: 'I take commissions for custom plugins and configuration.',
-      talk: 'Talk on Discord', screens: 'Screenshots', inGame: 'In the game', tap: 'Tap an image to enlarge.',
-      video: 'Video', seeAction: 'See it in action', more: 'More', others: 'Other plugins',
+      talk: 'Talk on Discord', screens: 'Screenshots', inGame: 'In the game', inBot: 'A closer look', tap: 'Tap an image to enlarge.',
+      video: 'Video', seeAction: 'See it in action', more: 'More', others: 'Other plugins', othersBots: 'Other bots', allBots: 'All bots',
       download: 'Download on SpigotMC', invite: 'Add to your server', ask: 'Ask about it on Discord'
     },
     lightbox: { hero: 'hero', gallery: 'gallery', close: 'Close image preview', prev: 'Previous image', next: 'Next image' },
