@@ -1338,3 +1338,160 @@ html[data-nav='lang']::view-transition-new(root) { animation: langIn .7s var(--e
 /* Menu de aparência: sai com a mesma animação de entrada, ao contrário */
 .theme-menu.is-closing { animation: themeMenuOut .18s ease-in forwards; pointer-events: none; }
 @keyframes themeMenuOut { to { opacity: 0; transform: translateY(-6px) scale(.97); } }
+
+/* ---------- Sites (página /sites e prévia no início) ---------- */
+.site-card-media { display: block; }
+.site-card-media img { transition: transform .5s var(--ease-out, ease); }
+.site-card:hover .site-card-media img { transform: scale(1.03); }
+.site-card-title { color: inherit; text-decoration: none; }
+.site-card-title:hover { text-decoration: underline; text-underline-offset: 4px; text-decoration-thickness: 2px; }
+.site-card .chips { margin-top: 2px; }
+.site-card-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: auto; padding-top: 6px; }
+.site-card-actions .button { gap: 8px; }
+.site-card-actions .icon { width: 17px; height: 17px; }
+@media (prefers-reduced-motion: reduce) {
+  .site-card-media img { transition: none; }
+  .site-card:hover .site-card-media img { transform: none; }
+}
+
+/* =====================================================================
+ * Área Sites (/sites): 4ª posição do seletor, cor laranja
+ * ===================================================================== */
+
+/* seletor com 4 áreas */
+.mode-switch { grid-template-columns: repeat(4, 1fr); }
+.mode-thumb { width: calc((100% - 8px) / 4); }
+.mode-switch[data-active='sites'] .mode-thumb { transform: translateX(300%); background: #e8590c; box-shadow: 0 0 0 3px rgba(232, 89, 12, .24); }
+@media (max-width: 380px) {
+  .mode-option { min-width: 50px; padding: 0 6px; }
+}
+
+/* cores da área: só as cores mudam, igual ao Discord */
+body[data-skin='sites'] { --brand: #e8590c; --cta: #e8590c; }
+html[data-theme='light'] body[data-skin='sites'] { --sky: #ffe8d9; --brand-dark: #b3420a; }
+html[data-theme='dark'] body[data-skin='sites'] { --sky: #3a2618; --brand-dark: #ffa36b; }
+body[data-skin='sites'] .mark { background: linear-gradient(transparent 62%, rgba(232, 89, 12, .45) 62%, rgba(232, 89, 12, .45) 92%, transparent 92%); }
+body[data-skin='sites'] .eyebrow::before { content: '</>'; width: auto; height: auto; background: none; font-size: 13px; line-height: 1; font-weight: 800; color: var(--brand); }
+body[data-skin='sites'] .button-primary { background: #e8590c; color: #fff; border-color: #a63d06; }
+body[data-skin='sites'] .button-primary:hover { background: #c94c09; color: #fff; }
+body[data-skin='sites'] .button-light { background: #fff; color: #b3420a; }
+body[data-skin='sites'] .status-pill i { background: #e8590c; }
+
+/* botão e porta no início */
+.button-sites { background: #e8590c; color: #fff; border-color: #a63d06; }
+.button-sites:hover { background: #c94c09; }
+.door-sites { background: #e8590c; border-color: #8f3404; box-shadow: 5px 5px 0 #8f3404; color: #fff; }
+.door-sites:hover { box-shadow: 8px 8px 0 #8f3404; }
+.door-sites .door-label { background: rgba(255, 255, 255, .22); color: #fff; }
+.door-sites .door-body p { color: rgba(255, 255, 255, .92); }
+.door-sites .door-go { color: #fff; }
+.door-art-sites { background: linear-gradient(160deg, #ff7a2e 0%, #f25c0e 60%, #d94c06 100%); }
+.ws-mini-browser {
+  display: flex; flex-direction: column; width: min(100%, 300px); overflow: hidden;
+  background: #fff; border: 2px solid #fff; border-radius: 10px; box-shadow: 0 8px 0 rgba(110, 35, 0, .28);
+  transform: rotate(-2deg); transition: transform .3s ease;
+}
+.door-sites:hover .ws-mini-browser { transform: rotate(0deg) translateY(-4px); }
+.ws-mini-bar { display: flex; gap: 4px; padding: 5px 7px; background: #f1ece6; }
+.ws-mini-bar i { width: 7px; height: 7px; border-radius: 50%; background: #d6cfc6; }
+.ws-mini-bar i:first-child { background: #ff5f57; } .ws-mini-bar i:nth-child(2) { background: #febc2e; } .ws-mini-bar i:nth-child(3) { background: #28c840; }
+.ws-mini-screen { display: block; aspect-ratio: 1200 / 630; }
+
+/* três portas: Minecraft e Discord lado a lado, Sites embaixo ocupando a largura */
+@media (min-width: 760px) {
+  .hub-doors { grid-template-columns: 1fr 1fr; }
+  .hub-doors .door-sites { grid-column: 1 / -1; grid-template-columns: 1.1fr 1fr; }
+  .hub-doors .door-sites .door-art { min-height: 0; }
+}
+@media (min-width: 1020px) {
+  .hub-doors .door-body { padding: 18px 18px 20px; }
+  .hub-doors .door-body h2 { font-size: 1.3rem; }
+  .hub-doors .door-art { min-height: 120px; }
+}
+.hub-doors > :nth-child(3) { animation-delay: .39s; }
+
+/* ---------- capa: navegador + editor + celular ---------- */
+.ws-hero { align-items: center; }
+.ws-collage { position: relative; width: 100%; max-width: 580px; margin: 0 auto; aspect-ratio: 1 / .9; }
+.ws-window {
+  position: absolute; overflow: hidden; background: var(--surface);
+  border: 1.5px solid var(--edge); border-radius: 14px; box-shadow: 6px 6px 0 var(--edge);
+}
+.ws-bar { display: flex; align-items: center; gap: 10px; padding: 8px 12px; border-bottom: 1.5px solid var(--edge); background: var(--paper-2); }
+.ws-dots { display: flex; gap: 5px; }
+.ws-dots i { width: 9px; height: 9px; border-radius: 50%; background: var(--line); }
+.ws-dots i:first-child { background: #ff5f57; } .ws-dots i:nth-child(2) { background: #febc2e; } .ws-dots i:nth-child(3) { background: #28c840; }
+.ws-url {
+  flex: 1; min-width: 0; padding: 3px 10px; border-radius: 999px; background: var(--surface);
+  font-size: 12px; font-weight: 600; color: var(--ink-3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.ws-window-browser { left: 0; top: 4%; width: 86%; animation: wsFloat 7s ease-in-out infinite; }
+.ws-screen { display: block; aspect-ratio: 1200 / 630; }
+.ws-window-code { right: 0; bottom: 0; width: 62%; animation: wsFloat 7s ease-in-out -3.5s infinite; }
+.ws-code {
+  margin: 0; padding: 14px 16px; overflow: hidden; white-space: pre; background: #15171f; color: #e6e6e6;
+  font: 600 12.5px/1.65 ui-monospace, 'JetBrains Mono', Consolas, monospace;
+}
+.ws-code .c-tag { color: #ff8a4c; } .ws-code .c-attr { color: #8cc2ff; } .ws-code .c-str { color: #9ee09e; }
+.ws-phone {
+  position: absolute; left: 6%; bottom: 2%; width: 22%; aspect-ratio: 9 / 18; padding: 6px;
+  background: #15171f; border-radius: 22px; box-shadow: 6px 6px 0 var(--edge); animation: wsFloat 7s ease-in-out -1.5s infinite;
+}
+.ws-phone-notch { position: absolute; top: 9px; left: 50%; width: 30%; height: 6px; border-radius: 999px; background: #2b2e3a; transform: translateX(-50%); z-index: 2; }
+
+
+.ws-chip {
+  position: absolute; display: inline-flex; align-items: center; gap: 6px; padding: 7px 12px; border-radius: 999px;
+  background: var(--surface); border: 1.5px solid var(--edge); box-shadow: 3px 3px 0 var(--edge);
+  font-size: 13px; font-weight: 800; color: var(--ink); white-space: nowrap;
+}
+.ws-chip .icon { color: var(--brand); }
+.ws-chip-1 { right: 4%; top: 0; }
+.ws-chip-2 { right: 26%; bottom: 40%; }
+@keyframes wsFloat { 50% { translate: 0 -6px; } }
+
+/* serviços com ícone */
+.ws-service-icon {
+  display: grid; place-items: center; width: 42px; height: 42px; margin-bottom: 4px; border-radius: 12px;
+  background: var(--sky); color: var(--brand-dark);
+}
+.ws-service-icon .icon { width: 22px; height: 22px; }
+@media (min-width: 760px) { .ws-service-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (min-width: 1020px) { .ws-service-grid { grid-template-columns: repeat(3, 1fr); } }
+
+@media (max-width: 560px) {
+  .ws-collage { aspect-ratio: 1 / 1; }
+  .ws-code { font-size: 10.5px; padding: 10px 12px; }
+  .ws-chip { font-size: 11.5px; padding: 6px 10px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ws-window, .ws-phone { animation: none; }
+}
+
+/* com 4 áreas o seletor fica mais largo: em telas médias os ícones ficam um pouco mais estreitos para não encostar no menu */
+@media (min-width: 1020px) and (max-width: 1279px) {
+  .mode-option { min-width: 46px; padding: 0 6px; }
+}
+
+/* celular da capa de Sites: mini versão mobile do site (em vez da imagem larga cortada) */
+.ws-phone-screen {
+  display: flex; flex-direction: column; gap: 7%; width: 100%; height: 100%;
+  padding: 20% 9% 10%; overflow: hidden; border-radius: 16px;
+  background: linear-gradient(180deg, #ff6a1a 0%, #ff4d00 52%, #0f1424 52%);
+}
+.ws-m-bar { display: flex; align-items: center; justify-content: space-between; }
+.ws-m-bar b { width: 22%; aspect-ratio: 1; border-radius: 4px; background: #fff; opacity: .95; }
+.ws-m-bar i { width: 26%; height: 4px; border-radius: 4px; background: rgba(255, 255, 255, .7); }
+.ws-m-title { display: grid; gap: 5px; }
+.ws-m-title i { height: 7px; border-radius: 4px; background: #1f130d; }
+.ws-m-title i:last-child { width: 70%; }
+.ws-m-shot {
+  display: block; flex: 1 1 auto; min-height: 0; width: 100%; border-radius: 10px;
+  border: 2px solid rgba(255, 255, 255, .9); background: #0f1424;
+}
+.ws-m-shot img { object-position: 80% 50%; }
+.ws-m-text { display: grid; gap: 4px; }
+.ws-m-text i { height: 4px; border-radius: 4px; background: rgba(255, 255, 255, .45); }
+.ws-m-text i:nth-child(2) { width: 85%; }
+.ws-m-text i:nth-child(3) { width: 60%; }
+.ws-m-btn { width: 62%; height: 12%; max-height: 18px; border-radius: 999px; background: #ff4d00; margin-top: auto; }

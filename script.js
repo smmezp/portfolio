@@ -22,11 +22,13 @@ const TERMS = window.MEDEIROS_TERMS || null;
 const ALL_PRODUCTS = (window.MEDEIROS_PRODUCTS || []).filter((product) => product && product.id !== 'meu-bot' && product.name !== 'Nome do Bot');
 const PROJECTS = ALL_PRODUCTS.filter((product) => product.brand !== 'discord');
 const DISCORD_PRODUCTS = ALL_PRODUCTS.filter((product) => product.brand === 'discord');
+/* Sites (página /sites): um arquivo por site em data/sites/<nome>.js */
+const WEBSITES = (window.MEDEIROS_WEBSITES || []).filter((site) => site && site.url);
 const DISCORD_SERVER_URL = SITE?.contact?.discordServer || 'https://discord.gg/Unbx6TpXwa';
 const GITHUB_PROFILE_URL = (/^https:\/\/github\.com\/[^/]+\/?$/.test(SITE?.contact?.github || '') ? SITE.contact.github : 'https://github.com/smmezp').replace(/\/$/, '');
-/* Três áreas, da esquerda para a direita: Minecraft | Início | Discord. */
-const MODE_ORDER = ['minecraft', 'home', 'discord'];
-const MODE_ROUTE = { minecraft: '/minecraft', home: '/', discord: '/discord' };
+/* Quatro áreas, da esquerda para a direita: Minecraft | Início | Discord | Sites. */
+const MODE_ORDER = ['minecraft', 'home', 'discord', 'sites'];
+const MODE_ROUTE = { minecraft: '/minecraft', home: '/', discord: '/discord', sites: '/sites' };
 const STORAGE_LANG = 'medeiros-lang';
 const STORAGE_THEME = 'medeiros-theme';
 const app = document.getElementById('app');
@@ -56,6 +58,8 @@ const ICON_PATHS = {
   tiktok: '<path d=\"M14 3v11.5a3.5 3.5 0 1 1-3.5-3.5\"/><path d=\"M14 3c.4 2.4 2 4 4.5 4.2\"/>',
   arrow: '<path d="M5 12h14"/><path d="m13 6 6 6-6 6"/>',
   search: '<circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.5 4.5"/>',
+  browser: '<rect x="3" y="4" width="18" height="16" rx="2.5"/><path d="M3 9h18"/><path d="M6.5 6.5h.01M9 6.5h.01"/>',
+  globe: '<circle cx="12" cy="12" r="9"/><path d="M3 12h18"/><path d="M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/>',
   external: '<path d="M14 4h6v6"/><path d="m20 4-9 9"/><path d="M18 13v5a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h5"/>'
 };
 
@@ -367,6 +371,11 @@ function renderRoute(shouldScroll, enter) {
       markup = renderNotFound(t('notFound.product'), t('notFound.productText'));
       title = t('meta.notFoundTitle');
     }
+  } else if (path === '/sites') {
+    markup = renderSites();
+    skin = 'sites';
+    title = t('meta.sitesTitle');
+    description = t('meta.sitesDesc');
   } else if (path === '/about') {
     markup = renderAbout();
     title = t('meta.aboutTitle');
@@ -538,6 +547,7 @@ function renderHub() {
           <div class="button-row">
             <a class="button button-primary" href="/minecraft" data-route>${t('hub.ctaMinecraft')} ${icon('arrow')}</a>
             <a class="button button-discord" href="/discord" data-route>${t('hub.ctaDiscord')} ${icon('arrow')}</a>
+            <a class="button button-sites" href="/sites" data-route>${t('hub.ctaSites')} ${icon('arrow')}</a>
           </div>
           <ul class="hero-facts">
             ${renderReleasedFact(released.length)}
@@ -570,6 +580,17 @@ function renderHub() {
               <h2>${t('hub.doorDiscordTitle')}</h2>
               <p>${t('hub.doorDiscordText')}</p>
               <span class="door-go">${t('hub.doorDiscordGo')} ${icon('arrow')}</span>
+            </div>
+          </a>
+          <a class="door door-sites" href="/sites" data-route>
+            <div class="door-art door-art-sites" aria-hidden="true">
+              <span class="ws-mini-browser"><span class="ws-mini-bar"><i></i><i></i><i></i></span><span class="ws-mini-screen image-frame" data-image-frame>${WEBSITES[0] ? renderProjectImage(WEBSITES[0].images?.hero, WEBSITES[0].name, { loading: 'eager' }) : ''}</span></span>
+            </div>
+            <div class="door-body">
+              <span class="door-label">${t('nav.sites')}</span>
+              <h2>${t('hub.doorSitesTitle')}</h2>
+              <p>${t('hub.doorSitesText')}</p>
+              <span class="door-go">${t('hub.doorSitesGo')} ${icon('arrow')}</span>
             </div>
           </a>
         </div>
@@ -660,6 +681,112 @@ function renderMinecraftHome() {
       ${renderCtaPanel()}
     </div>
   `;
+}
+
+/* ------------------------------------------------------------------
+ * Página /sites — sites publicados (cada um em data/sites/<nome>.js).
+ * ------------------------------------------------------------------ */
+function renderSites() {
+  const shots = WEBSITES.slice(0, 2);
+  const sitesMarkup = WEBSITES.length
+    ? `<div class="project-grid">${WEBSITES.map(renderSiteCard).join('')}</div>`
+    : renderEmptyProjects(t('sites.empty'));
+  return `
+    <div class="view sites-view">
+      <section class="hero ws-hero">
+        <div class="hero-copy">
+          <p class="status-pill"><i></i> ${t('common.open')}</p>
+          <h1>${t('ws.h1a')} <span class="mark">${t('ws.h1b')}</span> ${t('ws.h1c')}</h1>
+          <p class="lede">${t('ws.lede')}</p>
+          <div class="button-row">
+            <a class="button button-primary" href="#ws-sites" data-scroll="ws-sites">${t('ws.ctaSites')} ${icon('arrow')}</a>
+            ${renderDiscordLink(t('common.hire'), 'button button-ghost')}
+          </div>
+          <ul class="hero-facts">
+            <li><strong>${t('ws.fact1A')}</strong> ${t('ws.fact1B')}</li>
+            <li><strong>${t('ws.fact2A')}</strong> ${t('ws.fact2B')}</li>
+            <li><strong>${t('ws.fact3A')}</strong> ${t('ws.fact3B')}</li>
+          </ul>
+        </div>
+        ${renderSitesCollage(shots)}
+      </section>
+
+      <section class="section reveal" id="ws-services">
+        <div class="section-head">
+          <div><p class="eyebrow">${t('common.services')}</p><h2>${t('ws.servicesTitle')}</h2></div>
+          <div class="section-head-side"><p>${t('ws.servicesText')}</p></div>
+        </div>
+        <div class="service-grid ws-service-grid">${(SITE.siteServices || []).map(renderSiteService).join('')}</div>
+      </section>
+
+      <section class="section reveal" id="ws-sites">
+        <div class="section-head">
+          <div><p class="eyebrow">${t('sites.eyebrow')}</p><h2>${t('sites.title')}</h2></div>
+          <div class="section-head-side"><p>${t('sites.lede')}</p></div>
+        </div>
+        ${sitesMarkup}
+      </section>
+
+      <section class="section reveal" id="ws-process">
+        <div class="section-head"><div><p class="eyebrow">${t('common.howItWorks')}</p><h2>${t('ws.processTitle')}</h2></div></div>
+        <div class="process-grid">${(SITE.siteProcess || SITE.process).map(renderProcessStep).join('')}</div>
+        <div class="toolbelt">
+          <span class="toolbelt-label">${t('common.workingWith')}</span>
+          <ul class="chips">${(SITE.siteTechnologies || []).map((tech) => `<li class="chip">${escapeHTML(tech)}</li>`).join('')}</ul>
+        </div>
+      </section>
+
+      ${renderCtaPanel()}
+    </div>
+  `;
+}
+
+/* Capa da área Sites: uma janela de navegador com o site, um editor de código e um "celular". */
+function renderSitesCollage(shots) {
+  const main = shots[0];
+  const host = (url) => { try { return new URL(url).host + new URL(url).pathname.replace(/\/$/, ''); } catch (error) { return url; } };
+  return `
+    <div class="ws-collage" aria-hidden="true">
+      <div class="ws-window ws-window-browser">
+        <div class="ws-bar"><span class="ws-dots"><i></i><i></i><i></i></span><span class="ws-url">${main ? escapeHTML(host(main.url)) : 'seusite.com'}</span></div>
+        <div class="ws-screen image-frame" data-image-frame>${main ? renderProjectImage(main.images?.hero, main.name, { loading: 'eager' }) : renderImagePlaceholder('')}</div>
+      </div>
+      <div class="ws-window ws-window-code">
+        <div class="ws-bar"><span class="ws-dots"><i></i><i></i><i></i></span><span class="ws-url">index.html</span></div>
+        <pre class="ws-code"><span class="c-tag">&lt;section</span> <span class="c-attr">class</span>=<span class="c-str">"hero"</span><span class="c-tag">&gt;</span>
+  <span class="c-tag">&lt;h1&gt;</span>${escapeHTML(t('ws.codeLine'))}<span class="c-tag">&lt;/h1&gt;</span>
+  <span class="c-tag">&lt;a</span> <span class="c-attr">href</span>=<span class="c-str">"/start"</span><span class="c-tag">&gt;</span>${escapeHTML(t('ws.codeCta'))}<span class="c-tag">&lt;/a&gt;</span>
+<span class="c-tag">&lt;/section&gt;</span></pre>
+      </div>
+      <div class="ws-phone">
+        <div class="ws-phone-notch"></div>
+        <div class="ws-phone-screen"><span class="ws-m-bar"><b></b><i></i></span><span class="ws-m-title"><i></i><i></i></span><span class="ws-m-shot image-frame" data-image-frame>${main ? renderProjectImage(main.images?.hero, main.name, { loading: 'eager' }) : ''}</span><span class="ws-m-text"><i></i><i></i><i></i></span><span class="ws-m-btn"></span></div>
+      </div>
+      <span class="ws-chip ws-chip-1">${icon('spark')} ${t('ws.chipFast')}</span>
+      <span class="ws-chip ws-chip-2">${icon('globe')} PT / EN</span>
+    </div>`;
+}
+
+function renderSiteService(service) {
+  return `<article class="service ws-service"><span class="ws-service-icon">${icon(service.icon)}</span><h3>${escapeHTML(L(service.title))}</h3><p>${escapeHTML(L(service.description))}</p><a class="text-link" href="/contact?service=${encodeURIComponent(service.id)}" data-route>${t('common.request')} ${icon('arrow')}</a></article>`;
+}
+
+function renderSiteCard(site) {
+  const url = escapeHTML(site.url);
+  const highlights = (L(site.highlights) || site.technologies || []).slice(0, 4);
+  const external = 'target="_blank" rel="noopener noreferrer"';
+  return `<article class="project-card site-card">
+    <a class="project-card-media image-frame site-card-media" data-image-frame href="${url}" ${external} tabindex="-1" aria-hidden="true">${renderProjectImage(site.images?.hero, site.name)}</a>
+    <div class="project-card-body">
+      <div class="project-card-top"><h3><a class="site-card-title" href="${url}" ${external}>${escapeHTML(site.name)}</a></h3>${renderStatusBadge(site.status)}</div>
+      <p>${escapeHTML(L(site.shortDescription))}</p>
+      <ul class="chips">${highlights.map((item) => `<li class="chip">${escapeHTML(item)}</li>`).join('')}</ul>
+      <div class="site-card-actions">
+        <a class="button button-primary button-small" href="${url}" ${external}>${t('sites.visit')} ${icon('external')}</a>
+        ${site.repo ? `<a class="button button-ghost button-small" href="${escapeHTML(site.repo)}" ${external}>${icon('github')} ${t('sites.code')}</a>` : ''}
+      </div>
+    </div>
+  </article>`;
 }
 
 function renderProjects() {
@@ -1138,6 +1265,7 @@ function renderDiscord() {
 }
 
 function modeOfPath(path) {
+  if (path === '/sites' || path.startsWith('/sites/')) return 'sites';
   if (path === '/discord' || path.startsWith('/discord/')) return 'discord';
   if (path === '/minecraft' || path.startsWith('/projects') || path === '/services') return 'minecraft';
   return 'home';
@@ -1246,7 +1374,7 @@ function stepMode(direction) {
   navigate(MODE_ROUTE[MODE_ORDER[index]]);
 }
 
-/* Arrastar a tela: dedo para a esquerda avança (Minecraft > Início > Discord), para a direita volta. */
+/* Arrastar a tela: dedo para a esquerda avança (Minecraft > Início > Discord > Sites), para a direita volta. */
 function setupSwipe() {
   let start = null;
   const blocked = (target) => {
@@ -1290,7 +1418,7 @@ function setupModeSwitchDrag() {
   if (!switchEl || !thumb) return;
   let drag = null;
   let suppressClick = false;
-  const segment = (rect) => (rect.width - 8) / 3;
+  const segment = (rect) => (rect.width - 8) / MODE_ORDER.length;
 
   switchEl.addEventListener('pointerdown', (event) => {
     if (event.pointerType === 'mouse' && event.button !== 0) return;
@@ -1308,7 +1436,7 @@ function setupModeSwitchDrag() {
     }
     if (drag.moved) {
       const size = segment(drag.rect);
-      drag.x = Math.max(0, Math.min(size * 2, drag.startIndex * size + dx));
+      drag.x = Math.max(0, Math.min(size * (MODE_ORDER.length - 1), drag.startIndex * size + dx));
       thumb.style.transform = `translateX(${drag.x}px)`;
     }
   });
@@ -1321,7 +1449,7 @@ function setupModeSwitchDrag() {
     suppressClick = true;
     window.setTimeout(() => { suppressClick = false; }, 0);
     switchEl.classList.remove('is-dragging');
-    const index = Math.max(0, Math.min(2, Math.round(state.x / segment(state.rect))));
+    const index = Math.max(0, Math.min(MODE_ORDER.length - 1, Math.round(state.x / segment(state.rect))));
     thumb.style.transform = '';
     const target = MODE_ORDER[index];
     if (target === currentMode()) {
@@ -1498,7 +1626,7 @@ function initializeContactForm(query) {
 
   const serviceId = query.get('service');
   const projectSlug = query.get('project');
-  const service = [...SITE.services, ...SITE.discordServices].find((item) => item.id === serviceId);
+  const service = [...SITE.services, ...SITE.discordServices, ...(SITE.siteServices || [])].find((item) => item.id === serviceId);
   const project = findProject(projectSlug);
   if (service && [...typeSelect.options].some((option) => option.value === service.projectType)) {
     typeSelect.value = service.projectType;

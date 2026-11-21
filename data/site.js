@@ -152,8 +152,73 @@ window.MEDEIROS_SITE = {
     }
   ],
 
+  /* Serviços de sites (página /sites) */
+  siteServices: [
+    {
+      id: 'site-landing',
+      icon: 'browser',
+      projectType: 'website',
+      title: { pt: 'Landing pages', en: 'Landing pages' },
+      description: {
+        pt: 'Uma página de apresentação para o seu projeto, servidor ou negócio: rápida, bonita e com o que importa logo de cara.',
+        en: 'A showcase page for your project, server or business: fast, good-looking and with what matters up front.'
+      }
+    },
+    {
+      id: 'site-community',
+      icon: 'users',
+      projectType: 'website',
+      title: { pt: 'Sites para servidores e comunidades', en: 'Sites for servers and communities' },
+      description: {
+        pt: 'Regras, equipe, como entrar, links do Discord e da loja — tudo num lugar só, fácil de atualizar.',
+        en: 'Rules, staff, how to join, Discord and store links — all in one place, easy to update.'
+      }
+    },
+    {
+      id: 'site-tools',
+      icon: 'code',
+      projectType: 'website',
+      title: { pt: 'Ferramentas interativas', en: 'Interactive tools' },
+      description: {
+        pt: 'Guias, calculadoras, timers e páginas com animação — como o guia do cubo mágico com cubo 3D.',
+        en: 'Guides, calculators, timers and animated pages — like the Rubik’s Cube guide with a 3D cube.'
+      }
+    },
+    {
+      id: 'site-portfolio',
+      icon: 'spark',
+      projectType: 'website',
+      title: { pt: 'Portfólios e páginas pessoais', en: 'Portfolios and personal pages' },
+      description: {
+        pt: 'Uma página com a sua cara para mostrar o seu trabalho, com seus projetos e redes sociais.',
+        en: 'A page that looks like you, to show your work with your projects and social links.'
+      }
+    },
+    {
+      id: 'site-publish',
+      icon: 'globe',
+      projectType: 'website',
+      title: { pt: 'Publicação e domínio', en: 'Publishing and domain' },
+      description: {
+        pt: 'Site no ar de graça pelo GitHub Pages ou no seu domínio, com imagem de compartilhamento e Google.',
+        en: 'Your site live for free on GitHub Pages or on your own domain, with share image and search setup.'
+      }
+    },
+    {
+      id: 'site-fixes',
+      icon: 'wrench',
+      projectType: 'website',
+      title: { pt: 'Ajustes e melhorias', en: 'Fixes and improvements' },
+      description: {
+        pt: 'Deixar um site existente responsivo, mais rápido, traduzido para inglês ou com visual renovado.',
+        en: 'Make an existing site responsive, faster, translated to English or with a refreshed look.'
+      }
+    }
+  ],
+
   technologies: ['Java', 'Paper', 'Spigot', 'Velocity', 'Maven', 'Discord.js', 'JavaScript', 'PlaceholderAPI', 'ItemsAdder'],
   discordTechnologies: ['Discord.js', 'JavaScript'],
+  siteTechnologies: ['HTML', 'CSS', 'JavaScript', 'Responsive design', 'PT / EN', 'GitHub Pages'],
 
   process: [
     {
@@ -179,11 +244,37 @@ window.MEDEIROS_SITE = {
     }
   ],
 
+  /* Processo da área Sites */
+  siteProcess: [
+    {
+      title: { pt: 'Entender o objetivo', en: 'Understand the goal' },
+      description: {
+        pt: 'Combinamos para quem é o site, o que ele precisa mostrar e qual é a ação principal de quem visita.',
+        en: 'We agree on who the site is for, what it needs to show and the main thing visitors should do.'
+      }
+    },
+    {
+      title: { pt: 'Design e código', en: 'Design and code' },
+      description: {
+        pt: 'Eu desenho e programo pensando no celular primeiro, com textos em português e inglês e um visual com a sua cara.',
+        en: 'I design and build phone-first, with English and Portuguese text and a look that fits you.'
+      }
+    },
+    {
+      title: { pt: 'Publicar e entregar', en: 'Publish and hand over' },
+      description: {
+        pt: 'O site vai pro ar, testamos em vários aparelhos e você recebe o código e o passo a passo para editar.',
+        en: 'The site goes live, we test it on several devices and you get the code plus a guide to edit it.'
+      }
+    }
+  ],
+
   projectTypes: [
     { id: 'configuration', label: { pt: 'Configuração de plugins', en: 'Plugin configuration' } },
     { id: 'custom-plugin', label: { pt: 'Plugin personalizado', en: 'Custom plugin' } },
     { id: 'server-system', label: { pt: 'Sistema para servidor', en: 'Server system' } },
     { id: 'discord-bot', label: { pt: 'Bot de Discord', en: 'Discord bot' } },
+    { id: 'website', label: { pt: 'Site', en: 'Website' } },
     { id: 'proxy', label: { pt: 'Velocity / proxy', en: 'Velocity / proxy' } },
     { id: 'bug-fixing', label: { pt: 'Correção de bugs', en: 'Bug fixing' } },
     { id: 'integration', label: { pt: 'Integração', en: 'Integration' } },

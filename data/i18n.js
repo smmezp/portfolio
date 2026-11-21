@@ -6,7 +6,7 @@
 window.MEDEIROS_I18N = {
   pt: {
     nav: {
-      home: 'Início', minecraft: 'Minecraft', discord: 'Discord', about: 'Sobre', contact: 'Contato',
+      home: 'Início', minecraft: 'Minecraft', discord: 'Discord', sites: 'Sites', about: 'Sobre', contact: 'Contato',
       hire: 'Contratar', hireDiscord: 'Contratar no Discord', donate: 'Apoiar', github: 'GitHub',
       theme: 'Escolher a aparência', language: 'Idioma', menu: 'Menu', openMenu: 'Abrir menu', closeMenu: 'Fechar menu',
       footer: 'Rodapé', primary: 'Navegação principal', breadcrumb: 'Trilha de navegação'
@@ -18,6 +18,7 @@ window.MEDEIROS_I18N = {
       projectsTitle: 'Plugins — Medeiros', projectsDesc: 'Plugins de Minecraft criados pelo Medeiros, com páginas, imagens e lista de recursos.',
       servicesTitle: 'Serviços — Medeiros', servicesDesc: 'Configuração de plugins, plugins personalizados, sistemas para servidor, proxy e correção de bugs.',
       discordTitle: 'Bots de Discord — Medeiros', discordDesc: 'Bots de Discord sob medida: moderação, tickets, integração com Minecraft, comandos personalizados e mais.',
+      sitesTitle: 'Sites — Medeiros', sitesDesc: 'Sites feitos pelo Medeiros: páginas rápidas, bonitas e que funcionam no celular.',
       aboutTitle: 'Sobre — Medeiros', aboutDesc: 'Conheça o Medeiros, desenvolvedor de configurações, plugins e bots fáceis de manter.',
       contactTitle: 'Contato — Medeiros', contactDesc: 'Conte ao Medeiros o que o seu servidor de Minecraft ou comunidade de Discord precisa.',
       termsTitle: 'Termos de serviço — Medeiros', termsDesc: 'Regras de pedidos, pagamentos, reembolsos, revisões, entrega e mais para os serviços do Medeiros.',
@@ -33,7 +34,7 @@ window.MEDEIROS_I18N = {
     hub: {
       h1a: 'Configuração e plugins', h1b: 'sob medida', h1c: 'para o seu servidor.',
       lede: 'Eu sou o Medeiros. Configuro servidores de Minecraft, desenvolvo plugins personalizados e crio bots de Discord. Nada genérico: tudo feito para o que a sua comunidade precisa.',
-      ctaMinecraft: 'Ver Minecraft', ctaDiscord: 'Ver Discord',
+      ctaMinecraft: 'Ver Minecraft', ctaDiscord: 'Ver Discord', ctaSites: 'Ver Sites',
       factPlugin: 'plugin publicado', factPlugins: 'plugins publicados',
       factTestedA: 'Entrega testada,', factTestedB: 'com suporte depois',
       factEasyA: 'Fácil de manter:', factEasyB: 'configuração clara',
@@ -43,6 +44,7 @@ window.MEDEIROS_I18N = {
       doorDiscordTitle: 'Bots de Discord sob medida',
       doorDiscordText: 'Moderação, tickets, integração com o seu servidor de Minecraft e comandos feitos para a sua comunidade.',
       doorDiscordGo: 'Entrar no Discord',
+      doorSitesTitle: 'Sites rápidos e bonitos', doorSitesText: 'Landing pages, sites para comunidades e ferramentas interativas que funcionam no celular.', doorSitesGo: 'Ver os sites',
       processTitle: 'Um pedido, passo a passo.',
       githubTitle: 'Meu GitHub', githubText: 'O código dos meus projetos e as novidades ficam no meu perfil do GitHub.', githubCta: 'Abrir GitHub'
     },
@@ -55,6 +57,24 @@ window.MEDEIROS_I18N = {
       workEyebrow: 'Trabalhos', workTitle: 'Plugins que você já pode usar.',
       workText: 'Cada plugin tem página própria, com imagens e lista de recursos.',
       processTitle: 'Um pedido, passo a passo.'
+    },
+    ws: {
+      h1a: 'Sites que', h1b: 'abrem rápido', h1c: 'e ficam bonitos em qualquer tela.',
+      lede: 'Landing pages, sites para servidores e comunidades e ferramentas interativas — feitos do zero, em português e inglês, e publicados de graça.',
+      ctaSites: 'Ver os sites',
+      fact1A: 'Celular primeiro,', fact1B: 'depois tablet e PC',
+      fact2A: 'Português e inglês', fact2B: 'na mesma página',
+      fact3A: 'No ar de graça', fact3B: 'pelo GitHub Pages',
+      servicesTitle: 'O que eu faço em sites',
+      servicesText: 'Do primeiro rascunho ao site no ar: design, código, tradução e publicação.',
+      processTitle: 'Do pedido ao site no ar',
+      codeLine: 'Seu projeto aqui', codeCta: 'Começar',
+      chipFast: 'Rápido'
+    },
+    sites: {
+      eyebrow: 'Sites', title: 'Sites que eu fiz', lede: 'Páginas publicadas e funcionando: rápidas, bonitas e pensadas para celular, tablet e computador. Clique para abrir o site ou ver o código.',
+      hubTitle: 'Sites que eu fiz', hubText: 'Além de plugins e bots, também crio sites completos, do design ao código.', all: 'Ver todos os sites',
+      visit: 'Abrir site', code: 'Código', empty: 'Nenhum site publicado ainda.'
     },
     projects: {
       title: 'Meus plugins', lede: 'Plugins e sistemas para servidores de Minecraft.',
@@ -135,13 +155,13 @@ window.MEDEIROS_I18N = {
       processTitle: 'Um bot, passo a passo.'
     },
     theme: { title: 'Aparência', system: 'Sistema', systemSub: 'Padrão do dispositivo', light: 'Claro', dark: 'Escuro' },
-    mode: { label: 'Escolher a área do site', minecraft: 'Minecraft', home: 'Início', discord: 'Discord' },
+    mode: { label: 'Escolher a área do site', minecraft: 'Minecraft', home: 'Início', discord: 'Discord', sites: 'Sites' },
     toast: { discordCopied: 'Usuário do Discord copiado.' }
   },
 
   en: {
     nav: {
-      home: 'Home', minecraft: 'Minecraft', discord: 'Discord', about: 'About', contact: 'Contact',
+      home: 'Home', minecraft: 'Minecraft', discord: 'Discord', sites: 'Websites', about: 'About', contact: 'Contact',
       hire: 'Hire me', hireDiscord: 'Hire me on Discord', donate: 'Support', github: 'GitHub',
       theme: 'Choose appearance', language: 'Language', menu: 'Menu', openMenu: 'Open menu', closeMenu: 'Close menu',
       footer: 'Footer', primary: 'Primary navigation', breadcrumb: 'Breadcrumb'
@@ -153,6 +173,7 @@ window.MEDEIROS_I18N = {
       projectsTitle: 'Plugins — Medeiros', projectsDesc: 'Minecraft plugins built by Medeiros, with pages, screenshots and feature lists.',
       servicesTitle: 'Services — Medeiros', servicesDesc: 'Plugin configuration, custom plugins, server systems, proxy development and bug fixing.',
       discordTitle: 'Discord bots — Medeiros', discordDesc: 'Tailor-made Discord bots: moderation, tickets, Minecraft integration, custom commands and more.',
+      sitesTitle: 'Websites — Medeiros', sitesDesc: 'Websites built by Medeiros: fast, good-looking pages that work great on phones.',
       aboutTitle: 'About — Medeiros', aboutDesc: 'Meet Medeiros, a developer of configurations, plugins and bots that are easy to maintain.',
       contactTitle: 'Contact — Medeiros', contactDesc: 'Tell Medeiros what your Minecraft server or Discord community needs.',
       termsTitle: 'Terms of Service — Medeiros', termsDesc: 'Rules for orders, payments, refunds, revisions, delivery and more for Medeiros’ services.',
@@ -168,7 +189,7 @@ window.MEDEIROS_I18N = {
     hub: {
       h1a: 'Configuration and plugins', h1b: 'made to order', h1c: 'for your server.',
       lede: 'I’m Medeiros. I configure Minecraft servers, build custom plugins and make Discord bots. Nothing generic: everything is made for what your community needs.',
-      ctaMinecraft: 'See Minecraft', ctaDiscord: 'See Discord',
+      ctaMinecraft: 'See Minecraft', ctaDiscord: 'See Discord', ctaSites: 'See Websites',
       factPlugin: 'plugin released', factPlugins: 'plugins released',
       factTestedA: 'Tested delivery,', factTestedB: 'with support afterwards',
       factEasyA: 'Easy to maintain:', factEasyB: 'clear configuration',
@@ -178,6 +199,7 @@ window.MEDEIROS_I18N = {
       doorDiscordTitle: 'Tailor-made Discord bots',
       doorDiscordText: 'Moderation, tickets, integration with your Minecraft server and commands made for your community.',
       doorDiscordGo: 'Enter Discord',
+      doorSitesTitle: 'Fast, good-looking websites', doorSitesText: 'Landing pages, community sites and interactive tools that work great on phones.', doorSitesGo: 'See the websites',
       processTitle: 'A commission, step by step.',
       githubTitle: 'My GitHub', githubText: 'The code behind my projects and the latest updates live on my GitHub profile.', githubCta: 'Open GitHub'
     },
@@ -190,6 +212,24 @@ window.MEDEIROS_I18N = {
       workEyebrow: 'Selected work', workTitle: 'Plugins you can use today.',
       workText: 'Each plugin has its own page with screenshots and a feature list.',
       processTitle: 'A commission, step by step.'
+    },
+    ws: {
+      h1a: 'Websites that', h1b: 'load fast', h1c: 'and look great on any screen.',
+      lede: 'Landing pages, sites for servers and communities, and interactive tools — built from scratch, in English and Portuguese, and published for free.',
+      ctaSites: 'See the websites',
+      fact1A: 'Phone first,', fact1B: 'then tablet and desktop',
+      fact2A: 'English and Portuguese', fact2B: 'on the same page',
+      fact3A: 'Live for free', fact3B: 'on GitHub Pages',
+      servicesTitle: 'What I build for the web',
+      servicesText: 'From the first sketch to a live site: design, code, translation and publishing.',
+      processTitle: 'From request to live site',
+      codeLine: 'Your project here', codeCta: 'Get started',
+      chipFast: 'Fast'
+    },
+    sites: {
+      eyebrow: 'Websites', title: 'Websites I built', lede: 'Published, working pages: fast, good-looking and built for phones, tablets and desktops. Click to open the site or see the code.',
+      hubTitle: 'Websites I built', hubText: 'Besides plugins and bots, I also build complete websites, from design to code.', all: 'See all websites',
+      visit: 'Open site', code: 'Code', empty: 'No websites published yet.'
     },
     projects: {
       title: 'My plugins', lede: 'Plugins and systems for Minecraft servers.',
@@ -270,7 +310,7 @@ window.MEDEIROS_I18N = {
       processTitle: 'A bot, step by step.'
     },
     theme: { title: 'Appearance', system: 'System', systemSub: 'Device default', light: 'Light', dark: 'Dark' },
-    mode: { label: 'Choose the site area', minecraft: 'Minecraft', home: 'Home', discord: 'Discord' },
+    mode: { label: 'Choose the site area', minecraft: 'Minecraft', home: 'Home', discord: 'Discord', sites: 'Websites' },
     toast: { discordCopied: 'Discord username copied.' }
   }
 };
